@@ -1,0 +1,29 @@
+<div class="container" style="margin: 0px 100px;">
+  <div id="title">
+    <h1 style="text-align: center; margin-bottom: 10px; margin-top: 10px;">CODENAMES</h1>
+  </div>
+
+  <mat-card>
+    <mat-card-title>
+      Settings
+    </mat-card-title>
+
+    <mat-card-content>
+      <form [formGroup]="settingsForm" (ngSubmit)="submit()">
+        <mat-radio-group formControlName="gameMode">
+          <label for="words-radio-btn">Words</label>
+          <mat-radio-button color="primary" style="margin: 5px;" id="words-radio-btn" type="radio" value="Words"></mat-radio-button>
+
+          <label for="pictures-radio-btn">Pictures</label>
+          <mat-radio-button color="primary" style="margin: 5px;" id="pictures-radio-btn" type="radio" value="Pictures"></mat-radio-button>
+        </mat-radio-group>
+
+        <div style="margin: 5px;">
+          <button mat-raised-button type="submit" color="primary">New Game!</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+
+</div>
