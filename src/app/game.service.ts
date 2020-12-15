@@ -1,64 +1,59 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
-
 import { Card } from './card';
 import { DataService } from './data.service';
 import { GameContext } from './game-context';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { GameIdPair } from './game-id-pair';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private baseUrl = 'api/games';  // URL to web api
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
 
-  counter = 0;
+  constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase) { }
 
-  constructor(private dataService: DataService, private http: HttpClient) { }
-
-  getGameById(id: number): Promise<GameContext> {
-    const url = `${this.baseUrl}/${id}`;
-    return this.http.get<GameContext>(url).toPromise();
+  async getGameById(firebaseId: any): Promise<GameContext> {
+    const snapshot = await this.firebaseDb.database.ref("/games").child(firebaseId)
+      .get();
+    return snapshot.val();
   }
 
-  addGame(game: GameContext): Promise<GameContext> {
-    return this.http.post<GameContext>(this.baseUrl, game, this.httpOptions).toPromise();
+  addGameToDb(game: GameContext) {
+    var firebaseId = this.firebaseDb.database.ref("/games").push(game);
+    console.log("Game added to DB with id of " + firebaseId.key);
+    return firebaseId.key;
   }
 
-  deleteGame(game: GameContext | number): Promise<GameContext> {
-    const id = typeof game === 'number' ? game : game.id;
-    const url = `${this.baseUrl}/${id}`;
-
-    return this.http.delete<GameContext>(url, this.httpOptions).toPromise();
+  updateGameInDb(gameIdPair: GameIdPair){
+    this.firebaseDb.database.ref("/games").child(gameIdPair.id.toString()).set(gameIdPair.game);
+    console.log("Updating game DB with id of " + gameIdPair.id);
   }
 
-  async createNewGame(gameMode: String){
-    var cards = this.createCardList(gameMode);
-    //TODO - make it random which team goes first
+  async deleteGameFromDb(firebaseId: any) {
+   await this.firebaseDb.database.ref("/games").child(firebaseId).remove();
+  }
+
+  async createNewGame(gameMode: String) {
+    var cards = await this.createCardList(gameMode);
     var redStartingScore = this.calcStartingScore(cards, "red");
     var blueStartingScore = this.calcStartingScore(cards, "blue");
-    var newGame = new GameContext(this.counter + 1, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore), this.isFirstTurn(blueStartingScore))
-    this.counter++;
+    // var id = this.getNewId();
+    var newGame = new GameContext(cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore), this.isFirstTurn(blueStartingScore))
 
-    await this.addGame(newGame);
+    var firebaseId = this.addGameToDb(newGame);
 
-    return newGame;
+    return new GameIdPair(firebaseId, newGame);
   }
   isFirstTurn(startingScore: number): Boolean {
     return startingScore === 9;
   }
 
-  private createCardList(gameMode: String){
+  async createCardList(gameMode: String){
     var cards: Array<Card> = [];
 
     if (gameMode === "Words"){
-      this.setInitialCardsWithWords(cards);
+      await this.setInitialCardsWithWords(cards);
     } else {
       this.setInitialCardsWithPictures(cards)
     }
@@ -69,7 +64,7 @@ export class GameService {
   }
 
   setCardColors(cards: Array<Card>) {
-    //randomly determine if blue or red will have 9
+    //randomly determine if blue or red will have 9 (this impacts who will go first)
     var randomNumForColorWithNine = this.getRandomNumber(2);
     if (randomNumForColorWithNine == 0){
       this.setColors(cards, "blue", "red");
@@ -79,9 +74,9 @@ export class GameService {
 
   }
 
-  private setInitialCardsWithWords(cards: Array<Card>){
+  async setInitialCardsWithWords(cards: Array<Card>){
     var wordList: Array<String> = []
-    var allWords = this.dataService.getAllWords();
+    var allWords = await this.dataService.getAllWords();
     wordList = this.dataService.get25RandomWords(allWords);
 
     for (var word of wordList){
@@ -144,5 +139,22 @@ export class GameService {
       cards[i] = cards[j];
       cards[j] = temp;
     }
+  }
+
+  getNewId(){
+    return 1;
+    // var id: number;
+    // this.firebaseDb.database.ref("/games").on("value", function(snapshotList) {
+    //   console.log(snapshotList.val);
+    //   id = snapshotList[snapshotList.val().length - 1].id + 1
+    // })
+
+    // return id;
+
+    // console.log("List");
+    // console.log(list);
+    // console.log(list[list.length - 1].id + 1);
+
+    // return list[list.length - 1].id + 1;
   }
 }

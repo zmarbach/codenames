@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
-import { GameContext } from "../app/game-context";
-import { Card } from './card';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +29,6 @@ export class InMemoryDataService implements InMemoryDbService {
     return {games};
   }
 
-  // Overrides the genId method to ensure that a hero always has an id.
   genId(): number {
     this.counter++;
     return this.counter + 1;

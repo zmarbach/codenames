@@ -1,18 +1,18 @@
 <div class="container" class="container" style="margin: 0px 100px;">
   <div id="title">
-    <h1 class="codeNamesTitle">CODENAMES</h1>
+    <h1 class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()">CODENAMES</h1>
   </div>
 
   <mat-card id="boardTop" class="boardTop">
     <table class="matTable" mat-table>
       <tr mat-table-row>
         <td mat-cell class="score">
-          <span style="color: red;">Red: {{currentGame.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGame.blueScore}}</span>
+          <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
         </td>
         <td mat-cell class="turnIndicator">
-          <span class="redTurn" *ngIf="currentGame.isRedTurn">Red's</span>
-          <span class="blueTurn" *ngIf="currentGame.isBlueTurn">Blue's</span>
-          <span [ngClass]="{redTurn: currentGame.isRedTurn, blueTurn: currentGame.isBlueTurn}"> turn</span>
+          <span class="redTurn" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
+          <span class="blueTurn" *ngIf="currentGameIdPair.game.isBlueTurn">Blue's</span>
+          <span [ngClass]="{redTurn: currentGameIdPair.game.isRedTurn, blueTurn: currentGameIdPair.game.isBlueTurn}"> turn</span>
         </td>
         <td mat-cell class="endTurnButton" (click)="endTurn()">
           <button mat-raised-button color="primary">End turn</button>
@@ -22,7 +22,7 @@
   </mat-card>
 
   <div id="board" class="boardContainer">
-    <div *ngFor="let card of currentGame.cards">
+    <div *ngFor="let card of currentGameIdPair.game.cards">
       <mat-card [ngClass]="{cardContainer: !card.selected,
                             cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
                             cardContainerSelectedBlue: (card.selected || isSpyMaster) && card.color == 'blue',

@@ -22,8 +22,10 @@ export class HomeComponent implements OnInit {
   }
 
   async submit(){
-    var newGame = await this.gameService.createNewGame(this.settingsForm.value.gameMode)
-    this.router.navigate(['/board/' + newGame.id]);
+    console.log("Creating new game...");
+    var newGameIdPair = await this.gameService.createNewGame(this.settingsForm.value.gameMode)
+    console.log("Game created with this id " + newGameIdPair.id);
+    this.router.navigate(['/board/' + newGameIdPair.id]);
   }
 
 }

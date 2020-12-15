@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../card';
 import { GameContext } from '../game-context';
+import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
 
 @Component({
@@ -10,43 +11,42 @@ import { GameService } from '../game.service';
   styleUrls: ['./board.component.css'],
 })
 export class BoardComponent implements OnInit {
-  currentGame: GameContext;
+  currentGameIdPair = new GameIdPair("", new GameContext(new Array<Card>(), 0,0, false, false));
   isSpyMaster=false;
 
   constructor(private activeRoute: ActivatedRoute, private router: Router, private gameService: GameService) { }
 
   ngOnInit() {
-    this.getCurrentGame();
+    this.setUpCurrentGame();
   }
 
-  async getCurrentGame(){
-    var gameId;
+  async setUpCurrentGame(){
     this.activeRoute.params.subscribe(params => {
-      gameId = params.id;
+      this.currentGameIdPair.id = params.id;
     })
 
-    this.currentGame = await this.gameService.getGameById(gameId);
+    this.currentGameIdPair.game = await this.gameService.getGameById(this.currentGameIdPair.id);
+    if(this.currentGameIdPair.game == undefined){
+      window.alert("This game has been deleted. You will now be redirected to the Home Page to start a new game");
+      this.router.navigate(["/home"]);
+    }
   }
 
   async nextGame(){
     //figure out game mode before deleteing
     var gameMode = "Words"
-    if (this.currentGame.cards[0].imgPath){
+    if (this.currentGameIdPair.game.cards[0].imgPath){
       gameMode = "Pictures";
     }
 
     //delete old game
-    var oldGame = this.currentGame;
-    this.deleteGame(oldGame);
+    this.deleteGameFromDb();
 
     //create new game, set it equal to current game and update page
-    const nextGame = await this.gameService.createNewGame(gameMode);
-    this.currentGame = nextGame;
-    this.router.navigate(['/board/' + nextGame.id]);
-  }
-
-  deleteGame(game: GameContext){
-    this.gameService.deleteGame(game);
+    const nextGameIdPair = await this.gameService.createNewGame(gameMode);
+    this.currentGameIdPair.id = nextGameIdPair.id;
+    this.currentGameIdPair.game = nextGameIdPair.game;
+    this.router.navigate(['/board/' + this.currentGameIdPair.id]);
   }
 
   toggleSpyMaster(){
@@ -63,26 +63,33 @@ export class BoardComponent implements OnInit {
       card.selected = true;
     }
     //update game in Firebase DB
+    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
   updateScore(color: String){
-    if (color == "red" && this.currentGame.redScore !== 0){
-      this.currentGame.redScore--;
-    } else if (color == "blue" && this.currentGame.blueScore !== 0){
-      this.currentGame.blueScore--;
+    if (color == "red" && this.currentGameIdPair.game.redScore !== 0){
+      this.currentGameIdPair.game.redScore--;
+    } else if (color == "blue" && this.currentGameIdPair.game.blueScore !== 0){
+      this.currentGameIdPair.game.blueScore--;
     }
     //update game in Firebase DB
+    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
   endTurn(){
-    if (this.currentGame.isRedTurn){
-      this.currentGame.isRedTurn = false;
-      this.currentGame.isBlueTurn = true;
+    if (this.currentGameIdPair.game.isRedTurn){
+      this.currentGameIdPair.game.isRedTurn = false;
+      this.currentGameIdPair.game.isBlueTurn = true;
     } else {
-      this.currentGame.isRedTurn = true;
-      this.currentGame.isBlueTurn = false;
+      this.currentGameIdPair.game.isRedTurn = true;
+      this.currentGameIdPair.game.isBlueTurn = false;
     }
     //update game in Firebase DB
+    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
+  }
+
+  async deleteGameFromDb(){
+    await this.gameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 
 }
