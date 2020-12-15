@@ -9,26 +9,10 @@ export class DataService {
 
   constructor(private firebaseDb: AngularFireDatabase) { }
 
-  // async getAllWords(){
-  //   const allWords = await this.firebaseDb.list<String>("/words").valueChanges().toPromise();
-  //   return allWords.values();
-  // }
-
   async getAllWords(): Promise<String> {
-    const snapshot = await this.firebaseDb.database.ref("/words")
-      .get();
+    const snapshot = await this.firebaseDb.database.ref("/words").get();
     return snapshot.val();
   }
-  // gotData(data) {
-  //   console.log("All words...");
-  //   console.log(data.val());
-  //   this.allWords = data.val();
-  // }
-
-  // errData(errData) {
-  //   console.log("Error!");
-  //   console.log(errData);
-  // }
 
   get25RandomWords(allWords){
     this.shuffle(allWords);
@@ -43,8 +27,10 @@ export class DataService {
     //get image paths from assets
   }
 
+  //get 25 random image paths
   get25RandomImages(){
-    //get 25 random image paths from assets
+    // const snapshot = await this.firebaseDb.database.ref("/words").get();
+    // return snapshot.val();
   }
 
   shuffle(wordList: Array<String>){

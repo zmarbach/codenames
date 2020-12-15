@@ -38,7 +38,6 @@ export class GameService {
     var cards = await this.createCardList(gameMode);
     var redStartingScore = this.calcStartingScore(cards, "red");
     var blueStartingScore = this.calcStartingScore(cards, "blue");
-    // var id = this.getNewId();
     var newGame = new GameContext(cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore), this.isFirstTurn(blueStartingScore))
 
     var firebaseId = this.addGameToDb(newGame);
@@ -139,22 +138,5 @@ export class GameService {
       cards[i] = cards[j];
       cards[j] = temp;
     }
-  }
-
-  getNewId(){
-    return 1;
-    // var id: number;
-    // this.firebaseDb.database.ref("/games").on("value", function(snapshotList) {
-    //   console.log(snapshotList.val);
-    //   id = snapshotList[snapshotList.val().length - 1].id + 1
-    // })
-
-    // return id;
-
-    // console.log("List");
-    // console.log(list);
-    // console.log(list[list.length - 1].id + 1);
-
-    // return list[list.length - 1].id + 1;
   }
 }

@@ -15,8 +15,6 @@ import { HomeComponent } from './home/home.component';
 import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameService } from './game.service';
-import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from './in-memory-data.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 
@@ -39,11 +37,6 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
-    ),
-
-
   ],
   providers: [GameService],
   bootstrap: [AppComponent]
