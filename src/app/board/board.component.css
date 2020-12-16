@@ -1,7 +1,17 @@
+.title{
+  margin: 15px;
+}
 .codeNamesTitle{
   text-align: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  font-size: 40px;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.codeNamesTitle:hover{
+  cursor: pointer;
+  color: cornflowerblue;
+  font-size: 41px;
 }
 
 .boardTop{
@@ -71,6 +81,7 @@
 
 .cardContainer:hover{
   cursor: pointer;
+  transform: scale(1.05);
 }
 
 .cardImg{
@@ -105,4 +116,18 @@
 
 .blueTurn{
   color: blue;
+}
+
+.assassinDisplay{
+  font-size: 20px;
+  margin: 0px;
+}
+
+.assassinImgContents{
+  font-size: 35px;
+  max-height: 100%;
+  max-width: 100%;
+}
+button:hover{
+  transform: scale(1.1);
 }

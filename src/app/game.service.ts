@@ -97,7 +97,6 @@ export class GameService {
         score++;
       }
     }
-
     return score;
   }
 

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import * as uuid from 'uuid';
 import { GameService } from '../game.service';
 
 @Component({
@@ -12,8 +11,7 @@ import { GameService } from '../game.service';
 export class HomeComponent implements OnInit {
 
   settingsForm = new FormGroup({
-    gameMode: new FormControl(''),
-    test: new FormControl('')
+    gameMode: new FormControl('Words', Validators.required),
   });
 
   constructor(private router: Router, private gameService: GameService) { }

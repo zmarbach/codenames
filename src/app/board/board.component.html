@@ -1,6 +1,6 @@
 <div class="container" class="container" style="margin: 0px 100px;">
-  <div id="title">
-    <h1 class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()">CODENAMES</h1>
+  <div id="title" class="title">
+    <p class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()"><strong><a>CODENAMES</a></strong></p>
   </div>
 
   <mat-card id="boardTop" class="boardTop">
@@ -30,10 +30,33 @@
                             cardContainerSelectedBeige: (card.selected || isSpyMaster) && card.color == 'beige'}"
                 (click)="select(card)">
         <div *ngIf="card.word" style="margin: 25px">
-          {{ card.word }}
+          <div *ngIf="card.color == 'black' && card.selected; else regularWordDisplay">
+            <div>
+              <p class="assassinDisplay">BANG!!!</p>
+              <p class="assassinDisplay" [style.color]="currentGameIdPair.game.isRedTurn ? 'cornflowerblue' : 'tomato'">{{currentGameIdPair.game.isRedTurn ? "Blue" : "Red"}} team wins</p>
+            </div>
+          </div>
+
+          <ng-template #regularWordDisplay>
+            <div>
+              {{ card.word }}
+            </div>
+          </ng-template>
         </div>
-        <div *ngIf="card.imgPath" class="cardImg" >
-          <img src="../../assets/dog.jpg"/>
+
+        <div *ngIf="card.imgPath" class="cardImg">
+          <div *ngIf="card.color == 'black' && card.selected; else regularImgDisplay">
+            <div class="assassinImgContents">
+              <p>BANG!!!</p>
+              <p [style.color]="currentGameIdPair.game.isRedTurn ? 'cornflowerblue' : 'tomato'">{{currentGameIdPair.game.isRedTurn ? "Blue" : "Red"}} team wins</p>
+            </div>
+          </div>
+
+          <ng-template #regularImgDisplay>
+            <div>
+              <img src="{{card.imgPath}}"/>
+            </div>
+          </ng-template>
         </div>
       </mat-card>
     </div>
