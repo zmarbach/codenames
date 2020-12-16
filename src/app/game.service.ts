@@ -54,7 +54,7 @@ export class GameService {
     if (gameMode === "Words"){
       await this.setInitialCardsWithWords(cards);
     } else {
-      this.setInitialCardsWithPictures(cards)
+      await this.setInitialCardsWithPictures(cards)
     }
 
     this.setCardColors(cards);
@@ -76,18 +76,26 @@ export class GameService {
   async setInitialCardsWithWords(cards: Array<Card>){
     var wordList: Array<String> = []
     var allWords = await this.dataService.getAllWords();
-    wordList = this.dataService.get25RandomWords(allWords);
+    wordList = this.dataService.getRandomItems(allWords, 25);
 
     for (var word of wordList){
       cards.push(new Card(word, "", "", false));
     }
   }
 
-  private setInitialCardsWithPictures(cards: Array<Card>){
-    //handle this logic
-    for(var i=0; i<20; i++){
-      cards.push(new Card("", "/assets/dog.jpg", "", false))
+  async setInitialCardsWithPictures(cards: Array<Card>){
+    var imgPathList: Array<String> = [];
+    var allImgPaths = await this.dataService.getAllImages();
+    imgPathList = this.dataService.getRandomItems(allImgPaths, 20);
+
+    for (var imgPath of imgPathList){
+      cards.push(new Card("", imgPath, "", false))
     }
+
+    // //handle this logic
+    // for(var i=0; i<20; i++){
+    //   cards.push(new Card("", "/assets/dog.jpg", "", false))
+    // }
   }
 
   calcStartingScore(cards: Array<Card>, color: String){

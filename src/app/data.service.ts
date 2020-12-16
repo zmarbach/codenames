@@ -14,23 +14,19 @@ export class DataService {
     return snapshot.val();
   }
 
-  get25RandomWords(allWords){
-    this.shuffle(allWords);
-    var randomWords: Array<String> = [];
-    for (var i=0; i < 25; i++){
-      randomWords.push(allWords[i]);
+  async getAllImages(): Promise<String> {
+    const snapshot = await this.firebaseDb.database.ref("/imgPaths").get();
+    return snapshot.val();
+  }
+
+  //pass in either 25 (words) or 20 (pictures)
+  getRandomItems(list, num: number){
+    this.shuffle(list);
+    var randomItems: Array<String> = [];
+    for (var i=0; i < num; i++){
+      randomItems.push(list[i]);
     }
-    return randomWords;
-  }
-
-  getAllImages(){
-    //get image paths from assets
-  }
-
-  //get 25 random image paths
-  get25RandomImages(){
-    // const snapshot = await this.firebaseDb.database.ref("/words").get();
-    // return snapshot.val();
+    return randomItems;
   }
 
   shuffle(wordList: Array<String>){
