@@ -1,0 +1,29 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  ng-build:
+    runs-on: ubuntu-latest
+    name: Angular Build
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '10.x'
+    - run: npm install
+    - run: npm run build:prod
+  firebase-deploy:
+    # Require ng-build to complete successfully before running deploy
+    needs: ng-build
+    runs-on: ubuntu-latest
+    name: Firebase Deploy
+    steps:
+    - uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
