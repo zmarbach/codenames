@@ -11,16 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    - name: Angular Build
     - uses: actions/checkout@master
     - uses: actions/setup-node@master
       with:
         node-version: '10.x'
     - run: npm install
     - run: npm run build
-
-    - name: Firebase Deploy
     - uses: w9jds/firebase-action@master
       with:
         args: deploy --only hosting
