@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '10.x'
     - run: npm install
-    - run: npm run build:prod
+    - run: npm run build
   firebase-deploy:
     # Require ng-build to complete successfully before running deploy
     needs: ng-build
