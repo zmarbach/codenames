@@ -21,7 +21,8 @@
     </table>
   </mat-card>
 
-  <div id="board" class="boardContainer">
+  <div id="board" [ngClass]="{boardContainer: currentGameIdPair.game.cards[0].word,
+                              boardContainerFourByFive: currentGameIdPair.game.cards[0].imgPath}">
     <div *ngFor="let card of currentGameIdPair.game.cards">
       <mat-card [ngClass]="{cardContainer: !card.selected,
                             cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',

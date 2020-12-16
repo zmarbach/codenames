@@ -39,6 +39,13 @@
   grid-auto-flow:row;
 }
 
+.boardContainerFourByFive{
+  display:grid;
+  grid-template-rows:repeat(4, 24%);
+  grid-gap:10px;
+  grid-auto-flow:column;
+}
+
 .cardContainer{
   text-align: center;
   font-size: 40px;

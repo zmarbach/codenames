@@ -38,14 +38,14 @@ export class GameService {
     var cards = await this.createCardList(gameMode);
     var redStartingScore = this.calcStartingScore(cards, "red");
     var blueStartingScore = this.calcStartingScore(cards, "blue");
-    var newGame = new GameContext(cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore), this.isFirstTurn(blueStartingScore))
+    var newGame = new GameContext(cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore))
 
     var firebaseId = this.addGameToDb(newGame);
 
     return new GameIdPair(firebaseId, newGame);
   }
-  isFirstTurn(startingScore: number): Boolean {
-    return startingScore === 9;
+  isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
+    return scoreToEval > comparingScore;
   }
 
   async createCardList(gameMode: String){
@@ -64,8 +64,8 @@ export class GameService {
 
   setCardColors(cards: Array<Card>) {
     //randomly determine if blue or red will have 9 (this impacts who will go first)
-    var randomNumForColorWithNine = this.getRandomNumber(2);
-    if (randomNumForColorWithNine == 0){
+    var randomNumForColorWithMore = this.getRandomNumber(2);
+    if (randomNumForColorWithMore == 0){
       this.setColors(cards, "blue", "red");
     } else {
       this.setColors(cards, "red", "blue");
@@ -85,7 +85,7 @@ export class GameService {
 
   private setInitialCardsWithPictures(cards: Array<Card>){
     //handle this logic
-    for(var i=0; i<25; i++){
+    for(var i=0; i<20; i++){
       cards.push(new Card("", "/assets/dog.jpg", "", false))
     }
   }
@@ -100,26 +100,38 @@ export class GameService {
     return score;
   }
 
-  setColors(cards: Array<Card>, colorWithNine: String, colorWithEight: String){
-    //assign first 9 cards with colorWithNine
-    for (var i=0; i < 9 ; i++){
-      cards[i].color = colorWithNine;
+  setColors(cards: Array<Card>, colorWithMore: String, colorWithLess: String){
+    var firstBatchIndex: number;
+    var secondBatchIndex: number;
+
+    if(cards.length == 25){
+      firstBatchIndex = 9;
+      secondBatchIndex = firstBatchIndex + 8;
+    } else {
+      firstBatchIndex = 8;
+      secondBatchIndex = firstBatchIndex + 7;
     }
 
-    //assign next 8 cards with colorWithEight
-    for (var i=9; i < 17 ; i++){
-      cards[i].color = colorWithEight;
+    //assign first 8/9 cards with colorWithMore
+    for (var i=0; i < firstBatchIndex ; i++){
+      cards[i].color = colorWithMore;
+    }
+
+    //assign next 7/8 cards with colorWithLess
+    for (var i=firstBatchIndex; i < secondBatchIndex; i++){
+      cards[i].color = colorWithLess;
     }
 
     //randomly assign 1 assassin
-    for (var i=17; i < 18; i++){
+    for (var i=secondBatchIndex; i < secondBatchIndex + 1; i++){
       cards[i].color = "black";
     }
 
     //assign rest as beige
-    for (var i=18; i < cards.length; i++){
+    for (var i=secondBatchIndex + 1; i < cards.length; i++){
       cards[i].color = "beige";
     }
+
 
     //shuffle the cards at end to make it random
     this.shuffle(cards);
