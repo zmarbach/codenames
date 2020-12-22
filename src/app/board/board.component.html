@@ -67,5 +67,7 @@
       <mat-slide-toggle class="spyMasterToggle" color="primary" (click)="toggleSpyMaster()">SpyMaster</mat-slide-toggle>
       <button class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
   </mat-card>
-
+  <div *ngIf=currentGameIdPair.game.cards[0].imgPath>
+    <p class="copyright"><strong>*** Images adapted from Czech Games Edition, <i>Codenames: Pictures</i>. 2016. ***</strong></p>
+  </div>
 </div>

@@ -20,6 +20,14 @@ export class BoardComponent implements OnInit {
     this.setUpCurrentGame();
   }
 
+  ngOnChanges(){
+    //refresh the page manually
+    console.log("The game changed...reloading the page");
+    window.location.reload();
+
+    //this.currentGameIdPair.game = await this.gameService.getGameById(this.currentGameIdPair.id);
+  }
+
   async setUpCurrentGame(){
     this.activeRoute.params.subscribe(params => {
       this.currentGameIdPair.id = params.id;

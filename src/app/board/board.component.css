@@ -138,3 +138,9 @@
 button:hover{
   transform: scale(1.1);
 }
+
+.copyright{
+  margin: 20px 0px;
+  padding-bottom: 20px;
+  text-align: center;
+}

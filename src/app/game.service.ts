@@ -91,11 +91,6 @@ export class GameService {
     for (var imgPath of imgPathList){
       cards.push(new Card("", imgPath, "", false))
     }
-
-    // //handle this logic
-    // for(var i=0; i<20; i++){
-    //   cards.push(new Card("", "/assets/dog.jpg", "", false))
-    // }
   }
 
   calcStartingScore(cards: Array<Card>, color: String){
