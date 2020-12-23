@@ -14,11 +14,11 @@ export class BoardComponent implements OnInit {
   currentGameIdPair = new GameIdPair("", new GameContext(new Array<Card>(), 0,0, false, false));
   isSpyMaster=false;
 
-  constructor(private activeRoute: ActivatedRoute, private router: Router, private gameService: GameService) { }
+  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService) { }
 
   ngOnInit() {
-    this.currentGameIdPair
     this.setUpCurrentGame();
+    console.log("currentGameIdPair is: " + JSON.stringify(this.currentGameIdPair));
   }
 
   async setUpCurrentGame(){
