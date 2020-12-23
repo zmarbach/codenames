@@ -9,7 +9,6 @@ import { GameService } from '../game.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
   settingsForm = new FormGroup({
     gameMode: new FormControl('Words', Validators.required),
   });
@@ -21,8 +20,8 @@ export class HomeComponent implements OnInit {
 
   async submit(){
     console.log("Creating new game...");
-    var newGameIdPair = await this.gameService.createNewGame(this.settingsForm.value.gameMode)
-    console.log("Game created with this id " + newGameIdPair.id);
+    var newGameIdPair = await this.gameService.createNewGame(this.settingsForm.value.gameMode);
+    console.log("New game created with this id ---> " + newGameIdPair.id);
     this.router.navigate(['/board/' + newGameIdPair.id]);
   }
 

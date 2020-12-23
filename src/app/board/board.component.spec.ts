@@ -4,6 +4,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Card } from '../card';
+import { DataService } from '../data.service';
 import { GameContext } from '../game-context';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
@@ -14,21 +15,28 @@ describe('BoardComponent', () => {
   let component: BoardComponent;
   let fixture: ComponentFixture<BoardComponent>;
   let gameServiceSpy: jasmine.SpyObj<GameService>;
+  let dataServiceSpy: jasmine.SpyObj<DataService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('GameService', ['getGameById', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('GameService', ['getGameById', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
+    const spyForDataService = jasmine.createSpyObj('DataService', ['getAllWords', 'getAllImages', 'getRandomItems']);
+
     await TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([]),
         AngularFireModule.initializeApp(environment.firebase),
         AngularFireDatabaseModule,
       ],
-      providers: [ { provide: GameService, useValue: spy }],
+      providers: [
+        { provide: GameService, useValue: spyForGameService },
+        { provide: DataService, useValue: spyForDataService }
+      ],
       declarations: [ BoardComponent ]
     })
     .compileComponents();
 
     gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+    dataServiceSpy = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
   });
 
   beforeEach(() => {
