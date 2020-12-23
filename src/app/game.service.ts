@@ -25,8 +25,8 @@ export class GameService {
     return firebaseId.key;
   }
 
-  updateGameInDb(gameIdPair: GameIdPair){
-    this.firebaseDb.database.ref("/games").child(gameIdPair.id.toString()).set(gameIdPair.game);
+  async updateGameInDb(gameIdPair: GameIdPair){
+    await this.firebaseDb.database.ref("/games").child(gameIdPair.id.toString()).set(gameIdPair.game);
     console.log("Updating game DB with id of " + gameIdPair.id);
   }
 
@@ -44,11 +44,12 @@ export class GameService {
 
     return new GameIdPair(firebaseId, newGame);
   }
-  isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
+
+  private isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
     return scoreToEval > comparingScore;
   }
 
-  async createCardList(gameMode: String){
+  private async createCardList(gameMode: String){
     var cards: Array<Card> = [];
 
     if (gameMode === "Words"){
@@ -62,7 +63,7 @@ export class GameService {
     return cards;
   }
 
-  setCardColors(cards: Array<Card>) {
+  private setCardColors(cards: Array<Card>) {
     //randomly determine if blue or red will have 9 (this impacts who will go first)
     var randomNumForColorWithMore = this.getRandomNumber(2);
     if (randomNumForColorWithMore == 0){
@@ -70,10 +71,9 @@ export class GameService {
     } else {
       this.setColors(cards, "red", "blue");
     }
-
   }
 
-  async setInitialCardsWithWords(cards: Array<Card>){
+  private async setInitialCardsWithWords(cards: Array<Card>){
     var wordList: Array<String> = []
     var allWords = await this.dataService.getAllWords();
     wordList = this.dataService.getRandomItems(allWords, 25);
@@ -83,7 +83,7 @@ export class GameService {
     }
   }
 
-  async setInitialCardsWithPictures(cards: Array<Card>){
+  private async setInitialCardsWithPictures(cards: Array<Card>){
     var imgPathList: Array<String> = [];
     var allImgPaths = await this.dataService.getAllImages();
     imgPathList = this.dataService.getRandomItems(allImgPaths, 20);
@@ -93,7 +93,7 @@ export class GameService {
     }
   }
 
-  calcStartingScore(cards: Array<Card>, color: String){
+  private calcStartingScore(cards: Array<Card>, color: String){
     var score = 0;
     for (var card of cards){
       if (card.color == color){
@@ -103,7 +103,7 @@ export class GameService {
     return score;
   }
 
-  setColors(cards: Array<Card>, colorWithMore: String, colorWithLess: String){
+  private setColors(cards: Array<Card>, colorWithMore: String, colorWithLess: String){
     var firstBatchIndex: number;
     var secondBatchIndex: number;
 
@@ -140,12 +140,12 @@ export class GameService {
     this.shuffle(cards);
   }
 
-  getRandomNumber(maxNum: number){
+  private getRandomNumber(maxNum: number){
     //this will generate random number from 0 to maxNum - 1
     return Math.floor(Math.random() * maxNum);
   }
 
-  shuffle(cards: Array<Card>){
+  private shuffle(cards: Array<Card>){
     for (var i = cards.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var temp = cards[i];

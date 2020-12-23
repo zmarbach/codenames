@@ -17,15 +17,8 @@ export class BoardComponent implements OnInit {
   constructor(private activeRoute: ActivatedRoute, private router: Router, private gameService: GameService) { }
 
   ngOnInit() {
+    this.currentGameIdPair
     this.setUpCurrentGame();
-  }
-
-  ngOnChanges(){
-    //refresh the page manually
-    console.log("The game changed...reloading the page");
-    window.location.reload();
-
-    //this.currentGameIdPair.game = await this.gameService.getGameById(this.currentGameIdPair.id);
   }
 
   async setUpCurrentGame(){
@@ -65,26 +58,26 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  select(card: Card){
+  async select(card: Card){
     if (!card.selected){
       this.updateScore(card.color);
       card.selected = true;
     }
     //update game in Firebase DB
-    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
+    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
-  updateScore(color: String){
+  async updateScore(color: String){
     if (color == "red" && this.currentGameIdPair.game.redScore !== 0){
       this.currentGameIdPair.game.redScore--;
     } else if (color == "blue" && this.currentGameIdPair.game.blueScore !== 0){
       this.currentGameIdPair.game.blueScore--;
     }
     //update game in Firebase DB
-    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
+    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
-  endTurn(){
+  async endTurn(){
     if (this.currentGameIdPair.game.isRedTurn){
       this.currentGameIdPair.game.isRedTurn = false;
       this.currentGameIdPair.game.isBlueTurn = true;
@@ -93,7 +86,7 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     //update game in Firebase DB
-    this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
+    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
   async deleteGameFromDb(){
