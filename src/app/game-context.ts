@@ -2,8 +2,8 @@ import { Card } from './card';
 
 export class GameContext {
   cards: Array<Card> = [];
-  redScore: number = 0;
-  blueScore: number = 0;
+  redScore = 0;
+  blueScore = 0;
   isRedTurn: Boolean = false;
   isBlueTurn: Boolean = false;
 

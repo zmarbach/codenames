@@ -44,9 +44,9 @@ describe('BoardComponent', () => {
       ],
       providers: [
         { provide: GameService, useValue: spyForGameService },
-        //Mock the activated route so that params actually contain this id
-        //params is an Observable so need to use "from"
-        { provide: ActivatedRoute, useValue: { 'params': from([{ 'id': 'abc1234' }]) } }
+        // Mock the activated route so that params actually contain this id
+        // params is an Observable so need to use "from"
+        { provide: ActivatedRoute, useValue: { params: from([{ id: 'abc1234' }]) } }
       ],
       declarations: [ BoardComponent ]
     })
@@ -61,10 +61,10 @@ describe('BoardComponent', () => {
     fixture = TestBed.createComponent(BoardComponent);
     component = fixture.componentInstance;
 
-    var card = new Card("testWord", "testImgPath", "red", false);
-    var cards = new Array<Card>();
+    let card = new Card('testWord', 'testImgPath', 'red', false);
+    let cards = new Array<Card>();
     cards.push(card);
-    component.currentGameIdPair = new GameIdPair("abc1234", new GameContext(cards, 0, 0, false, false));
+    component.currentGameIdPair = new GameIdPair('abc1234', new GameContext(cards, 0, 0, false, false));
 
     fixture.detectChanges();
 
@@ -78,7 +78,7 @@ describe('BoardComponent', () => {
   // setUpCurrentGame() tests
   it('setUpCurrentGame should call getGameById of GameService twice', async () => {
     gameServiceSpy.getGameById.and.returnValue(Promise.resolve(component.currentGameIdPair.game));
-    console.log("CurrentGame = " + component.currentGameIdPair.game);
+    console.log('CurrentGame = ' + component.currentGameIdPair.game);
 
     await component.setUpCurrentGame();
 
@@ -97,31 +97,31 @@ describe('BoardComponent', () => {
 
   // nextGame() tests
   it('nextGame should call deleteGameFromDb and createNewGame with Words as parameter', () => {
-    component.currentGameIdPair.game.cards[0].imgPath = "";
+    component.currentGameIdPair.game.cards[0].imgPath = '';
     fixture.detectChanges();
 
     component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith("Words");
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
   });
 
   it('nextGame should call deleteGameFromDb and createNewGame with Pictures as parameter', () => {
-    component.currentGameIdPair.game.cards[0].imgPath = "test";
+    component.currentGameIdPair.game.cards[0].imgPath = 'test';
     fixture.detectChanges();
 
     component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith("Pictures");
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Pictures');
   });
 
-  //updateScore() tests
+  // updateScore() tests
   it('updateScore should decrememnt redScore by 1 if selected card color is red', () => {
     component.currentGameIdPair.game.redScore = 4;
     fixture.detectChanges();
 
-    component.updateScore("red");
+    component.updateScore('red');
 
     expect(component.currentGameIdPair.game.redScore).toEqual(3);
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
@@ -131,7 +131,7 @@ describe('BoardComponent', () => {
     component.currentGameIdPair.game.blueScore = 8;
     fixture.detectChanges();
 
-    component.updateScore("blue");
+    component.updateScore('blue');
 
     expect(component.currentGameIdPair.game.blueScore).toEqual(7);
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
@@ -141,35 +141,35 @@ describe('BoardComponent', () => {
     component.currentGameIdPair.game.blueScore = 0;
     fixture.detectChanges();
 
-    component.updateScore("blue");
+    component.updateScore('blue');
 
     expect(component.currentGameIdPair.game.blueScore).toEqual(0);
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
-  //select() tests
+  // select() tests
   it('select should mark the card as selected', () => {
-    var card = new Card("", "", "red", false);
+    let card = new Card('', '', 'red', false);
     component.select(card);
 
     expect(card.selected).toBeTruthy();
   });
 
   it('select should make 2 calls to updateGameInDb of GameService if card is NOT selected', () => {
-    var card = new Card("", "", "red", false);
+    let card = new Card('', '', 'red', false);
     component.select(card);
 
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(2);
   });
 
   it('select should 1 call to updateGameInDb of GameService if card is selected', () => {
-    var card = new Card("", "", "red", true);
+    let card = new Card('', '', 'red', true);
     component.select(card);
 
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
-  //toggleSpyMaster() tests
+  // toggleSpyMaster() tests
   it('toggleSpyMaster should switch from true to false', () => {
     component.isSpyMaster = true;
     fixture.detectChanges();
@@ -202,7 +202,7 @@ describe('BoardComponent', () => {
   });
 
   // deleteGameFromDb() tests
-  it("deleteGameFromDb should call GameService", () => {
+  it('deleteGameFromDb should call GameService', () => {
     component.deleteGameFromDb();
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
   });

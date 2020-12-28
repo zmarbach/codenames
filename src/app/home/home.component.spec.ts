@@ -20,7 +20,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
 
 describe('HomeComponent', () => {
-  let router : Router;
+  let router: Router;
   let location: Location;
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
@@ -52,7 +52,7 @@ describe('HomeComponent', () => {
   });
 
   beforeEach(() => {
-    const fakeGamePairId = new GameIdPair("test1234", new GameContext(new Array<Card>(), 0, 0, false, false));
+    const fakeGamePairId = new GameIdPair('test1234', new GameContext(new Array<Card>(), 0, 0, false, false));
     gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeGamePairId));
 
     router = TestBed.inject(Router);
@@ -62,7 +62,7 @@ describe('HomeComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    //set up location change listener and execute initial nav
+    // set up location change listener and execute initial nav
     router.initialNavigation();
   });
 
@@ -70,7 +70,7 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  //routing is async so need to set up unit test acccordingly
+  // routing is async so need to set up unit test acccordingly
   it('navigation should default to /home', async () => {
     fixture.detectChanges();
 
@@ -82,17 +82,17 @@ describe('HomeComponent', () => {
   it('submit should call createNewGame method on GameService', async () => {
     fixture.detectChanges();
 
-    //WAIT for promise to resolve before making assertions
+    // WAIT for promise to resolve before making assertions
     await component.submit();
 
     expect(gameServiceSpy.createNewGame.calls.count()).toEqual(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith("Words");
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
   });
 
-  //Have to use tick and fakeAsync together
-  //Can do the same thing with async/await, but use fakeAsync and tick here as an example
-  //fakeAsync essentially turns all asycn stuff into sync
-  //tick simulates passage of time, so 'asycn' actions have resolved (can pass ms into tick if need more than default time to pass)
+  // Have to use tick and fakeAsync together
+  // Can do the same thing with async/await, but use fakeAsync and tick here as an example
+  // fakeAsync essentially turns all asycn stuff into sync
+  // tick simulates passage of time, so 'asycn' actions have resolved (can pass ms into tick if need more than default time to pass)
   it('submit should route to correct URL for board component', fakeAsync(() => {
     component.submit();
     tick();

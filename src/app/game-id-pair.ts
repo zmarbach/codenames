@@ -1,4 +1,4 @@
-import { GameContext } from "./game-context";
+import { GameContext } from './game-context';
 
 export class GameIdPair {
   id: String;

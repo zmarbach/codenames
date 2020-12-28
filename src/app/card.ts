@@ -1,7 +1,7 @@
 export class Card {
-  word: String = "";
-  imgPath: String = "";
-  color: String = "";
+  word: String = '';
+  imgPath: String = '';
+  color: String = '';
   selected: Boolean = false;
 
   constructor(word: String, imgPath: String, color: String, selected: Boolean){
