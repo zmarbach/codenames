@@ -64,7 +64,11 @@ describe('BoardComponent', () => {
     let card = new Card('testWord', 'testImgPath', 'red', false);
     let cards = new Array<Card>();
     cards.push(card);
+    //Set currentGameIdPair equal to this dummy data, otherwise will get property undefined errors
     component.currentGameIdPair = new GameIdPair('abc1234', new GameContext(cards, 0, 0, false, false));
+
+    //Set up spy to always return this dummy gameIdPair when createNewGame() is called
+    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(component.currentGameIdPair));
 
     fixture.detectChanges();
 
@@ -95,22 +99,24 @@ describe('BoardComponent', () => {
     expect(location.path()).toBe('/home');
   });
 
-  // nextGame() tests
-  it('nextGame should call deleteGameFromDb and createNewGame with Words as parameter', () => {
+  //nextGame() tests
+  it('nextGame should call deleteGameFromDb and createNewGame with WORDS as parameter', async () => {
     component.currentGameIdPair.game.cards[0].imgPath = '';
+
     fixture.detectChanges();
 
-    component.nextGame();
+    await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
   });
 
-  it('nextGame should call deleteGameFromDb and createNewGame with Pictures as parameter', () => {
-    component.currentGameIdPair.game.cards[0].imgPath = 'test';
+  it('nextGame should call deleteGameFromDb and createNewGame with PICTURES as parameter', async () => {
+    component.currentGameIdPair.game.cards[0].imgPath = 'testImgPath';
+
     fixture.detectChanges();
 
-    component.nextGame();
+    await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Pictures');
@@ -205,6 +211,11 @@ describe('BoardComponent', () => {
   it('deleteGameFromDb should call GameService', () => {
     component.deleteGameFromDb();
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
   });
 
 });

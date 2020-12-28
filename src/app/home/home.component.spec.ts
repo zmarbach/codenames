@@ -100,4 +100,8 @@ describe('HomeComponent', () => {
     expect(location.path()).toBe('/board/test1234');
   }));
 
+  afterEach(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+  });
 });
