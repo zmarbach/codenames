@@ -24,8 +24,10 @@ export class BoardComponent implements OnInit {
   async setUpCurrentGame(){
     this.activeRoute.params.subscribe(params => {
       this.currentGameIdPair.id = params.id;
+      console.log("Params.id = " + params.id);
     })
 
+    console.log("Current Id = " + this.currentGameIdPair.id);
     this.currentGameIdPair.game = await this.gameService.getGameById(this.currentGameIdPair.id);
     if(this.currentGameIdPair.game == undefined){
       window.alert("This game has been deleted. You will now be redirected to the Home Page to start a new game");

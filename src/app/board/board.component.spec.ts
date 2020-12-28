@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
@@ -8,10 +15,14 @@ import { Card } from '../card';
 import { GameContext } from '../game-context';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
+import { Location } from '@angular/common';
 
 import { BoardComponent } from './board.component';
+import { from } from 'rxjs';
 
 describe('BoardComponent', () => {
+  let router: Router;
+  let location: Location;
   let component: BoardComponent;
   let fixture: ComponentFixture<BoardComponent>;
   let gameServiceSpy: jasmine.SpyObj<GameService>;
@@ -24,15 +35,26 @@ describe('BoardComponent', () => {
         RouterTestingModule.withRoutes(routes),
         AngularFireModule.initializeApp(environment.firebase),
         AngularFireDatabaseModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSlideToggleModule,
+        MatRadioModule,
+        ReactiveFormsModule
       ],
       providers: [
         { provide: GameService, useValue: spyForGameService },
+        //Mock the activated route so that params actually contain this id
+        //params is an Observable so need to use "from"
+        { provide: ActivatedRoute, useValue: { 'params': from([{ 'id': 'abc1234' }]) } }
       ],
       declarations: [ BoardComponent ]
     })
     .compileComponents();
 
     gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+    router = TestBed.inject(Router);
+    location = TestBed.inject(Location);
   });
 
   beforeEach(() => {
@@ -45,6 +67,8 @@ describe('BoardComponent', () => {
     component.currentGameIdPair = new GameIdPair("abc1234", new GameContext(cards, 0, 0, false, false));
 
     fixture.detectChanges();
+
+    router.initialNavigation();
   });
 
   it('should create', () => {
@@ -52,19 +76,24 @@ describe('BoardComponent', () => {
   });
 
   // setUpCurrentGame() tests
-  it('setUpCurrentGame should call getGameById of GameService twice', () => {
-    component.setUpCurrentGame();
+  it('setUpCurrentGame should call getGameById of GameService twice', async () => {
+    gameServiceSpy.getGameById.and.returnValue(Promise.resolve(component.currentGameIdPair.game));
+    console.log("CurrentGame = " + component.currentGameIdPair.game);
+
+    await component.setUpCurrentGame();
+
     expect(gameServiceSpy.getGameById).toHaveBeenCalledTimes(2);
+    expect(component.currentGameIdPair.game).not.toBe(undefined);
   });
 
-  // it('setUpCurrentGame should redirect to /home', () => {
-  //   component.setUpCurrentGame();
+  it('setUpCurrentGame should redirect to /home if game is undefined', async () => {
+    gameServiceSpy.getGameById.and.returnValue(Promise.resolve(undefined));
 
-  //   expect (routerSpy.navigate).toHaveBeenCalledWith(['/home']);
-  // });
+    await component.setUpCurrentGame();
 
-
-  //TODO - test for the routing to home if game if undefined
+    expect(component.currentGameIdPair.game).toBe(undefined);
+    expect(location.path()).toBe('/home');
+  });
 
   // nextGame() tests
   it('nextGame should call deleteGameFromDb and createNewGame with Words as parameter', () => {
@@ -158,7 +187,6 @@ describe('BoardComponent', () => {
 
     expect(component.isSpyMaster).toBeTrue();
   });
-
 
   // endTurn() tests
   it('endTurn should flip turns and call updateGameInDb on GameService', () => {
