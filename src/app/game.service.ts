@@ -5,18 +5,24 @@ import { DataService } from './data.service';
 import { GameContext } from './game-context';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { GameIdPair } from './game-id-pair';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
+  constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase, private router: Router) {}
 
-  constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase) { }
+  setUpGameAndDbListener(gameIdPair: GameIdPair) {
+    this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).on('value', (snapshot) => {
+      console.log('New changes in firebase');
+      console.log("New shapshot val is " + JSON.stringify(snapshot.val()));
 
-  async getGameById(firebaseId: any): Promise<GameContext> {
-    const snapshot = await this.firebaseDb.database.ref('/games').child(firebaseId)
-      .get();
-    return snapshot.val();
+      //if snapshot does not exist, then the id is not in db...game has been deleted.
+      if (snapshot.exists()){
+        gameIdPair.game = snapshot.val();
+      }
+    });
   }
 
   addGameToDb(game: GameContext) {
@@ -26,8 +32,13 @@ export class GameService {
   }
 
   async updateGameInDb(gameIdPair: GameIdPair){
-    await this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).set(gameIdPair.game);
-    console.log('Updating game DB with id of ' + gameIdPair.id);
+    if ((await this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).get()).exists()){
+      await this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).set(gameIdPair.game);
+      console.log('Updating game DB with id of ' + gameIdPair.id);
+    } else {
+      window.alert('This game has been deleted. You will now be redirected to the Home Page to start a new game');
+      this.router.navigate(['/home']);
+    }
   }
 
   async deleteGameFromDb(firebaseId: any) {

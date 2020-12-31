@@ -28,7 +28,7 @@ describe('BoardComponent', () => {
   let gameServiceSpy: jasmine.SpyObj<GameService>;
 
   beforeEach(async () => {
-    const spyForGameService = jasmine.createSpyObj('GameService', ['getGameById', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('GameService', ['setUpGameAndDbListener', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -80,23 +80,14 @@ describe('BoardComponent', () => {
   });
 
   // setUpCurrentGame() tests
-  it('setUpCurrentGame should call getGameById of GameService twice', async () => {
-    gameServiceSpy.getGameById.and.returnValue(Promise.resolve(component.currentGameIdPair.game));
+  it('setUpCurrentGame should call getGameById of GameService twice', () => {
+    gameServiceSpy.setUpGameAndDbListener.and.callFake(() => {console.log("do nothing")});
     console.log('CurrentGame = ' + component.currentGameIdPair.game);
 
-    await component.setUpCurrentGame();
+    component.setUpCurrentGame(component.currentGameIdPair);
 
-    expect(gameServiceSpy.getGameById).toHaveBeenCalledTimes(2);
+    expect(gameServiceSpy.setUpGameAndDbListener).toHaveBeenCalledTimes(2);
     expect(component.currentGameIdPair.game).not.toBe(undefined);
-  });
-
-  it('setUpCurrentGame should redirect to /home if game is undefined', async () => {
-    gameServiceSpy.getGameById.and.returnValue(Promise.resolve(undefined));
-
-    await component.setUpCurrentGame();
-
-    expect(component.currentGameIdPair.game).toBe(undefined);
-    expect(location.path()).toBe('/home');
   });
 
   //nextGame() tests
@@ -130,7 +121,6 @@ describe('BoardComponent', () => {
     component.updateScore('red');
 
     expect(component.currentGameIdPair.game.redScore).toEqual(3);
-    expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
   it('updateScore should decrememnt blueScore by 1 if selected card color is blue', () => {
@@ -140,7 +130,6 @@ describe('BoardComponent', () => {
     component.updateScore('blue');
 
     expect(component.currentGameIdPair.game.blueScore).toEqual(7);
-    expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
   it('updateScore should NOT decrememnt blueScore if score is already 0', () => {
@@ -150,29 +139,28 @@ describe('BoardComponent', () => {
     component.updateScore('blue');
 
     expect(component.currentGameIdPair.game.blueScore).toEqual(0);
-    expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
   // select() tests
-  it('select should mark the card as selected', () => {
+  it('select should mark the card as selected', async () => {
     let card = new Card('', '', 'red', false);
-    component.select(card);
+    await component.select(card);
 
     expect(card.selected).toBeTruthy();
   });
 
-  it('select should make 2 calls to updateGameInDb of GameService if card is NOT selected', () => {
+  it('select should make 1 call to updateGameInDb of GameService if card is NOT selected', async () => {
     let card = new Card('', '', 'red', false);
-    component.select(card);
-
-    expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(2);
-  });
-
-  it('select should 1 call to updateGameInDb of GameService if card is selected', () => {
-    let card = new Card('', '', 'red', true);
-    component.select(card);
+    await component.select(card);
 
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
+  });
+
+  it('select should 0 calls to updateGameInDb of GameService if card is selected', async () => {
+    let card = new Card('', '', 'red', true);
+    await component.select(card);
+
+    expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(0);
   });
 
   // toggleSpyMaster() tests
@@ -195,12 +183,12 @@ describe('BoardComponent', () => {
   });
 
   // endTurn() tests
-  it('endTurn should flip turns and call updateGameInDb on GameService', () => {
+  it('endTurn should flip turns and call updateGameInDb on GameService', async () => {
     component.currentGameIdPair.game.isBlueTurn = true;
     component.currentGameIdPair.game.isRedTurn = false;
     fixture.detectChanges();
 
-    component.endTurn();
+    await component.endTurn();
 
     expect(component.currentGameIdPair.game.isBlueTurn).toBeFalse();
     expect(component.currentGameIdPair.game.isRedTurn).toBeTrue();
@@ -208,8 +196,8 @@ describe('BoardComponent', () => {
   });
 
   // deleteGameFromDb() tests
-  it('deleteGameFromDb should call GameService', () => {
-    component.deleteGameFromDb();
+  it('deleteGameFromDb should call GameService', async () => {
+    await component.deleteGameFromDb();
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
   });
 

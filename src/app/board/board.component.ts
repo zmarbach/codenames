@@ -17,22 +17,16 @@ export class BoardComponent implements OnInit {
   constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService) { }
 
   ngOnInit() {
-    this.setUpCurrentGame();
+    this.setUpCurrentGame(this.currentGameIdPair);
     console.log('currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair));
   }
 
-  async setUpCurrentGame(){
+  setUpCurrentGame(currentGameIdPair: GameIdPair){
     this.activeRoute.params.subscribe(params => {
-      this.currentGameIdPair.id = params.id;
-      console.log('Params.id = ' + params.id);
+      currentGameIdPair.id = params.id;
     });
 
-    console.log('Current Id = ' + this.currentGameIdPair.id);
-    this.currentGameIdPair.game = await this.gameService.getGameById(this.currentGameIdPair.id);
-    if (this.currentGameIdPair.game == undefined){
-      window.alert('This game has been deleted. You will now be redirected to the Home Page to start a new game');
-      this.router.navigate(['/home']);
-    }
+    this.gameService.setUpGameAndDbListener(currentGameIdPair);
   }
 
   async nextGame(){
@@ -62,21 +56,20 @@ export class BoardComponent implements OnInit {
 
   async select(card: Card){
     if (!card.selected){
-      this.updateScore(card.color);
       card.selected = true;
+      await this.updateScore(card.color);
+      await this.gameService.updateGameInDb(this.currentGameIdPair);
     }
-    // update game in Firebase DB
-    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
-  async updateScore(color: String){
+  updateScore(color: String){
     if (color == 'red' && this.currentGameIdPair.game.redScore !== 0){
       this.currentGameIdPair.game.redScore--;
+      console.log('hello');
     } else if (color == 'blue' && this.currentGameIdPair.game.blueScore !== 0){
       this.currentGameIdPair.game.blueScore--;
+      console.log('hello');
     }
-    // update game in Firebase DB
-    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
   }
 
   async endTurn(){
@@ -88,7 +81,7 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     // update game in Firebase DB
-    await this.gameService.updateGameInDb(new GameIdPair(this.currentGameIdPair.id, this.currentGameIdPair.game));
+    await this.gameService.updateGameInDb(this.currentGameIdPair);
   }
 
   async deleteGameFromDb(){

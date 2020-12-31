@@ -1,6 +1,6 @@
 <div class="container" class="container" style="margin: 0px 100px;">
   <div id="title" class="title">
-    <p class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()"><strong><a>CODENAMES</a></strong></p>
+    <p id="codeNamesTitle" class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()"><strong><a>CODENAMES</a></strong></p>
   </div>
 
   <mat-card id="boardTop" class="boardTop">
@@ -65,7 +65,7 @@
 
   <mat-card class="boardBottom">
       <mat-slide-toggle class="spyMasterToggle" color="primary" (click)="toggleSpyMaster()">SpyMaster</mat-slide-toggle>
-      <button class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
+      <button id="nextGameButton" class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
   </mat-card>
   <div *ngIf=currentGameIdPair.game.cards[0].imgPath>
     <p class="copyright"><strong>*** Images adapted from Czech Games Edition, <i>Codenames: Pictures</i>. 2016. ***</strong></p>
