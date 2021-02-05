@@ -4,8 +4,11 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Card } from './card';
+import { CodenameCard } from './codename-card';
+import { CodenamesGameContext } from './codenames-game-context';
 import { GameContext } from './game-context';
 import { GameIdPair } from './game-id-pair';
+import { GameMode } from './game-mode.enum';
 
 import { GameService } from './game.service';
 
@@ -15,8 +18,6 @@ let numOfBlacks = 0;
 let numOfBeiges = 0;
 
 describe('GameService', () => {
-  const WORDS = 'Words';
-  const PICTURES = 'Pictures';
   let service: GameService;
 
   beforeEach(() => {
@@ -35,7 +36,7 @@ describe('GameService', () => {
   });
 
   it('Add, Update, Get, and Delete should all succeed', async function() {
-    let gameIdPair = new GameIdPair(null, new GameContext(new Array<Card>(), 0, 0, false, false));
+    let gameIdPair = new GameIdPair(null, new CodenamesGameContext(GameMode.CODENAMES_WORDS,new Array<Card>(), 0, 0, false, false));
     try {
       gameIdPair.id = service.addGameToDb(gameIdPair.game);
       expect(gameIdPair.id).not.toBeNull();
@@ -65,20 +66,21 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Words" game mode should populate words in cards', async function() {
-    const newGame = await service.createNewGame(WORDS);
-    expect(newGame.game.cards[0].word).toBeTruthy();
-    expect(newGame.game.cards[0].imgPath).toBeFalsy();
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
+    let codeNamesCard = newGame.game.cards[0] as CodenameCard;
+    expect(codeNamesCard.word).toBeTruthy();
+    expect(codeNamesCard.imgPath).toBeFalsy();
     service.deleteGameFromDb(newGame.id);
   });
 
   it('createNewGame in "Words" game mode should create game with 25 cards', async function() {
-    const newGame = await service.createNewGame(WORDS);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
     expect(newGame.game.cards.length).toBe(25);
     service.deleteGameFromDb(newGame.id);
   });
 
   it('createNewGame in "Words" game mode should create game with 9 of one color, 8 of the other, 1 assassin, and 7 innocent', async function() {
-    const newGame = await service.createNewGame(WORDS);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
 
     countNumOfColors(newGame.game.cards);
 
@@ -104,20 +106,21 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Pictures" game mode should populate imgPaths in cards', async function() {
-    const newGame = await service.createNewGame(PICTURES);
-    expect(newGame.game.cards[0].word).toBeFalsy();
-    expect(newGame.game.cards[0].imgPath).toContain('.jpg');
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
+    let codeNamesCard = newGame.game.cards[0] as CodenameCard;
+    expect(codeNamesCard.word).toBeFalsy();
+    expect(codeNamesCard.imgPath).toContain('.jpg');
     service.deleteGameFromDb(newGame.id);
   });
 
   it('createNewGame in "Pictures" game mode should create game with 20 cards', async function() {
-    const newGame = await service.createNewGame(PICTURES);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
     expect(newGame.game.cards.length).toBe(20);
     service.deleteGameFromDb(newGame.id);
   });
 
   it('createNewGame in "Pictures" game mode should create game with 8 of one color, 7 of the other, 1 assassin, and 4 innocent', async function() {
-    const newGame = await service.createNewGame(PICTURES);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
 
     countNumOfColors(newGame.game.cards);
 

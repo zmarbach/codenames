@@ -6,11 +6,18 @@ import { GameContext } from './game-context';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { GameIdPair } from './game-id-pair';
 import { Router } from '@angular/router';
+import { GameMode } from './game-mode.enum';
+import { CodenameCard } from './codename-card';
+import { CodenamesGameContext } from './codenames-game-context';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
+  private WORDS = "Words";
+  private PICTURES = "Pictures";
+  private SEQUENCE = "Sequence";
+
   constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase, private router: Router) {}
 
   setUpGameAndDbListener(gameIdPair: GameIdPair) {
@@ -45,31 +52,54 @@ export class GameService {
    await this.firebaseDb.database.ref('/games').child(firebaseId).remove();
   }
 
-  async createNewGame(gameMode: String) {
+  async createNewGame(gameMode: GameMode) {
     const cards = await this.createCardList(gameMode);
     const redStartingScore = this.calcStartingScore(cards, 'red');
     const blueStartingScore = this.calcStartingScore(cards, 'blue');
-    const newGame = new GameContext(cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
+    const newGame = new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
 
     const firebaseId = this.addGameToDb(newGame);
 
     return new GameIdPair(firebaseId, newGame);
   }
 
+  // private determineGameMode(gameMode: String): GameMode{
+  //   let mode;
+
+  //   switch(gameMode){
+  //     case this.WORDS:
+  //       mode = GameMode.CODENAMES_WORDS;
+  //       break;
+  //     case this.PICTURES:
+  //       mode = GameMode.CODENAMES_PICTURES;
+  //       break;
+  //     case this.SEQUENCE:
+  //       mode = GameMode.SEQUENCE;
+  //       break;
+  //     default:
+  //       mode = GameMode.CODENAMES_WORDS;
+  //       break;
+  //   }
+
+  //   return mode;
+  // }
+
   private isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
     return scoreToEval > comparingScore;
   }
 
-  private async createCardList(gameMode: String){
+  private async createCardList(gameMode: GameMode){
     const cards: Array<Card> = [];
 
-    if (gameMode === 'Words'){
+    if (gameMode === GameMode.CODENAMES_WORDS){
       await this.setInitialCardsWithWords(cards);
-    } else {
+      this.setCardColors(cards);
+    } else if (gameMode === GameMode.CODENAMES_PICTURES) {
       await this.setInitialCardsWithPictures(cards);
+      this.setCardColors(cards);
+    } else if (gameMode === GameMode.SEQUENCE){
+      console.log("Do sequence related stuff");
     }
-
-    this.setCardColors(cards);
 
     return cards;
   }
@@ -90,7 +120,7 @@ export class GameService {
     wordList = this.dataService.getRandomItems(allWords, 25);
 
     for (const word of wordList){
-      cards.push(new Card(word, '', '', false));
+      cards.push(new CodenameCard('', false, word, ''));
     }
   }
 
@@ -100,7 +130,7 @@ export class GameService {
     imgPathList = this.dataService.getRandomItems(allImgPaths, 20);
 
     for (const imgPath of imgPathList){
-      cards.push(new Card('', imgPath, '', false));
+      cards.push(new CodenameCard('', false, '', imgPath));
     }
   }
 

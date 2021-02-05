@@ -19,6 +19,9 @@ import { Location } from '@angular/common';
 
 import { BoardComponent } from './board.component';
 import { from } from 'rxjs';
+import { GameMode } from '../game-mode.enum';
+import { CodenameCard } from '../codename-card';
+import { CodenamesGameContext } from '../codenames-game-context';
 
 describe('BoardComponent', () => {
   let router: Router;
@@ -61,11 +64,11 @@ describe('BoardComponent', () => {
     fixture = TestBed.createComponent(BoardComponent);
     component = fixture.componentInstance;
 
-    let card = new Card('testWord', 'testImgPath', 'red', false);
+    let card = new CodenameCard('red', false, 'testWord', 'testImgPath');
     let cards = new Array<Card>();
     cards.push(card);
     //Set currentGameIdPair equal to this dummy data, otherwise will get property undefined errors
-    component.currentGameIdPair = new GameIdPair('abc1234', new GameContext(cards, 0, 0, false, false));
+    component.currentGameIdPair = new GameIdPair('abc1234', new CodenamesGameContext(GameMode.CODENAMES_WORDS, cards, 0, 0, false, false));
 
     //Set up spy to always return this dummy gameIdPair when createNewGame() is called
     gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(component.currentGameIdPair));
@@ -92,25 +95,26 @@ describe('BoardComponent', () => {
 
   //nextGame() tests
   it('nextGame should call deleteGameFromDb and createNewGame with WORDS as parameter', async () => {
-    component.currentGameIdPair.game.cards[0].imgPath = '';
+    let codeNamesCards = component.currentGameIdPair.game.cards[0] as CodenameCard;
+    codeNamesCards.imgPath = '';
 
     fixture.detectChanges();
 
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
   it('nextGame should call deleteGameFromDb and createNewGame with PICTURES as parameter', async () => {
-    component.currentGameIdPair.game.cards[0].imgPath = 'testImgPath';
+    component.currentGameIdPair.game.mode = GameMode.CODENAMES_PICTURES;
 
     fixture.detectChanges();
 
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Pictures');
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES);
   });
 
   // updateScore() tests
@@ -143,21 +147,21 @@ describe('BoardComponent', () => {
 
   // select() tests
   it('select should mark the card as selected', async () => {
-    let card = new Card('', '', 'red', false);
+    let card = new CodenameCard('red', false, '', '');
     await component.select(card);
 
     expect(card.selected).toBeTruthy();
   });
 
   it('select should make 1 call to updateGameInDb of GameService if card is NOT selected', async () => {
-    let card = new Card('', '', 'red', false);
+    let card = new CodenameCard('red', false, '', '');
     await component.select(card);
 
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(1);
   });
 
   it('select should 0 calls to updateGameInDb of GameService if card is selected', async () => {
-    let card = new Card('', '', 'red', true);
+    let card = new CodenameCard('red', true, '', '');
     await component.select(card);
 
     expect(gameServiceSpy.updateGameInDb).toHaveBeenCalledTimes(0);

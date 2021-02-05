@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../card';
-import { GameContext } from '../game-context';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
+import { GameMode } from '../game-mode.enum';
+import { CodenamesGameContext } from '../codenames-game-context';
 
 @Component({
   selector: 'app-board',
@@ -11,7 +12,7 @@ import { GameService } from '../game.service';
   styleUrls: ['./board.component.css'],
 })
 export class BoardComponent implements OnInit {
-  currentGameIdPair = new GameIdPair('', new GameContext(new Array<Card>(), 0, 0, false, false));
+  currentGameIdPair = new GameIdPair('', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
   isSpyMaster = false;
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService) { }
@@ -30,17 +31,17 @@ export class BoardComponent implements OnInit {
   }
 
   async nextGame(){
-    // figure out game mode before deleteing
-    let gameMode = 'Words';
-    if (this.currentGameIdPair.game.cards[0].imgPath){
-      gameMode = 'Pictures';
-    }
+    // // figure out game mode before deleteing
+    // let gameMode = 'Words';
+    // if (this.currentGameIdPair.game.cards[0].imgPath){
+    //   gameMode = 'Pictures';
+    // }
 
     // delete old game
     this.deleteGameFromDb();
 
     // create new game, set it equal to current game and update page
-    const nextGameIdPair = await this.gameService.createNewGame(gameMode);
+    const nextGameIdPair = await this.gameService.createNewGame(this.currentGameIdPair.game.mode);
     this.currentGameIdPair.id = nextGameIdPair.id;
     this.currentGameIdPair.game = nextGameIdPair.game;
     this.router.navigate(['/board/' + this.currentGameIdPair.id]);

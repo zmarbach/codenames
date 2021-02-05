@@ -21,8 +21,8 @@
     </table>
   </mat-card>
 
-  <div id="board" [ngClass]="{boardContainer: currentGameIdPair.game.cards[0].word,
-                              boardContainerFourByFive: currentGameIdPair.game.cards[0].imgPath}">
+  <div id="board" [ngClass]="{boardContainer: currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS',
+                              boardContainerFourByFive: currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'}">
     <div *ngFor="let card of currentGameIdPair.game.cards">
       <mat-card [ngClass]="{cardContainer: !card.selected,
                             cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
@@ -30,7 +30,7 @@
                             cardContainerSelectedBlack: (card.selected || isSpyMaster) && card.color == 'black',
                             cardContainerSelectedBeige: (card.selected || isSpyMaster) && card.color == 'beige'}"
                 (click)="select(card)">
-        <div *ngIf="card.word" style="margin: 25px">
+        <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS'" style="margin: 25px">
           <div *ngIf="card.color == 'black' && card.selected; else regularWordDisplay">
             <div>
               <p class="assassinDisplay">BANG!!!</p>
@@ -45,7 +45,7 @@
           </ng-template>
         </div>
 
-        <div *ngIf="card.imgPath" class="cardImg">
+        <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'" class="cardImg">
           <div *ngIf="card.color == 'black' && card.selected; else regularImgDisplay">
             <div class="assassinImgContents">
               <p>BANG!!!</p>
@@ -67,7 +67,7 @@
       <mat-slide-toggle class="spyMasterToggle" color="primary" (click)="toggleSpyMaster()">SpyMaster</mat-slide-toggle>
       <button id="nextGameButton" class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
   </mat-card>
-  <div *ngIf=currentGameIdPair.game.cards[0].imgPath>
+  <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'">
     <p class="copyright"><strong>*** Images adapted from Czech Games Edition, <i>Codenames: Pictures</i>. 2016. ***</strong></p>
   </div>
 </div>

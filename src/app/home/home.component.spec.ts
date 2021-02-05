@@ -7,7 +7,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
 import { Card } from '../card';
-import { GameContext } from '../game-context';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
 
@@ -18,6 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
+import { GameMode } from '../game-mode.enum';
+import { CodenamesGameContext } from '../codenames-game-context';
 
 describe('HomeComponent', () => {
   let router: Router;
@@ -52,7 +53,7 @@ describe('HomeComponent', () => {
   });
 
   beforeEach(() => {
-    const fakeGamePairId = new GameIdPair('test1234', new GameContext(new Array<Card>(), 0, 0, false, false));
+    const fakeGamePairId = new GameIdPair('test1234', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
     gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeGamePairId));
 
     router = TestBed.inject(Router);
@@ -86,7 +87,7 @@ describe('HomeComponent', () => {
     await component.submit();
 
     expect(gameServiceSpy.createNewGame.calls.count()).toEqual(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
   // Have to use tick and fakeAsync together
