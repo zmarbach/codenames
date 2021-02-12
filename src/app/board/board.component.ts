@@ -5,6 +5,7 @@ import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
 import { GameMode } from '../game-mode.enum';
 import { CodenamesGameContext } from '../codenames-game-context';
+import { Suit } from '../suit.enum';
 
 @Component({
   selector: 'app-board',
@@ -14,6 +15,7 @@ import { CodenamesGameContext } from '../codenames-game-context';
 export class BoardComponent implements OnInit {
   currentGameIdPair = new GameIdPair('', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
   isSpyMaster = false;
+  Suit = Suit;
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService) { }
 
@@ -31,20 +33,10 @@ export class BoardComponent implements OnInit {
   }
 
   async nextGame(){
-    // // figure out game mode before deleteing
-    // let gameMode = 'Words';
-    // if (this.currentGameIdPair.game.cards[0].imgPath){
-    //   gameMode = 'Pictures';
-    // }
-
-    // delete old game
-    this.deleteGameFromDb();
-
-    // create new game, set it equal to current game and update page
-    const nextGameIdPair = await this.gameService.createNewGame(this.currentGameIdPair.game.mode);
-    this.currentGameIdPair.id = nextGameIdPair.id;
-    this.currentGameIdPair.game = nextGameIdPair.game;
-    this.router.navigate(['/board/' + this.currentGameIdPair.id]);
+    // create new game and update it in the DB
+    // data on page will update dynamically since using event listener for any DB changes specific to current game id
+    const nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode);
+    this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
   }
 
   toggleSpyMaster(){
@@ -58,8 +50,8 @@ export class BoardComponent implements OnInit {
   async select(card: Card){
     if (!card.selected){
       card.selected = true;
-      await this.updateScore(card.color);
-      await this.gameService.updateGameInDb(this.currentGameIdPair);
+      this.updateScore(card.color);
+      await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
     }
   }
 
@@ -82,7 +74,7 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     // update game in Firebase DB
-    await this.gameService.updateGameInDb(this.currentGameIdPair);
+    await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
   }
 
   async deleteGameFromDb(){

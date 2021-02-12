@@ -9,6 +9,9 @@ import { Router } from '@angular/router';
 import { GameMode } from './game-mode.enum';
 import { CodenameCard } from './codename-card';
 import { CodenamesGameContext } from './codenames-game-context';
+import { SequenceCard } from './sequence-card';
+import { Face } from './face';
+import { Suit } from './suit.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -38,10 +41,10 @@ export class GameService {
     return firebaseId.key;
   }
 
-  async updateGameInDb(gameIdPair: GameIdPair){
-    if ((await this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).get()).exists()){
-      await this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).set(gameIdPair.game);
-      console.log('Updating game DB with id of ' + gameIdPair.id);
+  async updateGameInDb(gameIdToUpdate: String, updatedGame: GameContext){
+    if ((await this.firebaseDb.database.ref('/games').child(gameIdToUpdate.toString()).get()).exists()){
+      await this.firebaseDb.database.ref('/games').child(gameIdToUpdate.toString()).set(updatedGame);
+      console.log('Updating game DB with id of ' + gameIdToUpdate);
     } else {
       window.alert('This game has been deleted. You will now be redirected to the Home Page to start a new game');
       this.router.navigate(['/home']);
@@ -52,37 +55,12 @@ export class GameService {
    await this.firebaseDb.database.ref('/games').child(firebaseId).remove();
   }
 
-  async createNewGame(gameMode: GameMode) {
+  async createNewGame(gameMode: GameMode): Promise<GameContext> {
     const cards = await this.createCardList(gameMode);
     const redStartingScore = this.calcStartingScore(cards, 'red');
     const blueStartingScore = this.calcStartingScore(cards, 'blue');
-    const newGame = new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
-
-    const firebaseId = this.addGameToDb(newGame);
-
-    return new GameIdPair(firebaseId, newGame);
+    return new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
   }
-
-  // private determineGameMode(gameMode: String): GameMode{
-  //   let mode;
-
-  //   switch(gameMode){
-  //     case this.WORDS:
-  //       mode = GameMode.CODENAMES_WORDS;
-  //       break;
-  //     case this.PICTURES:
-  //       mode = GameMode.CODENAMES_PICTURES;
-  //       break;
-  //     case this.SEQUENCE:
-  //       mode = GameMode.SEQUENCE;
-  //       break;
-  //     default:
-  //       mode = GameMode.CODENAMES_WORDS;
-  //       break;
-  //   }
-
-  //   return mode;
-  // }
 
   private isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
     return scoreToEval > comparingScore;
@@ -98,7 +76,9 @@ export class GameService {
       await this.setInitialCardsWithPictures(cards);
       this.setCardColors(cards);
     } else if (gameMode === GameMode.SEQUENCE){
+      //Cards will always be in same order, so make sure to maintain order when adding to list of cards
       console.log("Do sequence related stuff");
+      await this.setInitialCardsForSequence(cards);
     }
 
     return cards;
@@ -131,6 +111,23 @@ export class GameService {
 
     for (const imgPath of imgPathList){
       cards.push(new CodenameCard('', false, '', imgPath));
+    }
+  }
+
+  private async setInitialCardsForSequence(cards: Array<Card>){
+    let x = 0;
+    while(x < 10){
+      cards.push(new SequenceCard('red', false, Face.ONE_EYED_JACK, Suit.SPADE));
+      cards.push(new SequenceCard('red', false, Face.TWO_EYED_JACK, Suit.DIAMOND));
+      cards.push(new SequenceCard('red', false, Face.ACE, Suit.HEART));
+      cards.push(new SequenceCard('red', false, Face.KING, Suit.CLUB));
+      cards.push(new SequenceCard('red', false, Face.QUEEN, Suit.SPADE));
+      cards.push(new SequenceCard('red', false, Face.TEN, Suit.SPADE));
+      cards.push(new SequenceCard('red', false, Face.TWO, Suit.DIAMOND));
+      cards.push(new SequenceCard('red', false, Face.THREE, Suit.HEART));
+      cards.push(new SequenceCard('red', false, Face.SEVEN, Suit.CLUB));
+      cards.push(new SequenceCard('red', false, Face.NINE, Suit.SPADE));
+      x++;
     }
   }
 

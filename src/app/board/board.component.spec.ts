@@ -68,10 +68,11 @@ describe('BoardComponent', () => {
     let cards = new Array<Card>();
     cards.push(card);
     //Set currentGameIdPair equal to this dummy data, otherwise will get property undefined errors
-    component.currentGameIdPair = new GameIdPair('abc1234', new CodenamesGameContext(GameMode.CODENAMES_WORDS, cards, 0, 0, false, false));
+    let newCodenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, cards, 0, 0, false, false)
+    component.currentGameIdPair = new GameIdPair('abc1234', newCodenamesGame);
 
     //Set up spy to always return this dummy gameIdPair when createNewGame() is called
-    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(component.currentGameIdPair));
+    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(component.currentGameIdPair.game));
 
     fixture.detectChanges();
 
@@ -102,7 +103,7 @@ describe('BoardComponent', () => {
 
     await component.nextGame();
 
-    expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
+    expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
@@ -113,7 +114,7 @@ describe('BoardComponent', () => {
 
     await component.nextGame();
 
-    expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(1);
+    expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES);
   });
 

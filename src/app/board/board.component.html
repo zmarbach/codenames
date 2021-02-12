@@ -21,8 +21,9 @@
     </table>
   </mat-card>
 
-  <div id="board" [ngClass]="{boardContainer: currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS',
-                              boardContainerFourByFive: currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'}">
+  <div id="board" [ngClass]="{boardContainerWords: currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS',
+                              boardContainerPictures: currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES',
+                              boardContainerSequence: currentGameIdPair.game.mode.toString() === 'SEQUENCE'}">
     <div *ngFor="let card of currentGameIdPair.game.cards">
       <mat-card [ngClass]="{cardContainer: !card.selected,
                             cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
@@ -58,6 +59,12 @@
               <img src="{{card.imgPath}}" width="200px" height="auto"/>
             </div>
           </ng-template>
+        </div>
+
+        <div *ngIf="currentGameIdPair.game.mode.toString() === 'SEQUENCE'" class="cardSequence">
+            <div>
+              <span [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
+            </div>
         </div>
       </mat-card>
     </div>

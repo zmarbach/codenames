@@ -1,4 +1,4 @@
-import { Face } from './face.enum';
+import { Face } from './face';
 import { SequenceCard } from './sequence-card';
 import { Suit } from './suit.enum';
 

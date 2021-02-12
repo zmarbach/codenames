@@ -23,9 +23,11 @@ export class HomeComponent implements OnInit {
   async submit(){
     console.log('Creating new game...');
     console.log('Game mode value is : ' + this.settingsForm.value.gameMode as GameMode);
-    const newGameIdPair = await this.gameService.createNewGame(this.settingsForm.value.gameMode as GameMode);
-    console.log('New game created with this id ---> ' + newGameIdPair.id);
-    this.router.navigate(['/board/' + newGameIdPair.id]);
+    const newGame = await this.gameService.createNewGame(this.settingsForm.value.gameMode as GameMode);
+    const newGameFirebaseId = this.gameService.addGameToDb(newGame);
+
+    console.log('New game created with this id ---> ' + newGameFirebaseId);
+    this.router.navigate(['/board/' + newGameFirebaseId]);
   }
 
 }

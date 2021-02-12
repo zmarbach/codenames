@@ -32,16 +32,23 @@
   text-align: center; width: auto;
 }
 
-.boardContainer{
+.boardContainerWords{
   display:grid;
   grid-template-columns:repeat(5, 19.5%);
   grid-gap:10px;
   grid-auto-flow:row;
 }
 
-.boardContainerFourByFive{
+.boardContainerPictures{
   display:grid;
   grid-template-rows:repeat(4, 24%);
+  grid-gap:10px;
+  grid-auto-flow:column;
+}
+
+.boardContainerSequence{
+  display:grid;
+  grid-template-rows:repeat(10, 9%);
   grid-gap:10px;
   grid-auto-flow:column;
 }
@@ -143,4 +150,8 @@ button:hover{
   margin: 20px 0px;
   padding-bottom: 20px;
   text-align: center;
+}
+
+.redSuit{
+  color: red;
 }

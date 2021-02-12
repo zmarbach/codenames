@@ -38,12 +38,12 @@ describe('GameService', () => {
   it('Add, Update, Get, and Delete should all succeed', async function() {
     let gameIdPair = new GameIdPair(null, new CodenamesGameContext(GameMode.CODENAMES_WORDS,new Array<Card>(), 0, 0, false, false));
     try {
-      gameIdPair.id = service.addGameToDb(gameIdPair.game);
+      gameIdPair.id = await service.addGameToDb(gameIdPair.game);
       expect(gameIdPair.id).not.toBeNull();
       console.log('Add game ---> SUCCESS');
 
       gameIdPair.game.blueScore = 99;
-      let resultAfterUpdate = await service.updateGameInDb(gameIdPair);
+      let resultAfterUpdate = await service.updateGameInDb(gameIdPair.id, gameIdPair.game);
       expect(resultAfterUpdate).not.toBeNull();
       console.log('Update game ---> SUCCESS');
 
@@ -67,81 +67,94 @@ describe('GameService', () => {
 
   it('createNewGame in "Words" game mode should populate words in cards', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
-    let codeNamesCard = newGame.game.cards[0] as CodenameCard;
+    const newGameId = service.addGameToDb(newGame);
+    let codeNamesCard = newGame.cards[0] as CodenameCard;
+
     expect(codeNamesCard.word).toBeTruthy();
     expect(codeNamesCard.imgPath).toBeFalsy();
-    service.deleteGameFromDb(newGame.id);
+
+    service.deleteGameFromDb(newGameId);
   });
 
   it('createNewGame in "Words" game mode should create game with 25 cards', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
-    expect(newGame.game.cards.length).toBe(25);
-    service.deleteGameFromDb(newGame.id);
+    const newGameId = service.addGameToDb(newGame);
+
+    expect(newGame.cards.length).toBe(25);
+    service.deleteGameFromDb(newGameId);
   });
 
   it('createNewGame in "Words" game mode should create game with 9 of one color, 8 of the other, 1 assassin, and 7 innocent', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS);
+    const newGameId = service.addGameToDb(newGame);
 
-    countNumOfColors(newGame.game.cards);
+    countNumOfColors(newGame.cards);
 
-    if (newGame.game.isRedTurn){
+    if (newGame.isRedTurn){
       expect(numOfReds).toBe(9);
       expect(numOfBlues).toBe(8);
-      expect(newGame.game.redScore).toBe(9);
-      expect(newGame.game.blueScore).toBe(8);
-      expect(newGame.game.isRedTurn).toBeTrue();
+      expect(newGame.redScore).toBe(9);
+      expect(newGame.blueScore).toBe(8);
+      expect(newGame.isRedTurn).toBeTrue();
     } else {
       expect(numOfReds).toBe(8);
       expect(numOfBlues).toBe(9);
-      expect(newGame.game.redScore).toBe(8);
-      expect(newGame.game.blueScore).toBe(9);
-      expect(newGame.game.isBlueTurn).toBeTrue();
+      expect(newGame.redScore).toBe(8);
+      expect(newGame.blueScore).toBe(9);
+      expect(newGame.isBlueTurn).toBeTrue();
     }
     expect(numOfBlacks).toBe(1);
     expect(numOfBeiges).toBe(7);
 
     // Remove game from DB and reset colors for next test
-    service.deleteGameFromDb(newGame.id);
+    service.deleteGameFromDb(newGameId);
     resetColors();
   });
 
   it('createNewGame in "Pictures" game mode should populate imgPaths in cards', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
-    let codeNamesCard = newGame.game.cards[0] as CodenameCard;
+    const newGameId = service.addGameToDb(newGame);
+    let codeNamesCard = newGame.cards[0] as CodenameCard;
+
     expect(codeNamesCard.word).toBeFalsy();
     expect(codeNamesCard.imgPath).toContain('.jpg');
-    service.deleteGameFromDb(newGame.id);
+
+    service.deleteGameFromDb(newGameId);
   });
 
   it('createNewGame in "Pictures" game mode should create game with 20 cards', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
-    expect(newGame.game.cards.length).toBe(20);
-    service.deleteGameFromDb(newGame.id);
+    const newGameId = service.addGameToDb(newGame);
+
+    expect(newGame.cards.length).toBe(20);
+
+    service.deleteGameFromDb(newGameId);
   });
 
   it('createNewGame in "Pictures" game mode should create game with 8 of one color, 7 of the other, 1 assassin, and 4 innocent', async function() {
     const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES);
+    const newGameId = service.addGameToDb(newGame);
 
-    countNumOfColors(newGame.game.cards);
+    countNumOfColors(newGame.cards);
 
-    if (newGame.game.isRedTurn){
+    if (newGame.isRedTurn){
       expect(numOfReds).toBe(8);
       expect(numOfBlues).toBe(7);
-      expect(newGame.game.redScore).toBe(8);
-      expect(newGame.game.blueScore).toBe(7);
-      expect(newGame.game.isRedTurn).toBeTrue();
+      expect(newGame.redScore).toBe(8);
+      expect(newGame.blueScore).toBe(7);
+      expect(newGame.isRedTurn).toBeTrue();
     } else {
       expect(numOfReds).toBe(7);
       expect(numOfBlues).toBe(8);
-      expect(newGame.game.redScore).toBe(7);
-      expect(newGame.game.blueScore).toBe(8);
-      expect(newGame.game.isBlueTurn).toBeTrue();
+      expect(newGame.redScore).toBe(7);
+      expect(newGame.blueScore).toBe(8);
+      expect(newGame.isBlueTurn).toBeTrue();
     }
     expect(numOfBlacks).toBe(1);
     expect(numOfBeiges).toBe(4);
 
     // Remove game from DB and reset colors for next test
-    service.deleteGameFromDb(newGame.id);
+    service.deleteGameFromDb(newGameId);
     resetColors();
   });
 

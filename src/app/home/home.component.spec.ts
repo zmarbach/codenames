@@ -28,7 +28,7 @@ describe('HomeComponent', () => {
   let gameServiceSpy: jasmine.SpyObj<GameService>;
 
   beforeEach(async () => {
-    const spyForGameService = jasmine.createSpyObj('GameService', ['createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('GameService', ['createNewGame', 'addGameToDb']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -53,8 +53,10 @@ describe('HomeComponent', () => {
   });
 
   beforeEach(() => {
-    const fakeGamePairId = new GameIdPair('test1234', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
-    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeGamePairId));
+    const fakeCodenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false);
+    const fakeGamePairId = new GameIdPair('test1234', fakeCodenamesGame);
+    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeCodenamesGame));
+    gameServiceSpy.addGameToDb.and.returnValue(fakeGamePairId.id.toString());
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
@@ -80,7 +82,7 @@ describe('HomeComponent', () => {
     });
   });
 
-  it('submit should call createNewGame method on GameService', async () => {
+  it('submit should call createNewGame method on GameService one time', async () => {
     fixture.detectChanges();
 
     // WAIT for promise to resolve before making assertions
@@ -90,13 +92,24 @@ describe('HomeComponent', () => {
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
+  it('submit should call addGameToDb method on GameService one time', async () => {
+    fixture.detectChanges();
+
+    // WAIT for promise to resolve before making assertions
+    await component.submit();
+
+    expect(gameServiceSpy.addGameToDb.calls.count()).toEqual(1);
+  });
+
   // Have to use tick and fakeAsync together
   // Can do the same thing with async/await, but use fakeAsync and tick here as an example
-  // fakeAsync essentially turns all asycn stuff into sync
-  // tick simulates passage of time, so 'asycn' actions have resolved (can pass ms into tick if need more than default time to pass)
-  it('submit should route to correct URL for board component', fakeAsync(() => {
+  // fakeAsync essentially turns all async stuff into sync
+  // tick simulates passage of time, so 'async' actions have resolved (can pass ms into tick if need more than default time to pass)
+  it('submit should route to correct URL for board component', fakeAsync (() => {
+    fixture.detectChanges();
+
     component.submit();
-    tick();
+    tick()
 
     expect(location.path()).toBe('/board/test1234');
   }));
