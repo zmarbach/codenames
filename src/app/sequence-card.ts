@@ -15,6 +15,10 @@ export class SequenceCard extends Card{
   }
 
   public getDisplayValue(){
-    return this.face.displayName + " " + this.suit.toString();
+    if (this.face === Face.FREE){
+      return this.face.displayName;
+    } else {
+      return this.face.displayName + " " + this.suit.toString();
+    }
   }
 }

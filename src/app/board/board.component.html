@@ -71,7 +71,7 @@
   </div>
 
   <mat-card class="boardBottom">
-      <mat-slide-toggle class="spyMasterToggle" color="primary" (click)="toggleSpyMaster()">SpyMaster</mat-slide-toggle>
+      <mat-slide-toggle *ngIf="currentGameIdPair.game.mode.toString() !== 'SEQUENCE'" class="spyMasterToggle" color="primary" (click)="toggleSpyMaster()">SpyMaster</mat-slide-toggle>
       <button id="nextGameButton" class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
   </mat-card>
   <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'">

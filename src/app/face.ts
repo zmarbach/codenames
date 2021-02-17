@@ -1,4 +1,5 @@
 export class Face {
+  public static FREE = new Face(0, "FREE");
   public static TWO = new Face(2, "2");
   public static THREE = new Face(3, "3");
   public static FOUR = new Face(4, "4");
