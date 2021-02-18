@@ -10,6 +10,7 @@ import { GameMode } from '../game-mode.enum';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  isSequence = false;
   settingsForm = new FormGroup({
     gameMode: new FormControl(GameMode.CODENAMES_WORDS, Validators.required),
   });
@@ -28,6 +29,14 @@ export class HomeComponent implements OnInit {
 
     console.log('New game created with this id ---> ' + newGameFirebaseId);
     this.router.navigate(['/board/' + newGameFirebaseId]);
+  }
+
+  showSequence(){
+    this.isSequence = true;
+  }
+
+  hideSequence(){
+    this.isSequence = false;
   }
 
 }

@@ -12,13 +12,27 @@
       <form [formGroup]="settingsForm" (ngSubmit)="submit()">
         <mat-radio-group formControlName="gameMode">
           <label for="words-radio-btn">Words</label>
-          <mat-radio-button color="primary" style="margin: 5px;" id="words-radio-btn" type="radio" [value]="GameMode.CODENAMES_WORDS"></mat-radio-button>
+          <mat-radio-button color="primary" (click)="hideSequence()" style="margin: 5px;" id="words-radio-btn" type="radio" [value]="GameMode.CODENAMES_WORDS"></mat-radio-button>
 
           <label for="pictures-radio-btn">Pictures</label>
-          <mat-radio-button color="primary" style="margin: 5px;" id="pictures-radio-btn" type="radio" [value]="GameMode.CODENAMES_PICTURES"></mat-radio-button>
+          <mat-radio-button color="primary" (click)="hideSequence()" style="margin: 5px;" id="pictures-radio-btn" type="radio" [value]="GameMode.CODENAMES_PICTURES"></mat-radio-button>
 
           <label for="sequence-radio-btn">Sequence</label>
-          <mat-radio-button color="primary" style="margin: 5px;" id="sequence-radio-btn" type="radio" [value]="GameMode.SEQUENCE"></mat-radio-button>
+          <mat-radio-button color="primary" (click)="showSequence()" style="margin: 5px;" id="sequence-radio-btn" type="radio" [value]="GameMode.SEQUENCE"></mat-radio-button>
+          
+          <div *ngIf="isSequence">
+            <mat-form-field>
+              <label for="sequence-select">Number of Players</label>
+              <mat-select id="sequence-select" [formControl]="selected">
+                <mat-option value="2">2</mat-option>
+                <mat-option value="4">4</mat-option>
+                <mat-option value="6">6</mat-option>
+                <mat-option value="8">8</mat-option>
+                <mat-option value="10">10</mat-option>
+                <mat-option value="12">12</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </mat-radio-group>
 
         <div style="margin: 5px;">
