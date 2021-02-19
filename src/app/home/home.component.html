@@ -19,28 +19,31 @@
 
           <label for="sequence-radio-btn">Sequence</label>
           <mat-radio-button color="primary" (click)="showSequence()" style="margin: 5px;" id="sequence-radio-btn" type="radio" [value]="GameMode.SEQUENCE"></mat-radio-button>
+        </mat-radio-group>
           
-          <div *ngIf="isSequence">
+        <div>
+          <mat-form-field *ngIf="isSequence">
+            <mat-label for="sequence-select">Number of Players</mat-label>
+            <mat-select id="sequence-select" formControlName="numOfPlayers" required>
+              <mat-option *ngFor="let num of numOfPlayerOptions" [value]="num">{{ num.displayValue }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-error *ngIf="numOfPlayers.errors?.required">Please pick number of players</mat-error>
+        </div>
+
+        <ng-container *ngIf="isSequence" formArrayName="playerNames">
+          <div *ngFor="let name of playerNames.controls; index as i">
             <mat-form-field>
-              <label for="sequence-select">Number of Players</label>
-              <mat-select id="sequence-select" [formControl]="selected">
-                <mat-option value="2">2</mat-option>
-                <mat-option value="4">4</mat-option>
-                <mat-option value="6">6</mat-option>
-                <mat-option value="8">8</mat-option>
-                <mat-option value="10">10</mat-option>
-                <mat-option value="12">12</mat-option>
-              </mat-select>
+              <mat-label>Player {{i + 1}} Name</mat-label>
+              <input matInput type="text" [formControlName]="i">
             </mat-form-field>
           </div>
-        </mat-radio-group>
+        </ng-container>
 
         <div style="margin: 5px;">
-          <button mat-raised-button type="submit" color="primary">New Game!</button>
+          <button mat-raised-button type="submit" color="primary" [disabled]="settingsForm.invalid">New Game!</button>
         </div>
       </form>
     </mat-card-content>
   </mat-card>
-
-
 </div>

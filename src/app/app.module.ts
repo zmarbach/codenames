@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { HomeComponent } from './home/home.component';
 import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -36,6 +37,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     MatSlideToggleModule,
     MatRadioModule,
     MatSelectModule,
+    MatInputModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,

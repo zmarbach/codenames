@@ -12,6 +12,9 @@ import { CodenamesGameContext } from './codenames-game-context';
 import { SequenceCard } from './sequence-card';
 import { Face } from './face';
 import { Suit } from './suit.enum';
+import { SequenceGameContext } from './sequence-game-context';
+import { FormGroup } from '@angular/forms';
+import { Player } from './player';
 
 @Injectable({
   providedIn: 'root'
@@ -55,11 +58,17 @@ export class GameService {
    await this.firebaseDb.database.ref('/games').child(firebaseId).remove();
   }
 
-  async createNewGame(gameMode: GameMode): Promise<GameContext> {
+  async createNewGame(gameMode: GameMode, playerNames: Player[]): Promise<GameContext> {
     const cards = await this.createCardList(gameMode);
     const redStartingScore = this.calcStartingScore(cards, 'red');
     const blueStartingScore = this.calcStartingScore(cards, 'blue');
-    return new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
+    if (gameMode === GameMode.SEQUENCE){
+      //TODO - randomize which team goes first
+      console.log('Player names ---> ' + playerNames);
+      return new SequenceGameContext(playerNames, gameMode, cards, 0, 0, true, false);
+    } else {
+      return new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
+    }
   }
 
   private isFirstTurn(scoreToEval: number, comparingScore: number): Boolean {
@@ -77,7 +86,6 @@ export class GameService {
       this.setCardColors(cards);
     } else if (gameMode === GameMode.SEQUENCE){
       //Cards will always be in same order, so make sure to maintain order when adding to list of cards
-      console.log("Do sequence related stuff");
       await this.setInitialCardsForSequence(cards);
     }
 
@@ -92,6 +100,10 @@ export class GameService {
     } else {
       this.setColors(cards, 'red', 'blue');
     }
+  }
+
+  private createPlayers(playerNames: Array<String>){
+    
   }
 
   private async setInitialCardsWithWords(cards: Array<Card>){

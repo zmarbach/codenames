@@ -6,6 +6,8 @@ import { GameService } from '../game.service';
 import { GameMode } from '../game-mode.enum';
 import { CodenamesGameContext } from '../codenames-game-context';
 import { Suit } from '../suit.enum';
+import { SequenceGameContext } from '../sequence-game-context';
+import { GameContext } from '../game-context';
 
 @Component({
   selector: 'app-board',
@@ -35,7 +37,13 @@ export class BoardComponent implements OnInit {
   async nextGame(){
     // create new game and update it in the DB
     // data on page will update dynamically since using event listener for any DB changes specific to current game id
-    const nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode);
+    let nextGame: GameContext;
+    if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
+      let game = this.currentGameIdPair.game as SequenceGameContext
+      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, game.players);
+    } else {
+      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, []);
+    }
     this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
   }
 
