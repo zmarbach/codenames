@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../card';
 import { GameIdPair } from '../game-id-pair';
@@ -10,8 +10,8 @@ import { SequenceGameContext } from '../sequence-game-context';
 import { GameContext } from '../game-context';
 import { MatDialog } from '@angular/material/dialog';
 import { Player } from '../player';
+import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
-import { SequenceCard } from '../sequence-card';
 
 @Component({
   selector: 'app-board',
@@ -19,35 +19,52 @@ import { SequenceCard } from '../sequence-card';
   styleUrls: ['./board.component.css'],
 })
 export class BoardComponent implements OnInit {
-  currentGameIdPair = new GameIdPair('', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
+  currentGameIdPair = new GameIdPair('', null);
   isSpyMaster = false;
+  isSequence = false;
   Suit = Suit;
-  currentPlayer: Player;
+  currentPlayer = new Player(9999, "test", []);
+  title: String;
+  nameForm: FormControl;
+  selectedPlayerId: number;
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService, private dialog: MatDialog) { }
 
   ngOnInit() {
+    //TODO - handle this better!!! No setTimeout, figure it out with async await instead!!!
+    // maybe create currentGameIdPair instead of "setting it up". Await for it and then move on once we know it is created
     this.setUpCurrentGame(this.currentGameIdPair);
-    if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
-      this.handleDialog();
-    }
+
+    setTimeout(() => {
+      this.isSequence = this.currentGameIdPair.game.mode === GameMode.SEQUENCE ? true : false;
+      this.title = this.isSequence? "SEQUENCE" : "CODENAMES";
+      if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
+        this.handleDialog();
+      }
+    }, 500);
+
     console.log('currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair));
   }
 
+  setCurrentPlayer(){
+    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+    this.currentPlayer = sequenceGame.players.find(player => player.id === this.selectedPlayerId);
+  }
+
   handleDialog(){
-    console.log("handling dialog open");
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
     console.log("players in sequence game ---- " + JSON.stringify(sequenceGame.players));
 
-      const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
-        width: '250px',
-        data: sequenceGame.players
-      });
-  
-      dialogRef.afterClosed().subscribe(result => {
-        //need to do something with this result;
-        console.log('Selected player has id of ' + result);
-      });
+    const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
+      width: '250px',
+      data: sequenceGame.players
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      //need to do something with this result;
+      console.log('Selected player has id of ' + result);
+      this.currentPlayer = sequenceGame.players.find(player => player.id === result);
+    });
   }
 
   setUpCurrentGame(currentGameIdPair: GameIdPair){

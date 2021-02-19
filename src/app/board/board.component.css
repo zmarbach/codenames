@@ -1,6 +1,15 @@
+.displayFlex{
+  display: flex;
+}
+
 .title{
   margin: 15px;
 }
+
+.mainContainer{
+  margin: 0px 100px;
+}
+
 .codeNamesTitle{
   text-align: center;
   font-size: 40px;

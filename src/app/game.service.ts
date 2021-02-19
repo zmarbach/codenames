@@ -19,15 +19,16 @@ import { Player } from './player';
   providedIn: 'root'
 })
 export class GameService {
+  
   constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase, private router: Router) {}
 
   setUpGameAndDbListener(gameIdPair: GameIdPair) {
     this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).on('value', (snapshot) => {
-      console.log('New changes in firebase');
       console.log("New shapshot val is " + JSON.stringify(snapshot.val()));
 
       //if snapshot does not exist, then the id is not in db...game has been deleted.
       if (snapshot.exists()){
+        console.log("snapshot does exist")
         gameIdPair.game = snapshot.val();
       }
     });
@@ -98,10 +99,18 @@ export class GameService {
   }
 
   private createPlayers(playerNames: Array<String>): Array<Player>{
+    let sampleHand = Array<Card>();
+    sampleHand.push(new SequenceCard("", false, Face.TWO, Suit.SPADE));
+    sampleHand.push(new SequenceCard("", false, Face.THREE, Suit.SPADE));
+    sampleHand.push(new SequenceCard("", false, Face.QUEEN, Suit.DIAMOND));
+    sampleHand.push(new SequenceCard("", false, Face.ONE_EYED_JACK, Suit.HEART));
+    sampleHand.push(new SequenceCard("", false, Face.TWO_EYED_JACK, Suit.SPADE));
+    sampleHand.push(new SequenceCard("", false, Face.ACE, Suit.CLUB));
+
     let players = [];
     for(let i=0; i < playerNames.length; i++){
       //TODO - build each player's hand
-      players.push(new Player(i, playerNames[i], []))
+      players.push(new Player(i, playerNames[i], sampleHand))
     }
     return players;
   }
