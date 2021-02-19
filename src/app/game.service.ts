@@ -13,17 +13,12 @@ import { SequenceCard } from './sequence-card';
 import { Face } from './face';
 import { Suit } from './suit.enum';
 import { SequenceGameContext } from './sequence-game-context';
-import { FormGroup } from '@angular/forms';
 import { Player } from './player';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private WORDS = "Words";
-  private PICTURES = "Pictures";
-  private SEQUENCE = "Sequence";
-
   constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase, private router: Router) {}
 
   setUpGameAndDbListener(gameIdPair: GameIdPair) {
@@ -58,14 +53,14 @@ export class GameService {
    await this.firebaseDb.database.ref('/games').child(firebaseId).remove();
   }
 
-  async createNewGame(gameMode: GameMode, playerNames: Player[]): Promise<GameContext> {
+  async createNewGame(gameMode: GameMode, playerNames: Array<String>): Promise<GameContext> {
     const cards = await this.createCardList(gameMode);
     const redStartingScore = this.calcStartingScore(cards, 'red');
     const blueStartingScore = this.calcStartingScore(cards, 'blue');
     if (gameMode === GameMode.SEQUENCE){
       //TODO - randomize which team goes first
       console.log('Player names ---> ' + playerNames);
-      return new SequenceGameContext(playerNames, gameMode, cards, 0, 0, true, false);
+      return new SequenceGameContext(this.createPlayers(playerNames), gameMode, cards, 0, 0, true, false);
     } else {
       return new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
     }
@@ -102,8 +97,13 @@ export class GameService {
     }
   }
 
-  private createPlayers(playerNames: Array<String>){
-    
+  private createPlayers(playerNames: Array<String>): Array<Player>{
+    let players = [];
+    for(let i=0; i < playerNames.length; i++){
+      //TODO - build each player's hand
+      players.push(new Player(i, playerNames[i], []))
+    }
+    return players;
   }
 
   private async setInitialCardsWithWords(cards: Array<Card>){

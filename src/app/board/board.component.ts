@@ -8,6 +8,10 @@ import { CodenamesGameContext } from '../codenames-game-context';
 import { Suit } from '../suit.enum';
 import { SequenceGameContext } from '../sequence-game-context';
 import { GameContext } from '../game-context';
+import { MatDialog } from '@angular/material/dialog';
+import { Player } from '../player';
+import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
+import { SequenceCard } from '../sequence-card';
 
 @Component({
   selector: 'app-board',
@@ -18,12 +22,32 @@ export class BoardComponent implements OnInit {
   currentGameIdPair = new GameIdPair('', new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false));
   isSpyMaster = false;
   Suit = Suit;
+  currentPlayer: Player;
 
-  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService) { }
+  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.setUpCurrentGame(this.currentGameIdPair);
+    if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
+      this.handleDialog();
+    }
     console.log('currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair));
+  }
+
+  handleDialog(){
+    console.log("handling dialog open");
+    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+    console.log("players in sequence game ---- " + JSON.stringify(sequenceGame.players));
+
+      const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
+        width: '250px',
+        data: sequenceGame.players
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        //need to do something with this result;
+        console.log('Selected player has id of ' + result);
+      });
   }
 
   setUpCurrentGame(currentGameIdPair: GameIdPair){
@@ -40,7 +64,7 @@ export class BoardComponent implements OnInit {
     let nextGame: GameContext;
     if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
       let game = this.currentGameIdPair.game as SequenceGameContext
-      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, game.players);
+      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, game.getAllPlayerNames());
     } else {
       nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, []);
     }

@@ -10,6 +10,14 @@ export class SequenceGameContext extends GameContext{
     super(mode, cards, redScore, blueScore, isRedTurn, isBlueTurn);
     this.players = players;
   }
+
+  getAllPlayerNames() : Array<String>{
+    let names = [];
+    for (let player of this.players){
+      names.push(player.name);
+    }
+    return names;
+  }
 }
 
 

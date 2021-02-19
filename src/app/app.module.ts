@@ -13,18 +13,21 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
 import { HomeComponent } from './home/home.component';
 import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameService } from './game.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    BoardComponent
+    BoardComponent,
+    PlayerNameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +41,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     MatRadioModule,
     MatSelectModule,
     MatInputModule,
+    MatDialogModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,

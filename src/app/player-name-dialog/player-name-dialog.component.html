@@ -1,0 +1,13 @@
+<div>
+    <mat-form-field>
+        <mat-label for="player-name-select">Which player are you?</mat-label>
+        <mat-select [formControl]="nameForm" id="player-name-select" required>
+            <mat-option *ngFor="let player of data" [value]="player">{{ player.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <!-- <mat-error *ngIf="numOfPlayers.errors?.required">Please pick which player you are.</mat-error> -->
+
+    <div mat-dialog-actions style="margin: 5px;">
+        <button mat-raised-button [mat-dialog-close]="selectedPlayerId" color="primary">Select</button>
+    </div>
+</div>
