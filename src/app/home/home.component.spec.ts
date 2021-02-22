@@ -89,7 +89,7 @@ describe('HomeComponent', () => {
     await component.submit();
 
     expect(gameServiceSpy.createNewGame.calls.count()).toEqual(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, []);
   });
 
   it('submit should call addGameToDb method on GameService one time', async () => {

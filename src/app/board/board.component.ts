@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Player } from '../player';
 import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
-import { SequenceCard } from '../sequence-card';
+import { PlayingCard } from '../playing-card';
 import { Face } from '../face';
 
 @Component({
@@ -24,6 +24,7 @@ export class BoardComponent implements OnInit {
   isSpyMaster = false;
   isSequence = false;
   Suit = Suit;
+  Face = Face;
   currentPlayer = new Player(9999, "test", [], "");
   title: String;
   nameForm: FormControl;
@@ -102,24 +103,31 @@ export class BoardComponent implements OnInit {
 
       //sequence related logic only
       if (this.isSequence){
-        let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-        const isSuccess = this.removeCardFromHand(card as SequenceCard, this.currentPlayer.cardsInHand as SequenceCard[]);
-        if (isSuccess){
-          this.currentPlayer.cardsInHand.push(this.drawTopCardFromDeck());
-          sequenceGame.topCardOnDiscardPile = card as SequenceCard;
-          card.color = this.currentPlayer.teamColor;
-          card.selected = true;
+        if ((card as PlayingCard).face.displayName === "FREE"){
+          alert("No need to select this space. It's a freebie.");
+        } else {
+          let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+          //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
+          const removedCard = this.removeCardFromHand(card as PlayingCard, this.currentPlayer.cardsInHand as PlayingCard[]);
+          if (removedCard){
+            this.currentPlayer.cardsInHand.push(this.drawTopCardFromDeck());
+            sequenceGame.topCardOnDiscardPile = removedCard as PlayingCard;
+            card.color = this.currentPlayer.teamColor;
+            card.selected = true;
+          }
         }
       } else {
         card.selected = true;
         this.updateScore(card.color);
       }
+
       await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
     }
   }
 
-  removeCardFromHand(cardToBeRemoved: SequenceCard, cardsInHand: Array<SequenceCard>) : Boolean {
+  removeCardFromHand(cardToBeRemoved: PlayingCard, cardsInHand: Array<PlayingCard>) : PlayingCard {
     let indexToRemove: number;
+    let removedCard: PlayingCard;
 
     for (let i=0; i < cardsInHand.length; i++){
       if (cardsInHand[i].displayValue === cardToBeRemoved.displayValue){
@@ -128,22 +136,22 @@ export class BoardComponent implements OnInit {
       }
     }
     if (indexToRemove !== undefined && !isNaN(indexToRemove) && indexToRemove >=0) {
-      cardsInHand.splice(indexToRemove, 1);
-      return true;
+      removedCard = cardsInHand.splice(indexToRemove, 1)[0];
+      return removedCard;
     } else if (this.getindexOfTwoEyedJack() !== undefined){
       const response = confirm("You don't have a " + cardToBeRemoved.displayValue + ". Do you want to play your Two-Eyed Jack?");
       if (response){
-        cardsInHand.splice(this.getindexOfTwoEyedJack(), 1);
-        return true;
+        removedCard = cardsInHand.splice(this.getindexOfTwoEyedJack(), 1)[0];
+        return removedCard;
       }
     } else {
       alert("You can't play there because you don't have a " + cardToBeRemoved.displayValue);
-      return false;
+      return undefined;
     }
   }
 
   getindexOfTwoEyedJack(): number{
-    var cards = this.currentPlayer.cardsInHand as SequenceCard[];
+    var cards = this.currentPlayer.cardsInHand as PlayingCard[];
 
     for (let i=0; i<cards.length; i++) {
       //TODO - figure out why this not working with Face.TWO_EYED_JACK equal comparison

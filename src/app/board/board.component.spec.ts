@@ -22,6 +22,7 @@ import { from } from 'rxjs';
 import { GameMode } from '../game-mode.enum';
 import { CodenameCard } from '../codename-card';
 import { CodenamesGameContext } from '../codenames-game-context';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 describe('BoardComponent', () => {
   let router: Router;
@@ -43,10 +44,13 @@ describe('BoardComponent', () => {
         MatIconModule,
         MatSlideToggleModule,
         MatRadioModule,
+        MatDialogModule,
         ReactiveFormsModule
       ],
       providers: [
         { provide: GameService, useValue: spyForGameService },
+        { provide: MatDialogRef, useValue: {}},
+        { provide: MAT_DIALOG_DATA, useValue: {}},
         // Mock the activated route so that params actually contain this id
         // params is an Observable so need to use "from"
         { provide: ActivatedRoute, useValue: { params: from([{ id: 'abc1234' }]) } }
@@ -96,7 +100,7 @@ describe('BoardComponent', () => {
 
   //nextGame() tests
   it('nextGame should call deleteGameFromDb and createNewGame with WORDS as parameter', async () => {
-    let codeNamesCards = component.currentGameIdPair.game.cards[0] as CodenameCard;
+    let codeNamesCards = component.currentGameIdPair.game.cardsForBoard[0] as CodenameCard;
     codeNamesCards.imgPath = '';
 
     fixture.detectChanges();
@@ -104,7 +108,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, []);
   });
 
   it('nextGame should call deleteGameFromDb and createNewGame with PICTURES as parameter', async () => {
@@ -115,7 +119,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES, []);
   });
 
   // updateScore() tests

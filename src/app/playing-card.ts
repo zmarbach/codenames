@@ -2,7 +2,7 @@ import { Card } from "./card";
 import { Face } from "./face";
 import { Suit } from "./suit.enum";
 
-export class SequenceCard extends Card{
+export class PlayingCard extends Card{
   face: Face;
   suit: Suit;
   displayValue: String;

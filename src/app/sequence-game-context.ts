@@ -3,19 +3,23 @@ import { Face } from "./face";
 import { GameContext } from "./game-context";
 import { GameMode } from "./game-mode.enum";
 import { Player } from "./player";
-import { SequenceCard } from "./sequence-card";
+import { PlayingCard } from "./playing-card";
 import { Suit } from "./suit.enum";
+import { Utils } from "./utils";
 
 export class SequenceGameContext extends GameContext{
   players: Array<Player> = [];
-  deck: Array<SequenceCard> = [];
-  topCardOnDiscardPile: SequenceCard;
+  deck: Array<PlayingCard> = [];
+  topCardOnDiscardPile: PlayingCard;
 
-  constructor(players: Array<Player>, mode: GameMode, cards: Array<Card>, redScore: number, blueScore: number, isRedTurn: Boolean, isBlueTurn: Boolean){
-    super(mode, cards, redScore, blueScore, isRedTurn, isBlueTurn);
+  constructor(players: Array<Player>, mode: GameMode, cardsForBoard: Array<Card>, redScore: number, blueScore: number, isRedTurn: Boolean, isBlueTurn: Boolean){
+    super(mode, cardsForBoard, redScore, blueScore, isRedTurn, isBlueTurn);
+
     //build deck twice because need 2 full decks for sequence
     this.buildDeck();
     this.buildDeck();
+    Utils.shuffle(this.deck);
+
     this.setPlayerHands(players);
     this.players = players;
   }
@@ -29,43 +33,36 @@ export class SequenceGameContext extends GameContext{
         if (face !== Face.FREE){
           if (face === Face.TWO_EYED_JACK){
             if (suit === Suit.DIAMOND || suit === Suit.CLUB){
-              this.deck.push(new SequenceCard(emptyString, isSelected, face, suit));
+              this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
             }
           } else if (face === Face.ONE_EYED_JACK) {
             if (suit === Suit.HEART || suit === Suit.SPADE){
-              this.deck.push(new SequenceCard(emptyString, isSelected, face, suit));
+              this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
             }
           } else { 
-            this.deck.push(new SequenceCard(emptyString, isSelected, face, suit));
+            this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
           }
         }
       }
     }
-
-    this.shuffle(this.deck);
   }
 
-  setPlayerHands(players: Array<Player>) {
+  private setPlayerHands(players: Array<Player>) {
     for (let player of players){
       for (let i=0; i < 4; i++){
         console.log("card added to " + player.name + "'s hand ---> " + JSON.stringify(this.deck[i].displayValue))
         player.cardsInHand.push(this.deck[i])
-        this.removeCard(this.deck[i], this.deck);
+        this.removeCardFromDeck(this.deck[i], this.deck);
       }
-      player.cardsInHand.push(new SequenceCard('', false, Face.TWO_EYED_JACK, Suit.CLUB));
     }
   }
 
-  removeCard(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {
-    let indexOfCardToRemove = listToRemoveFrom.indexOf(cardToBeRemoved as SequenceCard);
+  private removeCardFromDeck(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {
+    let indexOfCardToRemove = listToRemoveFrom.indexOf(cardToBeRemoved as PlayingCard);
     if (indexOfCardToRemove !== -1){
       var cardRemoved = this.deck.splice(indexOfCardToRemove, 1);
       console.log("card removed from deck ---> " + JSON.stringify(cardRemoved[0].displayValue))
     }
-  }
-
-  drawTopCardFromDeck(): Card {
-    return this.deck.pop();
   }
 
   getAllPlayerNames() : Array<String>{
@@ -74,15 +71,6 @@ export class SequenceGameContext extends GameContext{
       names.push(player.name);
     }
     return names;
-  }
-
-  private shuffle(list: Array<Object>){
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = list[i];
-      list[i] = list[j];
-      list[j] = temp;
-    }
   }
 
 }

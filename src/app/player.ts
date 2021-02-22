@@ -10,6 +10,6 @@ export class Player {
     this.id = id;
     this.name = name;
     this.cardsInHand = cardsInHand;
-    this.teamColor = teamColor;
+    this.teamColor = teamColor
   }
 }

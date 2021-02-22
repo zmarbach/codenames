@@ -9,11 +9,12 @@ import { Router } from '@angular/router';
 import { GameMode } from './game-mode.enum';
 import { CodenameCard } from './codename-card';
 import { CodenamesGameContext } from './codenames-game-context';
-import { SequenceCard } from './sequence-card';
+import { PlayingCard } from './playing-card';
 import { Face } from './face';
 import { Suit } from './suit.enum';
 import { SequenceGameContext } from './sequence-game-context';
 import { Player } from './player';
+import { Utils } from './utils';
 
 @Injectable({
   providedIn: 'root'
@@ -55,15 +56,15 @@ export class GameService {
   }
 
   async createNewGame(gameMode: GameMode, playerNames: Array<String>): Promise<GameContext> {
-    const cards = await this.createCardList(gameMode);
-    const redStartingScore = this.calcStartingScore(cards, 'red');
-    const blueStartingScore = this.calcStartingScore(cards, 'blue');
+    const cardsForBoard = await this.createCardList(gameMode);
+    const redStartingScore = this.calcStartingScore(cardsForBoard, 'red');
+    const blueStartingScore = this.calcStartingScore(cardsForBoard, 'blue');
     if (gameMode === GameMode.SEQUENCE){
       //TODO - randomize which team goes first
       console.log('Player names ---> ' + playerNames);
-      return new SequenceGameContext(this.createPlayers(playerNames), gameMode, cards, 0, 0, true, false);
+      return new SequenceGameContext(this.createPlayers(playerNames), gameMode, cardsForBoard, 0, 0, true, false);
     } else {
-      return new CodenamesGameContext(gameMode, cards, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
+      return new CodenamesGameContext(gameMode, cardsForBoard, redStartingScore, blueStartingScore, this.isFirstTurn(redStartingScore, blueStartingScore), this.isFirstTurn(blueStartingScore, redStartingScore));
     }
   }
 
@@ -72,25 +73,25 @@ export class GameService {
   }
 
   private async createCardList(gameMode: GameMode){
-    const cards: Array<Card> = [];
+    const cardsForBoard: Array<Card> = [];
 
     if (gameMode === GameMode.CODENAMES_WORDS){
-      await this.setInitialCardsWithWords(cards);
-      this.setCardColors(cards);
+      await this.setInitialCardsWithWords(cardsForBoard);
+      this.setCardColors(cardsForBoard);
     } else if (gameMode === GameMode.CODENAMES_PICTURES) {
-      await this.setInitialCardsWithPictures(cards);
-      this.setCardColors(cards);
+      await this.setInitialCardsWithPictures(cardsForBoard);
+      this.setCardColors(cardsForBoard);
     } else if (gameMode === GameMode.SEQUENCE){
       //Cards will always be in same order, so make sure to maintain order when adding to list of cards
-      await this.setInitialCardsForSequence(cards);
+      await this.setInitialCardsForSequence(cardsForBoard);
     }
 
-    return cards;
+    return cardsForBoard;
   }
 
   private setCardColors(cards: Array<Card>) {
     // randomly determine if blue or red will have 9 (this impacts who will go first)
-    const randomNumForColorWithMore = this.getRandomNumber(2);
+    const randomNumForColorWithMore = Utils.getRandomNumber(2);
     if (randomNumForColorWithMore == 0){
       this.setColors(cards, 'blue', 'red');
     } else {
@@ -129,106 +130,106 @@ export class GameService {
   private async setInitialCardsForSequence(cards: Array<Card>){
     let emptyString = '';
     let isSelected = false;
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.CLUB));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FOUR, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.SPADE));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TWO, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.THREE, Suit.HEART));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FIVE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
-    cards.push(new SequenceCard(emptyString, isSelected, Face.ACE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.KING, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.QUEEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.TEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.NINE, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.EIGHT, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SEVEN, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.SIX, Suit.DIAMOND));
-    cards.push(new SequenceCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.CLUB));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.SPADE));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.HEART));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
+    cards.push(new PlayingCard(emptyString, isSelected, Face.ACE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.KING, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.QUEEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.TEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.NINE, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.EIGHT, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SEVEN, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.DIAMOND));
+    cards.push(new PlayingCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
   }
 
   private calcStartingScore(cards: Array<Card>, color: String){
@@ -271,24 +272,6 @@ export class GameService {
     // assign rest as beige
     for (let i = secondBatchIndex + 1; i < cards.length; i++){
       cards[i].color = 'beige';
-    }
-
-
-    // shuffle the cards at end to make it random
-    this.shuffle(cards);
-  }
-
-  private getRandomNumber(maxNum: number){
-    // this will generate random number from 0 to maxNum - 1
-    return Math.floor(Math.random() * maxNum);
-  }
-
-  shuffle(list: Array<Object>){
-    for (let i = list.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = list[i];
-      list[i] = list[j];
-      list[j] = temp;
     }
   }
 }
