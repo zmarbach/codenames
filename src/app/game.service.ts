@@ -99,18 +99,9 @@ export class GameService {
   }
 
   private createPlayers(playerNames: Array<String>): Array<Player>{
-    let sampleHand = Array<Card>();
-    sampleHand.push(new SequenceCard("", false, Face.TWO, Suit.SPADE));
-    sampleHand.push(new SequenceCard("", false, Face.THREE, Suit.SPADE));
-    sampleHand.push(new SequenceCard("", false, Face.QUEEN, Suit.DIAMOND));
-    sampleHand.push(new SequenceCard("", false, Face.ONE_EYED_JACK, Suit.HEART));
-    sampleHand.push(new SequenceCard("", false, Face.TWO_EYED_JACK, Suit.SPADE));
-    sampleHand.push(new SequenceCard("", false, Face.ACE, Suit.CLUB));
-
     let players = [];
-    for(let i=0; i < playerNames.length; i++){
-      //TODO - build each player's hand
-      players.push(new Player(i, playerNames[i], sampleHand))
+    for (let i=0; i < playerNames.length; i++) {
+      players.push(new Player(i, playerNames[i], [], "red"))
     }
     return players;
   }
@@ -292,12 +283,12 @@ export class GameService {
     return Math.floor(Math.random() * maxNum);
   }
 
-  private shuffle(cards: Array<Card>){
-    for (let i = cards.length - 1; i > 0; i--) {
+  shuffle(list: Array<Object>){
+    for (let i = list.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      const temp = cards[i];
-      cards[i] = cards[j];
-      cards[j] = temp;
+      const temp = list[i];
+      list[i] = list[j];
+      list[j] = temp;
     }
   }
 }

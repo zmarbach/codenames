@@ -13,7 +13,7 @@ export class Face {
   public static TWO_EYED_JACK = new Face(11, "👁👁 J");
   public static QUEEN = new Face(12, "Q");
   public static KING = new Face(13, "K");
-  public static ACE = new Face(14, "A");
+  public static ACE = new Face(14, "A"); 
 
   rank: Number = 0;
   displayName: String = "";
@@ -22,4 +22,10 @@ export class Face {
     this.rank = rank;
     this.displayName = displayName;
   }
+
+  // static getAllFaces(): Array<Face> {
+  //   return [Face.FREE, Face.TWO, Face.THREE, Face.FOUR, Face.FIVE, Face.SIX, 
+  //           Face.SEVEN, Face.EIGHT, Face.NINE, Face.TEN, Face.ONE_EYED_JACK, 
+  //           Face.TWO_EYED_JACK, Face.QUEEN, Face.KING, Face.ACE]
+  // }
 }

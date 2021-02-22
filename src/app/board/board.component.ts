@@ -1,10 +1,9 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../card';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
 import { GameMode } from '../game-mode.enum';
-import { CodenamesGameContext } from '../codenames-game-context';
 import { Suit } from '../suit.enum';
 import { SequenceGameContext } from '../sequence-game-context';
 import { GameContext } from '../game-context';
@@ -12,6 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Player } from '../player';
 import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
+import { SequenceCard } from '../sequence-card';
+import { Face } from '../face';
 
 @Component({
   selector: 'app-board',
@@ -23,7 +24,7 @@ export class BoardComponent implements OnInit {
   isSpyMaster = false;
   isSequence = false;
   Suit = Suit;
-  currentPlayer = new Player(9999, "test", []);
+  currentPlayer = new Player(9999, "test", [], "");
   title: String;
   nameForm: FormControl;
   selectedPlayerId: number;
@@ -98,10 +99,65 @@ export class BoardComponent implements OnInit {
 
   async select(card: Card){
     if (!card.selected){
-      card.selected = true;
-      this.updateScore(card.color);
+
+      //sequence related logic only
+      if (this.isSequence){
+        let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+        const isSuccess = this.removeCardFromHand(card as SequenceCard, this.currentPlayer.cardsInHand as SequenceCard[]);
+        if (isSuccess){
+          this.currentPlayer.cardsInHand.push(this.drawTopCardFromDeck());
+          sequenceGame.topCardOnDiscardPile = card as SequenceCard;
+          card.color = this.currentPlayer.teamColor;
+          card.selected = true;
+        }
+      } else {
+        card.selected = true;
+        this.updateScore(card.color);
+      }
       await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
     }
+  }
+
+  removeCardFromHand(cardToBeRemoved: SequenceCard, cardsInHand: Array<SequenceCard>) : Boolean {
+    let indexToRemove: number;
+
+    for (let i=0; i < cardsInHand.length; i++){
+      if (cardsInHand[i].displayValue === cardToBeRemoved.displayValue){
+        indexToRemove = i;
+        break;
+      }
+    }
+    if (indexToRemove !== undefined && !isNaN(indexToRemove) && indexToRemove >=0) {
+      cardsInHand.splice(indexToRemove, 1);
+      return true;
+    } else if (this.getindexOfTwoEyedJack() !== undefined){
+      const response = confirm("You don't have a " + cardToBeRemoved.displayValue + ". Do you want to play your Two-Eyed Jack?");
+      if (response){
+        cardsInHand.splice(this.getindexOfTwoEyedJack(), 1);
+        return true;
+      }
+    } else {
+      alert("You can't play there because you don't have a " + cardToBeRemoved.displayValue);
+      return false;
+    }
+  }
+
+  getindexOfTwoEyedJack(): number{
+    var cards = this.currentPlayer.cardsInHand as SequenceCard[];
+
+    for (let i=0; i<cards.length; i++) {
+      //TODO - figure out why this not working with Face.TWO_EYED_JACK equal comparison
+      if (cards[i].face.displayName === "👁👁 J"){
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  drawTopCardFromDeck(): Card {
+    let card = (this.currentGameIdPair.game as SequenceGameContext).deck.pop();
+    console.log((this.currentGameIdPair.game as SequenceGameContext).deck.length);
+    return card;
   }
 
   updateScore(color: String){

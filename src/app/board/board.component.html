@@ -91,8 +91,7 @@
         <mat-card [ngClass]="{cardContainer: !card.selected,
                               cardContainerSelectedRed: card.selected && card.color == 'red',
                               cardContainerSelectedBlue: card.selected && card.color == 'blue',
-                              cardContainerSelectedBlack: card.selected && card.color == 'black'}"
-                  (click)="select(card)">
+                              cardContainerSelectedBlack: card.selected && card.color == 'black'}">
           <div class="cardSequence">
             <div>
               <span [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
@@ -101,5 +100,13 @@
         </mat-card>
       </div>
     </div>
+    <div id="discardPile">
+      {{ currentGameIdPair.game.topCardOnDiscardPile?.displayValue }}
+    </div>
+    {{ currentGameIdPair.game.deck?.length }}
+    <div *ngIf="currentGameIdPair.game.deck.length === 0" id="reshuffleButton">
+      SHUFFLE!!!
+    </div>
   </div>
+
 </div>
