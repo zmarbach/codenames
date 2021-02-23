@@ -30,9 +30,8 @@
                               cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
                               cardContainerSelectedBlue: (card.selected || isSpyMaster) && card.color == 'blue',
                               cardContainerSelectedBlack: (card.selected || isSpyMaster) && card.color == 'black',
-                              cardContainerSelectedBeige: (card.selected || isSpyMaster) && card.color == 'beige'}"
-                  (click)="select(card)">
-          <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS'" style="margin: 25px">
+                              cardContainerSelectedBeige: (card.selected || isSpyMaster) && card.color == 'beige'}">
+          <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS'" (click)="select(card)" style="margin: 25px">
             <div *ngIf="card.color == 'black' && card.selected; else regularWordDisplay">
               <div>
                 <p class="assassinDisplay">BANG!!!</p>
@@ -47,7 +46,7 @@
             </ng-template>
           </div>
 
-          <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'" class="cardImg">
+          <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES'" (click)="select(card)" class="cardImg">
             <div *ngIf="card.color == 'black' && card.selected; else regularImgDisplay">
               <div class="assassinImgContents">
                 <p>BANG!!!</p>
@@ -62,10 +61,13 @@
             </ng-template>
           </div>
 
-          <div *ngIf="currentGameIdPair.game.mode.toString() === 'SEQUENCE'" class="cardSequence">
-              <div>
-                <span [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
+          <div *ngIf="currentGameIdPair.game.mode.toString() === 'SEQUENCE'">
+            <div class="displayFlex">
+              <span (click)="select(card)" [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
+              <div *ngIf="card.selected">
+                <button id="removeButton" (click)="removeWithOneEyedJack(card)">x</button>
               </div>
+            </div>
           </div>
         </mat-card>
       </div>
@@ -82,11 +84,11 @@
 
   </div>
 
-  <div *ngIf="isSequence" id="sequenceCardsCol">
-    <div id="playerHand">
-      <div>
-        {{currentPlayer.name}}'s hand
-      </div>
+  <div *ngIf="isSequence" id="sequenceCardsCol" class="playerHandContainer">
+    <div class="playerHandTitle">
+      {{currentPlayer.name}}'s hand
+    </div>
+    <div id="playerHand" class="playerHandGrid">
       <div *ngFor="let card of currentPlayer.cardsInHand">
         <mat-card [ngClass]="{cardContainer: !card.selected,
                               cardContainerSelectedRed: card.selected && card.color == 'red',
@@ -100,12 +102,25 @@
         </mat-card>
       </div>
     </div>
+
     <div id="discardPile">
       {{ currentGameIdPair.game.topCardOnDiscardPile?.displayValue }}
     </div>
     {{ currentGameIdPair.game.deck?.length }}
     <div *ngIf="currentGameIdPair.game.deck.length === 0" id="reshuffleButton">
-      SHUFFLE!!!
+      <button mat-raised-button (click)="midGameShuffle()">Shuffle</button>
+    </div>
+
+    DECK: 
+    <div  *ngFor="let card of currentGameIdPair.game.deck">
+      {{ card.displayValue }}
+    </div>
+
+    <br/>
+
+    DISCARD PILE: 
+    <div  *ngFor="let card of currentGameIdPair.game.discardPile">
+      {{ card.displayValue }}
     </div>
   </div>
 

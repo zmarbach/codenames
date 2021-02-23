@@ -274,4 +274,63 @@ export class GameService {
       cards[i].color = 'beige';
     }
   }
+
+  removeCardFromHand(cardToBeRemoved: PlayingCard, cardsInHand: Array<PlayingCard>) : PlayingCard {
+    let indexToRemove: number;
+    let removedCard: PlayingCard;
+
+    for (let i=0; i < cardsInHand.length; i++){
+      if (cardsInHand[i].displayValue === cardToBeRemoved.displayValue){
+        indexToRemove = i;
+        break;
+      }
+    }
+    if (indexToRemove !== undefined && !isNaN(indexToRemove) && indexToRemove >=0) {
+      removedCard = cardsInHand.splice(indexToRemove, 1)[0];
+      return removedCard;
+    } else if (this.getindexOfTwoEyedJack(cardsInHand) !== undefined){
+      const response = confirm("You don't have a " + cardToBeRemoved.displayValue + ". Do you want to play your Two-Eyed Jack?");
+      if (response){
+        removedCard = cardsInHand.splice(this.getindexOfTwoEyedJack(cardsInHand), 1)[0];
+        return removedCard;
+      }
+    } else {
+      alert("You can't play there because you don't have a " + cardToBeRemoved.displayValue);
+      return undefined;
+    }
+  }
+
+  getindexOfTwoEyedJack(targetHand: Array<PlayingCard>): number{
+    for (let i=0; i<targetHand.length; i++) {
+      //TODO - figure out why this not working with Face.TWO_EYED_JACK equal comparison
+      if (targetHand[i].face.displayName === "👁👁 J"){
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  getindexOfOneEyedJack(targetHand: Array<PlayingCard>): number{
+    for (let i=0; i<targetHand.length; i++) {
+      //TODO - figure out why this not working with Face.ONE_EYED_JACK equal comparison
+      if (targetHand[i].face.displayName === "👁 J"){
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  drawTopCardFromDeck(sequenceGame: SequenceGameContext): Card {
+    let card = sequenceGame.deck.pop();
+    console.log(sequenceGame.deck.length);
+    return card;
+  }
+
+  addToDiscardPile(card: PlayingCard, sequenceGame: SequenceGameContext){
+    if (sequenceGame.discardPile === undefined){
+      sequenceGame.discardPile = [];
+    }
+    sequenceGame.discardPile.push(card);
+  }
+
 }

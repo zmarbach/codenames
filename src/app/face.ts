@@ -26,22 +26,13 @@ export class Face {
   }
 
 
-  // static getAllFaces(): Array<Face> {
-  //   return [Face.FREE, Face.TWO, Face.THREE, Face.FOUR, Face.FIVE, Face.SIX, 
-  //           Face.SEVEN, Face.EIGHT, Face.NINE, Face.TEN, Face.ONE_EYED_JACK, 
-  //           Face.TWO_EYED_JACK, Face.QUEEN, Face.KING, Face.ACE]
-  // }
-
-  isFreeSpace(){
-    console.log("here")
-   return this.displayName === "FREE" && this.rank === 0;
+  static getAllFaces(): Array<Face> {
+    return [Face.FREE, Face.TWO, Face.THREE, Face.FOUR, Face.FIVE, Face.SIX, 
+            Face.SEVEN, Face.EIGHT, Face.NINE, Face.TEN, Face.ONE_EYED_JACK, 
+            Face.TWO_EYED_JACK, Face.QUEEN, Face.KING, Face.ACE]
   }
 
-  isTwoEyedJack(){
-    return this.displayName === "👁👁 J" && this.rank === 11;
-  }
-
-  isOneEyedJack(){
-    return this.displayName === "👁 J" && this.rank === 11;
+  static mapToFace(rank: Number, displayName: String): Face {
+    return this.getAllFaces().find(face => rank === face.rank && displayName === face.displayName);
   }
 }

@@ -13,6 +13,8 @@ import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
 import { PlayingCard } from '../playing-card';
 import { Face } from '../face';
+import { CodenameCard } from '../codename-card';
+import { Utils } from '../utils';
 
 @Component({
   selector: 'app-board',
@@ -98,20 +100,26 @@ export class BoardComponent implements OnInit {
     }
   }
 
+  //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
   async select(card: Card){
     if (!card.selected){
-
       //sequence related logic only
-      if (this.isSequence){
-        if ((card as PlayingCard).face.displayName === "FREE"){
+      if (this.isSequence){  
+        let _card = card as PlayingCard;
+        //Have to manually create new PlayingCard because really this is just JSON passed in.
+        //Otherwise won't have access to functions on PlayingCard, Face, Suit, or any other objects
+        let playingCard = new PlayingCard(card.color, card.selected, Face.mapToFace(_card.face.rank, _card.face.displayName), _card.suit);
+
+        if (playingCard.isFreeSpace()){
           alert("No need to select this space. It's a freebie.");
         } else {
           let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
           //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
-          const removedCard = this.removeCardFromHand(card as PlayingCard, this.currentPlayer.cardsInHand as PlayingCard[]);
+          const removedCard = this.gameService.removeCardFromHand(playingCard, this.currentPlayer.cardsInHand as PlayingCard[]);
           if (removedCard){
-            this.currentPlayer.cardsInHand.push(this.drawTopCardFromDeck());
-            sequenceGame.topCardOnDiscardPile = removedCard as PlayingCard;
+            this.currentPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+            this.gameService.addToDiscardPile(removedCard, sequenceGame);
+            sequenceGame.topCardOnDiscardPile = removedCard;
             card.color = this.currentPlayer.teamColor;
             card.selected = true;
           }
@@ -125,47 +133,24 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  removeCardFromHand(cardToBeRemoved: PlayingCard, cardsInHand: Array<PlayingCard>) : PlayingCard {
-    let indexToRemove: number;
-    let removedCard: PlayingCard;
+  //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
+  async removeWithOneEyedJack(card: PlayingCard){
+    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
-    for (let i=0; i < cardsInHand.length; i++){
-      if (cardsInHand[i].displayValue === cardToBeRemoved.displayValue){
-        indexToRemove = i;
-        break;
-      }
-    }
-    if (indexToRemove !== undefined && !isNaN(indexToRemove) && indexToRemove >=0) {
-      removedCard = cardsInHand.splice(indexToRemove, 1)[0];
-      return removedCard;
-    } else if (this.getindexOfTwoEyedJack() !== undefined){
-      const response = confirm("You don't have a " + cardToBeRemoved.displayValue + ". Do you want to play your Two-Eyed Jack?");
-      if (response){
-        removedCard = cardsInHand.splice(this.getindexOfTwoEyedJack(), 1)[0];
-        return removedCard;
-      }
+    let indexOfOneEyedJack = this.gameService.getindexOfOneEyedJack(this.currentPlayer.cardsInHand as PlayingCard[])
+    if (indexOfOneEyedJack) {
+      if (confirm("Are you sure you want to use your One-Eyed Jack to remove the " + card.displayValue + "?")){
+        let removedCard = this.currentPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
+        this.currentPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+        this.gameService.addToDiscardPile(removedCard, sequenceGame);
+        sequenceGame.topCardOnDiscardPile = removedCard;
+
+        card.selected = false;
+        await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
+      };
     } else {
-      alert("You can't play there because you don't have a " + cardToBeRemoved.displayValue);
-      return undefined;
+      alert("You cannot remove the " + card.displayValue + " because you don't have a One-Eyed Jack.")
     }
-  }
-
-  getindexOfTwoEyedJack(): number{
-    var cards = this.currentPlayer.cardsInHand as PlayingCard[];
-
-    for (let i=0; i<cards.length; i++) {
-      //TODO - figure out why this not working with Face.TWO_EYED_JACK equal comparison
-      if (cards[i].face.displayName === "👁👁 J"){
-        return i;
-      }
-    }
-    return undefined;
-  }
-
-  drawTopCardFromDeck(): Card {
-    let card = (this.currentGameIdPair.game as SequenceGameContext).deck.pop();
-    console.log((this.currentGameIdPair.game as SequenceGameContext).deck.length);
-    return card;
   }
 
   updateScore(color: String){
@@ -192,6 +177,18 @@ export class BoardComponent implements OnInit {
 
   async deleteGameFromDb(){
     await this.gameService.deleteGameFromDb(this.currentGameIdPair.id);
+  }
+
+  midGameShuffle(){
+    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+
+    //multiple shuffles just for fun
+    Utils.shuffle(sequenceGame.discardPile);
+    Utils.shuffle(sequenceGame.discardPile);
+    Utils.shuffle(sequenceGame.discardPile);
+
+    sequenceGame.deck = sequenceGame.discardPile;
+    sequenceGame.discardPile = [];
   }
 
 }

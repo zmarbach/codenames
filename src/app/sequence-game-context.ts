@@ -10,6 +10,7 @@ import { Utils } from "./utils";
 export class SequenceGameContext extends GameContext{
   players: Array<Player> = [];
   deck: Array<PlayingCard> = [];
+  discardPile: Array<PlayingCard>;
   topCardOnDiscardPile: PlayingCard;
 
   constructor(players: Array<Player>, mode: GameMode, cardsForBoard: Array<Card>, redScore: number, blueScore: number, isRedTurn: Boolean, isBlueTurn: Boolean){
@@ -48,9 +49,31 @@ export class SequenceGameContext extends GameContext{
   }
 
   private setPlayerHands(players: Array<Player>) {
+    let numOfCardsInHand = 0;
+
+    switch (players.length){
+      case 2:
+        numOfCardsInHand = 7;
+        break;
+      case 4: 
+        numOfCardsInHand = 6;
+        break;
+      case 6:
+        numOfCardsInHand = 5;
+        break;
+      case 8:
+        numOfCardsInHand = 4;
+        break;
+      case 10:
+      case 12:
+        numOfCardsInHand = 3;
+        break;
+      default:
+        numOfCardsInHand = 4;
+        break;
+    }
     for (let player of players){
-      for (let i=0; i < 4; i++){
-        console.log("card added to " + player.name + "'s hand ---> " + JSON.stringify(this.deck[i].displayValue))
+      for (let i=0; i < numOfCardsInHand; i++){
         player.cardsInHand.push(this.deck[i])
         this.removeCardFromDeck(this.deck[i], this.deck);
       }

@@ -21,4 +21,16 @@ export class PlayingCard extends Card{
       return this.face.displayName + " " + this.suit.toString();
     }
   }
+
+  isFreeSpace(): Boolean{
+   return this.face === Face.FREE;
+  }
+
+  isTwoEyedJack(): Boolean{
+    return this.face === Face.TWO_EYED_JACK;
+  }
+
+  isOneEyedJack(): Boolean{
+    return this.face === Face.ONE_EYED_JACK;
+  }
 }

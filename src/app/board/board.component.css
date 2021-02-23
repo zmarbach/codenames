@@ -2,6 +2,16 @@
   display: flex;
 }
 
+#removeButton{
+  position:absolute; 
+  top:2px; 
+  right:2px;
+  border-radius: 50%;
+  background-color: transparent;
+  border-color: black;
+  color: black;
+}
+
 .title{
   margin: 15px;
 }
@@ -60,6 +70,25 @@
   grid-template-columns:repeat(10, 9.5%);
   grid-gap:10px;
   grid-auto-flow:row;
+}
+
+.playerHandTitle{
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.playerHandGrid{
+  display: grid;
+  grid-template-columns:repeat(2, auto);
+  grid-gap:10px;
+  grid-auto-flow:row;
+}
+
+.playerHandContainer{
+  margin: 50px 50px;
 }
 
 .cardContainer{
