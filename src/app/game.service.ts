@@ -269,9 +269,9 @@ export class GameService {
       cards[i].color = 'black';
     }
 
-    // assign rest as beige
+    // assign rest as innocent
     for (let i = secondBatchIndex + 1; i < cards.length; i++){
-      cards[i].color = 'beige';
+      cards[i].color = 'gray';
     }
   }
 

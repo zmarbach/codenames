@@ -30,7 +30,7 @@
                               cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
                               cardContainerSelectedBlue: (card.selected || isSpyMaster) && card.color == 'blue',
                               cardContainerSelectedBlack: (card.selected || isSpyMaster) && card.color == 'black',
-                              cardContainerSelectedBeige: (card.selected || isSpyMaster) && card.color == 'beige'}">
+                              cardContainerSelectedInnocent: (card.selected || isSpyMaster) && card.color == 'gray'}">
           <div *ngIf="currentGameIdPair.game.mode.toString() === 'CODENAMES_WORDS'" (click)="select(card)" style="margin: 25px">
             <div *ngIf="card.color == 'black' && card.selected; else regularWordDisplay">
               <div>

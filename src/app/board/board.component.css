@@ -114,12 +114,12 @@
   background-color: #8080ff;
 }
 
-.cardContainerSelectedBeige{
+.cardContainerSelectedInnocent{
   text-align: center;
   font-size: 40px;
-  border: 5px solid #a3a376;
+  border: 5px solid gray;
   padding: 5px;
-  background-color: #f5f5dc;
+  background-color: lightgray;
 }
 
 .cardContainerSelectedBlack{

@@ -15,7 +15,7 @@ import { GameService } from './game.service';
 let numOfReds = 0;
 let numOfBlues = 0;
 let numOfBlacks = 0;
-let numOfBeiges = 0;
+let numOfInnocent = 0;
 
 describe('GameService', () => {
   let service: GameService;
@@ -104,7 +104,7 @@ describe('GameService', () => {
       expect(newGame.isBlueTurn).toBeTrue();
     }
     expect(numOfBlacks).toBe(1);
-    expect(numOfBeiges).toBe(7);
+    expect(numOfInnocent).toBe(7);
 
     // Remove game from DB and reset colors for next test
     service.deleteGameFromDb(newGameId);
@@ -151,7 +151,7 @@ describe('GameService', () => {
       expect(newGame.isBlueTurn).toBeTrue();
     }
     expect(numOfBlacks).toBe(1);
-    expect(numOfBeiges).toBe(4);
+    expect(numOfInnocent).toBe(4);
 
     // Remove game from DB and reset colors for next test
     service.deleteGameFromDb(newGameId);
@@ -170,7 +170,7 @@ function countNumOfColors(cards: Array<Card>){
     } else if (card.color == 'black'){
       numOfBlacks++;
     } else {
-      numOfBeiges++;
+      numOfInnocent++;
     }
   }
 }
@@ -179,5 +179,5 @@ function resetColors(){
   numOfReds = 0;
   numOfBlues = 0;
   numOfBlacks = 0;
-  numOfBeiges = 0;
+  numOfInnocent = 0;
 }
