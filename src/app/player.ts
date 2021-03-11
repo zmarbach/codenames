@@ -12,4 +12,8 @@ export class Player {
     this.cardsInHand = cardsInHand;
     this.teamColor = teamColor
   }
+
+  public equals(otherPlayer: Player): Boolean{
+    return (this.name === otherPlayer.name) && (this.id === otherPlayer.id)
+  }
 }

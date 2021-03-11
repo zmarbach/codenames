@@ -7,13 +7,25 @@
     <mat-card id="boardTop" class="boardTop">
       <table class="matTable" mat-table>
         <tr mat-table-row>
-          <td mat-cell class="score">
-            <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
-          </td>
+          <div *ngIf="!isSequence">
+            <td mat-cell class="score">
+              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
+            </td>
+          </div>
+          <div *ngIf="isSequence">
+            <td mat-cell class="score">
+              <span><strong><i>Score is TBD</i></strong></span>
+            </td>
+          </div>
           <td mat-cell class="turnIndicator">
-            <span class="redTurn" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
-            <span class="blueTurn" *ngIf="currentGameIdPair.game.isBlueTurn">Blue's</span>
-            <span [ngClass]="{redTurn: currentGameIdPair.game.isRedTurn, blueTurn: currentGameIdPair.game.isBlueTurn}"> turn</span>
+            <div *ngIf='!isSequence'>
+              <span class="redTurn" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
+              <span class="blueTurn" *ngIf="currentGameIdPair.game.isBlueTurn">Blue's</span>
+              <span [ngClass]="{redTurn: currentGameIdPair.game.isRedTurn, blueTurn: currentGameIdPair.game.isBlueTurn}"> turn</span>
+            </div>
+            <div *ngIf='isSequence'>
+              <span [ngClass]="{redTurn: currentGameIdPair.game.currentPlayer.teamColor === 'red', blueTurn: currentGameIdPair.game.currentPlayer.teamColor === 'blue'}"> {{currentGameIdPair.game.currentPlayer.name}}'s turn</span>
+            </div>
           </td>
           <td mat-cell class="endTurnButton" (click)="endTurn()">
             <button mat-raised-button color="primary">End turn</button>
@@ -86,10 +98,10 @@
 
   <div *ngIf="isSequence" id="sequenceCardsCol" class="playerHandContainer">
     <div class="playerHandTitle">
-      {{currentPlayer.name}}'s hand
+      {{selectedPlayer.name}}'s hand
     </div>
     <div id="playerHand" class="playerHandGrid">
-      <div *ngFor="let card of currentPlayer.cardsInHand">
+      <div *ngFor="let card of selectedPlayer.cardsInHand">
         <mat-card [ngClass]="{cardContainer: !card.selected,
                               cardContainerSelectedRed: card.selected && card.color == 'red',
                               cardContainerSelectedBlue: card.selected && card.color == 'blue',

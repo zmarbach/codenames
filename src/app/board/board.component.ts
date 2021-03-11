@@ -13,7 +13,6 @@ import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
 import { PlayingCard } from '../playing-card';
 import { Face } from '../face';
-import { CodenameCard } from '../codename-card';
 import { Utils } from '../utils';
 
 @Component({
@@ -27,12 +26,17 @@ export class BoardComponent implements OnInit {
   isSequence = false;
   Suit = Suit;
   Face = Face;
-  currentPlayer = new Player(9999, "test", [], "");
+  selectedPlayer = new Player(9999, 'test', [], '');
   title: String;
   nameForm: FormControl;
   selectedPlayerId: number;
 
-  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService, private dialog: MatDialog) { }
+  constructor(
+    private activeRoute: ActivatedRoute,
+    public router: Router,
+    private gameService: GameService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     //TODO - handle this better!!! No setTimeout, figure it out with async await instead!!!
@@ -40,60 +44,63 @@ export class BoardComponent implements OnInit {
     this.setUpCurrentGame(this.currentGameIdPair);
 
     setTimeout(() => {
-      this.isSequence = this.currentGameIdPair.game.mode === GameMode.SEQUENCE ? true : false;
-      this.title = this.isSequence? "SEQUENCE" : "CODENAMES";
-      if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
+      this.isSequence =
+        this.currentGameIdPair.game.mode === GameMode.SEQUENCE ? true : false;
+      this.title = this.isSequence ? 'SEQUENCE' : 'CODENAMES';
+      if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE) {
         this.handleDialog();
       }
     }, 500);
 
-    console.log('currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair));
+    console.log(
+      'currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair)
+    );
   }
 
-  setCurrentPlayer(){
+  handleDialog() {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-    this.currentPlayer = sequenceGame.players.find(player => player.id === this.selectedPlayerId);
-  }
-
-  handleDialog(){
-    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-    console.log("players in sequence game ---- " + JSON.stringify(sequenceGame.players));
+    console.log(
+      'players in sequence game ---- ' + JSON.stringify(sequenceGame.players)
+    );
 
     const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
       width: '250px',
-      data: sequenceGame.players
+      data: sequenceGame.players,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      //need to do something with this result;
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('Selected player has id of ' + result);
-      this.currentPlayer = sequenceGame.players.find(player => player.id === result);
+      const selectedPlayerJSON = sequenceGame.players.find(
+        (player) => player.id === result
+      );
+      // Transform the data from find into an ACTUAL player obj so we have access to functions
+      this.selectedPlayer = new Player(selectedPlayerJSON.id, selectedPlayerJSON.name, selectedPlayerJSON.cardsInHand, selectedPlayerJSON.teamColor)
     });
   }
 
-  setUpCurrentGame(currentGameIdPair: GameIdPair){
-    this.activeRoute.params.subscribe(params => {
+  setUpCurrentGame(currentGameIdPair: GameIdPair) {
+    this.activeRoute.params.subscribe((params) => {
       currentGameIdPair.id = params.id;
     });
 
     this.gameService.setUpGameAndDbListener(currentGameIdPair);
   }
 
-  async nextGame(){
+  async nextGame() {
     // create new game and update it in the DB
     // data on page will update dynamically since using event listener for any DB changes specific to current game id
     let nextGame: GameContext;
-    if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE){
-      let game = this.currentGameIdPair.game as SequenceGameContext
-      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, game.getAllPlayerNames());
+    if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE) {
+      let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, this.gameService.getRedPlayerNames(sequenceGame), this.gameService.getBluePlayerNames(sequenceGame));
     } else {
-      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, []);
+      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, [], []);
     }
     this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
   }
 
-  toggleSpyMaster(){
-    if (this.isSpyMaster === false){
+  toggleSpyMaster() {
+    if (this.isSpyMaster === false) {
       this.isSpyMaster = true;
     } else {
       this.isSpyMaster = false;
@@ -101,70 +108,89 @@ export class BoardComponent implements OnInit {
   }
 
   //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
-  async select(card: Card){
-    if (!card.selected){
+  async select(card: Card) {
+    if (!card.selected) {
       //sequence related logic only
-      if (this.isSequence){  
-        let _card = card as PlayingCard;
-        //Have to manually create new PlayingCard because really this is just JSON passed in.
-        //Otherwise won't have access to functions on PlayingCard, Face, Suit, or any other objects
-        let playingCard = new PlayingCard(card.color, card.selected, Face.mapToFace(_card.face.rank, _card.face.displayName), _card.suit);
-
-        if (playingCard.isFreeSpace()){
-          alert("No need to select this space. It's a freebie.");
-        } else {
-          let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-          //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
-          const removedCard = this.gameService.removeCardFromHand(playingCard, this.currentPlayer.cardsInHand as PlayingCard[]);
-          if (removedCard){
-            this.currentPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
-            this.gameService.addToDiscardPile(removedCard, sequenceGame);
-            sequenceGame.topCardOnDiscardPile = removedCard;
-            card.color = this.currentPlayer.teamColor;
-            card.selected = true;
-          }
-        }
+      if (this.isSequence) {
+        this.doSequenceSelect(card);
       } else {
         card.selected = true;
         this.updateScore(card.color);
       }
 
-      await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
+      await this.gameService.updateGameInDb(
+        this.currentGameIdPair.id,
+        this.currentGameIdPair.game
+      );
+    }
+  }
+
+  private doSequenceSelect(card: Card) {
+    let _card = card as PlayingCard;
+    //Have to manually create new PlayingCard because really this is just JSON passed in.
+    //Otherwise won't have access to functions on PlayingCard, Face, Suit, or any other objects
+    let playingCard = new PlayingCard(card.color, card.selected, Face.mapToFace(_card.face.rank, _card.face.displayName), _card.suit);
+
+    if (playingCard.isFreeSpace()) {
+      alert("No need to select this space. It's a freebie.");
+    } else if (!this.isPlayersTurn()){
+      alert("It is not your turn yet.")
+    } else {
+      let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+      //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
+      const removedCard = this.gameService.removeCardFromHand(playingCard, this.selectedPlayer.cardsInHand as PlayingCard[]);
+      if (removedCard) {
+        this.selectedPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+        this.gameService.addToDiscardPile(removedCard, sequenceGame);
+        sequenceGame.topCardOnDiscardPile = removedCard;
+        card.color = this.selectedPlayer.teamColor;
+        card.selected = true;
+        sequenceGame.currentPlayer = this.gameService.getNextPlayer(sequenceGame as SequenceGameContext)
+      }
     }
   }
 
   //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
-  async removeWithOneEyedJack(card: PlayingCard){
+  async removeWithOneEyedJack(card: PlayingCard) {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
-    let indexOfOneEyedJack = this.gameService.getindexOfOneEyedJack(this.currentPlayer.cardsInHand as PlayingCard[])
+    let indexOfOneEyedJack = this.gameService.getindexOfOneEyedJack(
+      this.selectedPlayer.cardsInHand as PlayingCard[]
+    );
     if (indexOfOneEyedJack) {
-      if (confirm("Are you sure you want to use your One-Eyed Jack to remove the " + card.displayValue + "?")){
-        let removedCard = this.currentPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
-        this.currentPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+      if (confirm('Are you sure you want to use your One-Eyed Jack to remove the ' + card.displayValue + '?')) {
+        let removedCard = this.selectedPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
+        this.selectedPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+
         this.gameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
 
         card.selected = false;
-        await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
-      };
+        
+        sequenceGame.currentPlayer = this.gameService.getNextPlayer(sequenceGame as SequenceGameContext)
+
+        await this.gameService.updateGameInDb(
+          this.currentGameIdPair.id,
+          this.currentGameIdPair.game
+        );
+      }
     } else {
-      alert("You cannot remove the " + card.displayValue + " because you don't have a One-Eyed Jack.")
+      alert('You cannot remove the ' + card.displayValue + " because you don't have a One-Eyed Jack.");
     }
   }
 
-  updateScore(color: String){
-    if (color == 'red' && this.currentGameIdPair.game.redScore !== 0){
+  updateScore(color: String) {
+    if (color == 'red' && this.currentGameIdPair.game.redScore !== 0) {
       this.currentGameIdPair.game.redScore--;
       console.log('hello');
-    } else if (color == 'blue' && this.currentGameIdPair.game.blueScore !== 0){
+    } else if (color == 'blue' && this.currentGameIdPair.game.blueScore !== 0) {
       this.currentGameIdPair.game.blueScore--;
       console.log('hello');
     }
   }
 
-  async endTurn(){
-    if (this.currentGameIdPair.game.isRedTurn){
+  async endTurn() {
+    if (this.currentGameIdPair.game.isRedTurn) {
       this.currentGameIdPair.game.isRedTurn = false;
       this.currentGameIdPair.game.isBlueTurn = true;
     } else {
@@ -172,14 +198,17 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     // update game in Firebase DB
-    await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
+    await this.gameService.updateGameInDb(
+      this.currentGameIdPair.id,
+      this.currentGameIdPair.game
+    );
   }
 
-  async deleteGameFromDb(){
+  async deleteGameFromDb() {
     await this.gameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 
-  midGameShuffle(){
+  midGameShuffle() {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
     //multiple shuffles just for fun
@@ -191,4 +220,10 @@ export class BoardComponent implements OnInit {
     sequenceGame.discardPile = [];
   }
 
+  private isPlayersTurn(): Boolean {
+    const sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+    return this.selectedPlayer.equals(sequenceGame.currentPlayer)
+  }
 }
+
+

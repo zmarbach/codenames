@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormArray, ControlContainer } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormArray,
+  ControlContainer,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { GameService } from '../game.service';
 import { GameMode } from '../game-mode.enum';
@@ -7,89 +13,135 @@ import { GameMode } from '../game-mode.enum';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
   isSequence = false;
   settingsForm: FormGroup;
   GameMode = GameMode;
   numOfPlayerOptions = [
-      {value: '2', displayValue: 2},
-      {value: '4', displayValue: 4},
-      {value: '6', displayValue: 6},
-      {value: '8', displayValue: 8},
-      {value: '10', displayValue: 10},
-      {value: '12', displayValue: 12},
-  ]
+    { value: '2', displayValue: 2 },
+    { value: '4', displayValue: 4 },
+    { value: '6', displayValue: 6 },
+    { value: '8', displayValue: 8 },
+    { value: '10', displayValue: 10 },
+    { value: '12', displayValue: 12 },
+  ];
 
-  constructor(private router: Router, private gameService: GameService) { }
+  constructor(private router: Router, private gameService: GameService) {}
 
   ngOnInit(): void {
     this.settingsForm = new FormGroup({
       gameMode: new FormControl(GameMode.CODENAMES_WORDS, Validators.required),
       numOfPlayers: new FormControl(''),
-      playerNames: new FormArray([])
-    });  
+      redPlayerNames: new FormArray([]),
+      bluePlayerNames: new FormArray([]),
+    });
 
-    this.settingsForm.get('gameMode').valueChanges.subscribe(mode => this.updateRequiredStatus(mode))
-    this.settingsForm.get('numOfPlayers').valueChanges.subscribe(num => this.updateNumOfPlayers(num))
+    this.settingsForm
+      .get('gameMode')
+      .valueChanges.subscribe((mode) => this.updateRequiredStatus(mode));
+    this.settingsForm
+      .get('numOfPlayers')
+      .valueChanges.subscribe((num) => this.updateNumOfPlayers(num));
   }
 
-  updateRequiredStatus(mode: GameMode){
+  updateRequiredStatus(mode: GameMode) {
     console.log(mode);
-    if (mode === GameMode.SEQUENCE){
+    if (mode === GameMode.SEQUENCE) {
       this.numOfPlayers.enable();
-      this.playerNames.controls.forEach(control => control.enable);
+      this.redPlayerNames.controls.forEach((control) => control.enable);
+      this.bluePlayerNames.controls.forEach((control) => control.enable);
       this.numOfPlayers.setValidators(Validators.required);
-      this.playerNames.controls.forEach(control => control.setValidators(Validators.required));
+      this.redPlayerNames.controls.forEach((control) =>
+        control.setValidators(Validators.required)
+      );
+      this.bluePlayerNames.controls.forEach((control) =>
+        control.setValidators(Validators.required)
+      );
     } else {
       this.numOfPlayers.disable();
-      this.playerNames.controls.forEach(control => control.disable());
+      this.redPlayerNames.controls.forEach((control) => control.disable());
+      this.bluePlayerNames.controls.forEach((control) => control.disable());
       this.numOfPlayers.clearValidators();
-      this.playerNames.controls.forEach(control => control.clearValidators());
+      this.redPlayerNames.controls.forEach((control) =>
+        control.clearValidators()
+      );
+      this.bluePlayerNames.controls.forEach((control) =>
+        control.clearValidators()
+      );
     }
   }
 
-  updateNumOfPlayers(numOfPlayerOption){
+  updateNumOfPlayers(numOfPlayerOption) {
     let num = numOfPlayerOption.value;
-    if (this.playerNames.length !== 0){
-      console.log("player length is " + this.playerNames.length);
-      this.playerNames.clear();
+    if (this.redPlayerNames.length !== 0) {
+      console.log('Num of Red players ---> ' + this.redPlayerNames.length);
+      this.redPlayerNames.clear();
     }
-    for (let i=0; i < num; i++){
-      console.log(num);
-      this.playerNames.push(new FormControl("", Validators.required));
+    if (this.bluePlayerNames.length !== 0) {
+      console.log('Num of Blue players ---> ' + this.bluePlayerNames.length);
+      this.bluePlayerNames.clear();
+    }
+    for (let i = 0; i < num; i++) {
+      // Check odd/even to add half red and half blue
+      if (i % 2 === 0) {
+        this.redPlayerNames.push(new FormControl('', Validators.required));
+      } else {
+        this.bluePlayerNames.push(new FormControl('', Validators.required));
+      }
     }
   }
 
-  async submit(){
+  async submit() {
     console.log('Creating new game...');
-    console.log('Game mode value is : ' + this.settingsForm.value.gameMode as GameMode);
-    console.log('Player names are : ' + JSON.stringify(this.settingsForm.value.playerNames));
-    const newGame = await this.gameService.createNewGame(this.settingsForm.value.gameMode as GameMode, this.settingsForm.value.playerNames as []);
+    console.log(
+      ('Game mode value is : ' + this.settingsForm.value.gameMode) as GameMode
+    );
+    console.log(
+      'Red Player names are : ' +
+        JSON.stringify(this.settingsForm.value.redPlayerNames)
+    );
+    console.log(
+      'Blue Player names are : ' +
+        JSON.stringify(this.settingsForm.value.bluePlayerNames)
+    );
+
+    const newGame = await this.gameService.createNewGame(
+      this.settingsForm.value.gameMode as GameMode,
+      this.settingsForm.value.redPlayerNames as [],
+      this.settingsForm.value.bluePlayerNames as []
+    );
     const newGameFirebaseId = this.gameService.addGameToDb(newGame);
+
+    //Assign game id as newGameFireBaseId here
+    //eliminates the need for GameIdPair because game already has an id
 
     console.log('New game created with this id ---> ' + newGameFirebaseId);
     this.router.navigate(['/board/' + newGameFirebaseId]);
   }
 
-  showSequence(){
+  showSequence() {
     this.isSequence = true;
   }
 
-  hideSequence(){
+  hideSequence() {
     this.isSequence = false;
   }
 
-  get gameMode() { 
+  get gameMode() {
     return this.settingsForm.get('gameMode');
   }
 
-  get numOfPlayers() { 
+  get numOfPlayers() {
     return this.settingsForm.get('numOfPlayers');
   }
 
-  get playerNames() { 
-    return this.settingsForm.get('playerNames') as FormArray;
+  get redPlayerNames() {
+    return this.settingsForm.get('redPlayerNames') as FormArray;
+  }
+
+  get bluePlayerNames() {
+    return this.settingsForm.get('bluePlayerNames') as FormArray;
   }
 }

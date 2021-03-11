@@ -21,8 +21,6 @@ export class Face {
   private constructor(rank: number, displayName: String){
     this.rank = rank;
     this.displayName = displayName;
-    console.log("here")
-
   }
 
 

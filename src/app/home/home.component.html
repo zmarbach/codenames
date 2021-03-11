@@ -1,47 +1,94 @@
-<div class="container" style="margin: 0px 100px;">
+<div class="container" style="margin: 0px 100px">
   <div id="title" class="title">
     <p class="codeNamesTitle"><strong id="codeNames">CODENAMES</strong></p>
   </div>
 
   <mat-card>
-    <mat-card-title>
-      Settings
-    </mat-card-title>
+    <mat-card-title> Settings </mat-card-title>
 
     <mat-card-content>
       <form [formGroup]="settingsForm" (ngSubmit)="submit()">
         <mat-radio-group formControlName="gameMode">
           <label for="words-radio-btn">Words</label>
-          <mat-radio-button color="primary" (click)="hideSequence()" style="margin: 5px;" id="words-radio-btn" type="radio" [value]="GameMode.CODENAMES_WORDS"></mat-radio-button>
+          <mat-radio-button
+            color="primary"
+            (click)="hideSequence()"
+            style="margin: 5px"
+            id="words-radio-btn"
+            type="radio"
+            [value]="GameMode.CODENAMES_WORDS"
+          ></mat-radio-button>
 
           <label for="pictures-radio-btn">Pictures</label>
-          <mat-radio-button color="primary" (click)="hideSequence()" style="margin: 5px;" id="pictures-radio-btn" type="radio" [value]="GameMode.CODENAMES_PICTURES"></mat-radio-button>
+          <mat-radio-button
+            color="primary"
+            (click)="hideSequence()"
+            style="margin: 5px"
+            id="pictures-radio-btn"
+            type="radio"
+            [value]="GameMode.CODENAMES_PICTURES"
+          ></mat-radio-button>
 
           <label for="sequence-radio-btn">Sequence</label>
-          <mat-radio-button color="primary" (click)="showSequence()" style="margin: 5px;" id="sequence-radio-btn" type="radio" [value]="GameMode.SEQUENCE"></mat-radio-button>
+          <mat-radio-button
+            color="primary"
+            (click)="showSequence()"
+            style="margin: 5px"
+            id="sequence-radio-btn"
+            type="radio"
+            [value]="GameMode.SEQUENCE"
+          ></mat-radio-button>
         </mat-radio-group>
-          
+
         <div>
           <mat-form-field *ngIf="isSequence">
             <mat-label for="sequence-select">Number of Players</mat-label>
-            <mat-select id="sequence-select" formControlName="numOfPlayers" required>
-              <mat-option *ngFor="let num of numOfPlayerOptions" [value]="num">{{ num.displayValue }}</mat-option>
+            <mat-select
+              id="sequence-select"
+              formControlName="numOfPlayers"
+              required
+            >
+              <mat-option
+                *ngFor="let num of numOfPlayerOptions"
+                [value]="num"
+                >{{ num.displayValue }}</mat-option
+              >
             </mat-select>
           </mat-form-field>
-          <mat-error *ngIf="numOfPlayers.errors?.required">Please pick number of players</mat-error>
+          <mat-error *ngIf="numOfPlayers.errors?.required"
+            >Please pick number of players</mat-error
+          >
         </div>
 
-        <ng-container *ngIf="isSequence" formArrayName="playerNames">
-          <div *ngFor="let name of playerNames.controls; index as i">
+        <ng-container *ngIf="isSequence" formArrayName="redPlayerNames">
+          <h3>Red Team</h3>
+          <div *ngFor="let name of redPlayerNames.controls; index as i">
             <mat-form-field>
-              <mat-label>Player {{i + 1}} Name</mat-label>
-              <input matInput type="text" [formControlName]="i">
+              <mat-label>Player {{ i + 1 }} Name</mat-label>
+              <input matInput type="text" [formControlName]="i" />
             </mat-form-field>
           </div>
         </ng-container>
 
-        <div style="margin: 5px;">
-          <button mat-raised-button type="submit" color="primary" [disabled]="settingsForm.invalid">New Game!</button>
+        <ng-container *ngIf="isSequence" formArrayName="bluePlayerNames">
+          <h3>Blue Team</h3>
+          <div *ngFor="let name of bluePlayerNames.controls; index as i">
+            <mat-form-field>
+              <mat-label>Player {{ i + 1 }} Name</mat-label>
+              <input matInput type="text" [formControlName]="i" />
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <div style="margin: 5px">
+          <button
+            mat-raised-button
+            type="submit"
+            color="primary"
+            [disabled]="settingsForm.invalid"
+          >
+            New Game!
+          </button>
         </div>
       </form>
     </mat-card-content>
