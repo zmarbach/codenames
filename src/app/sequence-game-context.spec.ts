@@ -5,6 +5,7 @@ import { SequenceGameContext } from './sequence-game-context';
 
 describe('SequenceGameContext', () => {
   it('should create an instance', () => {
-    expect(new SequenceGameContext(new Array<Player>(), GameMode.SEQUENCE, new Array<Card>(),0, 0, true, false)).toBeTruthy();
+    let dummyPlayerList = new Array<Player>(new Player(1234, 'bob', [], 'red'), new Player(5678, 'joe', [], 'blue'));
+    expect(new SequenceGameContext(dummyPlayerList, GameMode.SEQUENCE, new Array<Card>(),0, 0, true, false)).toBeTruthy();
   });
 });

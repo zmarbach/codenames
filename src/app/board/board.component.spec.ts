@@ -12,7 +12,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
 import { Card } from '../card';
-import { GameContext } from '../game-context';
 import { GameIdPair } from '../game-id-pair';
 import { GameService } from '../game.service';
 import { Location } from '@angular/common';
@@ -108,7 +107,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, []);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, [], []);
   });
 
   it('nextGame should call deleteGameFromDb and createNewGame with PICTURES as parameter', async () => {
@@ -119,7 +118,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES, []);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES, [], []);
   });
 
   // updateScore() tests

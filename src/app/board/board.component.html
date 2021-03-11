@@ -115,15 +115,22 @@
       </div>
     </div>
 
-    <div id="discardPile">
-      {{ currentGameIdPair.game.topCardOnDiscardPile?.displayValue }}
+    <div id="discardPile" *ngIf="currentGameIdPair.game.topCardOnDiscardPile">
+      <h3>DISCARD PILE:</h3>
+      <mat-card class="cardContainer">
+          <div class="cardSequence">
+            <div>
+              <span [ngClass]="{redSuit: topDiscardIsRedSuit()}">{{ currentGameIdPair.game.topCardOnDiscardPile?.displayValue }}</span>
+            </div>
+          </div>
+        </mat-card>
     </div>
-    {{ currentGameIdPair.game.deck?.length }}
     <div *ngIf="currentGameIdPair.game.deck.length === 0" id="reshuffleButton">
       <button mat-raised-button (click)="midGameShuffle()">Shuffle</button>
     </div>
+  </div>
 
-    DECK: 
+  <!-- DECK: 
     <div  *ngFor="let card of currentGameIdPair.game.deck">
       {{ card.displayValue }}
     </div>
@@ -133,7 +140,6 @@
     DISCARD PILE: 
     <div  *ngFor="let card of currentGameIdPair.game.discardPile">
       {{ card.displayValue }}
-    </div>
-  </div>
+    </div> -->
 
 </div>

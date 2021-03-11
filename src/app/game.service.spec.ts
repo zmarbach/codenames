@@ -66,7 +66,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Words" game mode should populate words in cards', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, [], []);
     const newGameId = service.addGameToDb(newGame);
     let codeNamesCard = newGame.cardsForBoard[0] as CodenameCard;
 
@@ -77,7 +77,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Words" game mode should create game with 25 cards', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, [], []);
     const newGameId = service.addGameToDb(newGame);
 
     expect(newGame.cardsForBoard.length).toBe(25);
@@ -85,7 +85,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Words" game mode should create game with 9 of one color, 8 of the other, 1 assassin, and 7 innocent', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_WORDS, [], []);
     const newGameId = service.addGameToDb(newGame);
 
     countNumOfColors(newGame.cardsForBoard);
@@ -112,7 +112,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Pictures" game mode should populate imgPaths in cards', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, [], []);
     const newGameId = service.addGameToDb(newGame);
     let codeNamesCard = newGame.cardsForBoard[0] as CodenameCard;
 
@@ -123,7 +123,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Pictures" game mode should create game with 20 cards', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, [], []);
     const newGameId = service.addGameToDb(newGame);
 
     expect(newGame.cardsForBoard.length).toBe(20);
@@ -132,7 +132,7 @@ describe('GameService', () => {
   });
 
   it('createNewGame in "Pictures" game mode should create game with 8 of one color, 7 of the other, 1 assassin, and 4 innocent', async function() {
-    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, []);
+    const newGame = await service.createNewGame(GameMode.CODENAMES_PICTURES, [], []);
     const newGameId = service.addGameToDb(newGame);
 
     countNumOfColors(newGame.cardsForBoard);

@@ -1,4 +1,3 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Card } from './card';
 import { Face } from './face';
 import { GameContext } from './game-context';
@@ -19,15 +18,7 @@ export class SequenceGameContext extends GameContext {
   prevRedPlayerIndex: number;
   prevBluePlayerIndex: number;
 
-  constructor(
-    players: Array<Player>,
-    mode: GameMode,
-    cardsForBoard: Array<Card>,
-    redScore: number,
-    blueScore: number,
-    isRedTurn: Boolean,
-    isBlueTurn: Boolean
-  ) {
+  constructor(players: Array<Player>, mode: GameMode, cardsForBoard: Array<Card>, redScore: number, blueScore: number, isRedTurn: Boolean, isBlueTurn: Boolean){
     super(mode, cardsForBoard, redScore, blueScore, isRedTurn, isBlueTurn);
 
     //build deck twice because need 2 full decks for sequence
@@ -41,8 +32,7 @@ export class SequenceGameContext extends GameContext {
     this.createTeams();
 
     // set current Player to first player of a random team
-    this.currentPlayer = this.getRandomTeam()[0]    
-
+    this.currentPlayer = this.getRandomTeam()[0]
     
     this.setPrevPlayerIndicies();
     
@@ -140,18 +130,13 @@ export class SequenceGameContext extends GameContext {
     }
   }
 
-  private removeCardFromDeck(
-    cardToBeRemoved: Card,
-    listToRemoveFrom: Array<Card>
-  ) {
+  private removeCardFromDeck(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {
     let indexOfCardToRemove = listToRemoveFrom.indexOf(
       cardToBeRemoved as PlayingCard
     );
     if (indexOfCardToRemove !== -1) {
       var cardRemoved = this.deck.splice(indexOfCardToRemove, 1);
-      console.log(
-        'card removed from deck ---> ' +
-          JSON.stringify(cardRemoved[0].displayValue)
+      console.log('card removed from deck ---> ' + JSON.stringify(cardRemoved[0].displayValue)
       );
     }
   }

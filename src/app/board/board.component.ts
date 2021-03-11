@@ -157,7 +157,7 @@ export class BoardComponent implements OnInit {
     let indexOfOneEyedJack = this.gameService.getindexOfOneEyedJack(
       this.selectedPlayer.cardsInHand as PlayingCard[]
     );
-    if (indexOfOneEyedJack) {
+    if (indexOfOneEyedJack !== undefined) {
       if (confirm('Are you sure you want to use your One-Eyed Jack to remove the ' + card.displayValue + '?')) {
         let removedCard = this.selectedPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
         this.selectedPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
@@ -223,6 +223,11 @@ export class BoardComponent implements OnInit {
   private isPlayersTurn(): Boolean {
     const sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
     return this.selectedPlayer.equals(sequenceGame.currentPlayer)
+  }
+
+  topDiscardIsRedSuit(){
+    let sequenceGame = this.currentGameIdPair.game as SequenceGameContext
+    return sequenceGame.topCardOnDiscardPile.suit === Suit.HEART || sequenceGame.topCardOnDiscardPile.suit === Suit.DIAMOND; 
   }
 }
 

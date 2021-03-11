@@ -1,11 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormArray,
-  ControlContainer,
-} from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray} from '@angular/forms';
 import { Router } from '@angular/router';
 import { GameService } from '../game.service';
 import { GameMode } from '../game-mode.enum';
@@ -76,11 +70,9 @@ export class HomeComponent implements OnInit {
   updateNumOfPlayers(numOfPlayerOption) {
     let num = numOfPlayerOption.value;
     if (this.redPlayerNames.length !== 0) {
-      console.log('Num of Red players ---> ' + this.redPlayerNames.length);
       this.redPlayerNames.clear();
     }
     if (this.bluePlayerNames.length !== 0) {
-      console.log('Num of Blue players ---> ' + this.bluePlayerNames.length);
       this.bluePlayerNames.clear();
     }
     for (let i = 0; i < num; i++) {
@@ -95,27 +87,12 @@ export class HomeComponent implements OnInit {
 
   async submit() {
     console.log('Creating new game...');
-    console.log(
-      ('Game mode value is : ' + this.settingsForm.value.gameMode) as GameMode
-    );
-    console.log(
-      'Red Player names are : ' +
-        JSON.stringify(this.settingsForm.value.redPlayerNames)
-    );
-    console.log(
-      'Blue Player names are : ' +
-        JSON.stringify(this.settingsForm.value.bluePlayerNames)
-    );
-
     const newGame = await this.gameService.createNewGame(
       this.settingsForm.value.gameMode as GameMode,
       this.settingsForm.value.redPlayerNames as [],
       this.settingsForm.value.bluePlayerNames as []
     );
     const newGameFirebaseId = this.gameService.addGameToDb(newGame);
-
-    //Assign game id as newGameFireBaseId here
-    //eliminates the need for GameIdPair because game already has an id
 
     console.log('New game created with this id ---> ' + newGameFirebaseId);
     this.router.navigate(['/board/' + newGameFirebaseId]);

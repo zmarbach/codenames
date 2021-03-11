@@ -75,11 +75,7 @@ export class GameService {
     await this.firebaseDb.database.ref('/games').child(firebaseId).remove();
   }
 
-  async createNewGame(
-    gameMode: GameMode,
-    redPlayerNames: Array<String>,
-    bluePlayerNames: Array<String>
-  ): Promise<GameContext> {
+  async createNewGame(gameMode: GameMode, redPlayerNames: Array<String>, bluePlayerNames: Array<String>): Promise<GameContext> {
     const cardsForBoard = await this.createCardList(gameMode);
     const redStartingScore = this.calcStartingScore(cardsForBoard, 'red');
     const blueStartingScore = this.calcStartingScore(cardsForBoard, 'blue');
@@ -122,10 +118,7 @@ export class GameService {
     }
   }
 
-  private createPlayers(
-    redPlayerNames: Array<String>,
-    bluePlayerNames: Array<String>
-  ): Array<Player> {
+  private createPlayers(redPlayerNames: Array<String>, bluePlayerNames: Array<String>): Array<Player> {
     let id = 0;
     let players = [];
 
