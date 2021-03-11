@@ -96,7 +96,8 @@ export class BoardComponent implements OnInit {
     } else {
       nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, [], []);
     }
-    this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
+    await this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
+    this.handleDialog()
   }
 
   toggleSpyMaster() {
