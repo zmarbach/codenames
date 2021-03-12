@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray} from '@angular/forms';
 import { Router } from '@angular/router';
-import { GameService } from '../services/game.service';
 import { GameMode } from '../models/game-mode.enum';
+import { SequenceGameService } from '../services/sequence-game.service';
+import { CodenamesGameService } from '../services/codenames-game.service';
+import { GameContext } from '../models/game-contexts/game-context';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +24,7 @@ export class HomeComponent implements OnInit {
     { value: '12', displayValue: 12 },
   ];
 
-  constructor(private router: Router, private gameService: GameService) {}
+  constructor(private router: Router, private sequenceGameService: SequenceGameService, private codenamesGameService: CodenamesGameService) {}
 
   ngOnInit(): void {
     this.settingsForm = new FormGroup({
@@ -32,12 +34,8 @@ export class HomeComponent implements OnInit {
       bluePlayerNames: new FormArray([]),
     });
 
-    this.settingsForm
-      .get('gameMode')
-      .valueChanges.subscribe((mode) => this.updateRequiredStatus(mode));
-    this.settingsForm
-      .get('numOfPlayers')
-      .valueChanges.subscribe((num) => this.updateNumOfPlayers(num));
+    this.settingsForm.get('gameMode').valueChanges.subscribe((mode) => this.updateRequiredStatus(mode));
+    this.settingsForm.get('numOfPlayers').valueChanges.subscribe((num) => this.updateNumOfPlayers(num));
   }
 
   updateRequiredStatus(mode: GameMode) {
@@ -87,15 +85,18 @@ export class HomeComponent implements OnInit {
 
   async submit() {
     console.log('Creating new game...');
-    const newGame = await this.gameService.createNewGame(
-      this.settingsForm.value.gameMode as GameMode,
-      this.settingsForm.value.redPlayerNames as [],
-      this.settingsForm.value.bluePlayerNames as []
-    );
-    const newGameFirebaseId = this.gameService.addGameToDb(newGame);
+    let newGame: GameContext;
+
+    if (this.settingsForm.value.gameMode === GameMode.SEQUENCE){
+      newGame = await this.sequenceGameService.createNewGame(this.settingsForm.value.gameMode as GameMode, this.settingsForm.value.redPlayerNames, this.settingsForm.value.bluePlayerNames);
+    } else {
+      newGame = await this.codenamesGameService.createNewGame(this.settingsForm.value.gameMode as GameMode);
+    }
+
+    const newGameFirebaseId = this.codenamesGameService.addGameToDb(newGame);
 
     console.log('New game created with this id ---> ' + newGameFirebaseId);
-    this.router.navigate(['/board/' + newGameFirebaseId]);
+      this.router.navigate(['/board/' + newGameFirebaseId]);
   }
 
   showSequence() {

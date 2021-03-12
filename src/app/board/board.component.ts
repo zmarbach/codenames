@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../models/cards/card';
 import { GameIdPair } from '../models/game-id-pair';
-import { GameService } from '../services/game.service';
 import { GameMode } from '../models/game-mode.enum';
 import { Suit } from '../models/suit.enum';
 import { SequenceGameContext } from '../models/game-contexts/sequence-game-context';
@@ -14,6 +13,8 @@ import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dia
 import { PlayingCard } from '../models/cards/playing-card';
 import { Face } from '../models/face';
 import { Utils } from '../utils';
+import { SequenceGameService } from '../services/sequence-game.service';
+import { CodenamesGameService } from '../services/codenames-game.service';
 
 @Component({
   selector: 'app-board',
@@ -31,7 +32,7 @@ export class BoardComponent implements OnInit {
   nameForm: FormControl;
   selectedPlayerId: number;
 
-  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService, private dialog: MatDialog) {}
+  constructor(private activeRoute: ActivatedRoute, public router: Router, private sequenceGameService: SequenceGameService, private codenamesGameService: CodenamesGameService, private dialog: MatDialog) {}
 
   ngOnInit() {
     //TODO - handle this better!!! No setTimeout, figure it out with async await instead!!!
@@ -71,7 +72,7 @@ export class BoardComponent implements OnInit {
       currentGameIdPair.id = params.id;
     });
 
-    this.gameService.setUpGameAndDbListener(currentGameIdPair);
+    this.codenamesGameService.setUpGameAndDbListener(currentGameIdPair);
   }
 
   async nextGame() {
@@ -80,11 +81,11 @@ export class BoardComponent implements OnInit {
     let nextGame: GameContext;
     if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE) {
       let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, this.gameService.getRedPlayerNames(sequenceGame), this.gameService.getBluePlayerNames(sequenceGame));
+      nextGame = await this.sequenceGameService.createNewGame(this.currentGameIdPair.game.mode, this.sequenceGameService.getRedPlayerNames(sequenceGame), this.sequenceGameService.getBluePlayerNames(sequenceGame));
     } else {
-      nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, [], []);
+      nextGame = await this.codenamesGameService.createNewGame(this.currentGameIdPair.game.mode);
     }
-    await this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
+    await this.sequenceGameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
     if (nextGame.mode === GameMode.SEQUENCE){
       this.handleDialog()
     }
@@ -109,7 +110,7 @@ export class BoardComponent implements OnInit {
         this.updateScore(card.color);
       }
 
-      await this.gameService.updateGameInDb(
+      await this.codenamesGameService.updateGameInDb(
         this.currentGameIdPair.id,
         this.currentGameIdPair.game
       );
@@ -129,14 +130,14 @@ export class BoardComponent implements OnInit {
     } else {
       let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
       //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
-      const removedCard = this.gameService.removeCardFromHand(playingCard, this.selectedPlayer.cardsInHand as PlayingCard[]);
+      const removedCard = this.sequenceGameService.removeCardFromHand(playingCard, this.selectedPlayer.cardsInHand as PlayingCard[]);
       if (removedCard) {
-        this.selectedPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
-        this.gameService.addToDiscardPile(removedCard, sequenceGame);
+        this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
+        this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
         card.color = this.selectedPlayer.teamColor;
         card.selected = true;
-        sequenceGame.currentPlayer = this.gameService.getNextPlayer(sequenceGame as SequenceGameContext)
+        sequenceGame.currentPlayer = this.sequenceGameService.getNextPlayer(sequenceGame as SequenceGameContext)
       }
     }
   }
@@ -145,22 +146,20 @@ export class BoardComponent implements OnInit {
   async removeWithOneEyedJack(card: PlayingCard) {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
-    let indexOfOneEyedJack = this.gameService.getindexOfOneEyedJack(
-      this.selectedPlayer.cardsInHand as PlayingCard[]
-    );
+    let indexOfOneEyedJack = this.sequenceGameService.getindexOfCard(this.selectedPlayer.cardsInHand as PlayingCard[], '👁 J');
     if (indexOfOneEyedJack !== undefined) {
       if (confirm('Are you sure you want to use your One-Eyed Jack to remove the ' + card.displayValue + '?')) {
         let removedCard = this.selectedPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
-        this.selectedPlayer.cardsInHand.push(this.gameService.drawTopCardFromDeck(sequenceGame));
+        this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
 
-        this.gameService.addToDiscardPile(removedCard, sequenceGame);
+        this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
 
         card.selected = false;
         
-        sequenceGame.currentPlayer = this.gameService.getNextPlayer(sequenceGame as SequenceGameContext)
+        sequenceGame.currentPlayer = this.sequenceGameService.getNextPlayer(sequenceGame as SequenceGameContext)
 
-        await this.gameService.updateGameInDb(
+        await this.sequenceGameService.updateGameInDb(
           this.currentGameIdPair.id,
           this.currentGameIdPair.game
         );
@@ -189,11 +188,11 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     // update game in Firebase DB
-    await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
+    await this.codenamesGameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
   }
 
   async deleteGameFromDb() {
-    await this.gameService.deleteGameFromDb(this.currentGameIdPair.id);
+    await this.codenamesGameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 
   midGameShuffle() {

@@ -19,8 +19,12 @@ import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameService } from './services/game.service';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/database';
 import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dialog.component';
+import { DataService } from './services/data.service';
+import { Router } from '@angular/router';
+import { SequenceGameService } from './services/sequence-game.service';
+import { CodenamesGameService } from './services/codenames-game.service';
 
 @NgModule({
   declarations: [
@@ -46,7 +50,7 @@ import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dial
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
   ],
-  providers: [GameService],
+  providers: [SequenceGameService, CodenamesGameService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

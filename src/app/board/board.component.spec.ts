@@ -22,16 +22,17 @@ import { GameMode } from '../models/game-mode.enum';
 import { CodenameCard } from '../models/cards/codename-card';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CodenamesGameService } from '../services/codenames-game.service';
 
 describe('BoardComponent', () => {
   let router: Router;
   let location: Location;
   let component: BoardComponent;
   let fixture: ComponentFixture<BoardComponent>;
-  let gameServiceSpy: jasmine.SpyObj<GameService>;
+  let gameServiceSpy: jasmine.SpyObj<CodenamesGameService>;
 
   beforeEach(async () => {
-    const spyForGameService = jasmine.createSpyObj('GameService', ['setUpGameAndDbListener', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('CodenamesGameService', ['setUpGameAndDbListener', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -47,7 +48,7 @@ describe('BoardComponent', () => {
         ReactiveFormsModule
       ],
       providers: [
-        { provide: GameService, useValue: spyForGameService },
+        { provide: CodenamesGameService, useValue: spyForGameService },
         { provide: MatDialogRef, useValue: {}},
         { provide: MAT_DIALOG_DATA, useValue: {}},
         // Mock the activated route so that params actually contain this id
@@ -58,7 +59,7 @@ describe('BoardComponent', () => {
     })
     .compileComponents();
 
-    gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+    gameServiceSpy = TestBed.inject(CodenamesGameService) as jasmine.SpyObj<CodenamesGameService>;
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
   });
@@ -107,7 +108,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, [], []);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
   it('nextGame should call deleteGameFromDb and createNewGame with PICTURES as parameter', async () => {
@@ -118,7 +119,7 @@ describe('BoardComponent', () => {
     await component.nextGame();
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES, [], []);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES);
   });
 
   // updateScore() tests

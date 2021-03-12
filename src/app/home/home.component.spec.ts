@@ -19,13 +19,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameMode } from '../models/game-mode.enum';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
+import { CodenamesGameService } from '../services/codenames-game.service';
 
 describe('HomeComponent', () => {
   let router: Router;
   let location: Location;
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
-  let gameServiceSpy: jasmine.SpyObj<GameService>;
+  let gameServiceSpy: jasmine.SpyObj<CodenamesGameService>;
 
   beforeEach(async () => {
     const spyForGameService = jasmine.createSpyObj('GameService', ['createNewGame', 'addGameToDb']);
@@ -43,13 +44,13 @@ describe('HomeComponent', () => {
         ReactiveFormsModule
       ],
       providers: [
-        {provide: GameService, useValue: spyForGameService},
+        {provide: CodenamesGameService, useValue: spyForGameService},
       ],
       declarations: [ HomeComponent ],
     })
     .compileComponents();
 
-    gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+    gameServiceSpy = TestBed.inject(CodenamesGameService) as jasmine.SpyObj<CodenamesGameService>;
   });
 
   beforeEach(() => {
@@ -89,7 +90,7 @@ describe('HomeComponent', () => {
     await component.submit();
 
     expect(gameServiceSpy.createNewGame.calls.count()).toEqual(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS, [], []);
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
   });
 
   it('submit should call addGameToDb method on GameService one time', async () => {
