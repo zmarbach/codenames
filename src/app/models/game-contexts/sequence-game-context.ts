@@ -6,6 +6,7 @@ import { Player } from '../player';
 import { PlayingCard } from '../cards/playing-card';
 import { Suit } from '../suit.enum';
 import { Utils } from '../../utils';
+import { Sequence } from '../sequence';
 
 export class SequenceGameContext extends GameContext {
   players: Array<Player> = [];
@@ -17,6 +18,7 @@ export class SequenceGameContext extends GameContext {
   topCardOnDiscardPile: PlayingCard;
   prevRedPlayerIndex: number;
   prevBluePlayerIndex: number;
+  existingSequences: Array<Sequence> = [];
 
   constructor(players: Array<Player>, mode: GameMode, cardsForBoard: Array<Card>, redScore: number, blueScore: number, isRedTurn: Boolean, isBlueTurn: Boolean){
     super(mode, cardsForBoard, redScore, blueScore, isRedTurn, isBlueTurn);
@@ -35,7 +37,9 @@ export class SequenceGameContext extends GameContext {
     this.currentPlayer = this.getRandomTeam()[0]
     
     this.setPrevPlayerIndicies();
-    
+
+    //Need this dummy info, otherwise undefined from firebase
+    this.existingSequences.push(new Sequence([999999]))
   }
 
   // Team that starts gets prevPlayer index of 1
@@ -128,6 +132,27 @@ export class SequenceGameContext extends GameContext {
         this.removeCardFromDeck(this.deck[i], this.deck);
       }
     }
+
+    //TODO delete this after testing
+    players[0].cardsInHand = new Array<PlayingCard>(
+      new PlayingCard('red',false, Face.TWO, Suit.SPADE),
+      new PlayingCard('red',false, Face.THREE, Suit.SPADE),
+      new PlayingCard('red',false, Face.FOUR, Suit.SPADE),
+      new PlayingCard('red',false, Face.FIVE, Suit.SPADE),
+      new PlayingCard('red',false, Face.SIX, Suit.SPADE),
+      new PlayingCard('red',false, Face.SEVEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.EIGHT, Suit.SPADE),
+      )
+    
+    players[1].cardsInHand = new Array<PlayingCard>(
+      new PlayingCard('red',false, Face.ACE, Suit.SPADE),
+      new PlayingCard('red',false, Face.KING, Suit.SPADE),
+      new PlayingCard('red',false, Face.TEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.QUEEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.THREE, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.EIGHT, Suit.HEART),
+      )
   }
 
   private removeCardFromDeck(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {
