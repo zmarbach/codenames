@@ -19,12 +19,12 @@
           </div>
           <td mat-cell class="turnIndicator">
             <div *ngIf='!isSequence'>
-              <span class="redTurn" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
-              <span class="blueTurn" *ngIf="currentGameIdPair.game.isBlueTurn">Blue's</span>
-              <span [ngClass]="{redTurn: currentGameIdPair.game.isRedTurn, blueTurn: currentGameIdPair.game.isBlueTurn}"> turn</span>
+              <span class="redText" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
+              <span class="blueText" *ngIf="currentGameIdPair.game.isBlueTurn">Blue's</span>
+              <span [ngClass]="{redText: currentGameIdPair.game.isRedTurn, blueText: currentGameIdPair.game.isBlueTurn}"> turn</span>
             </div>
             <div *ngIf='isSequence'>
-              <span [ngClass]="{redTurn: currentGameIdPair.game.currentPlayer.teamColor === 'red', blueTurn: currentGameIdPair.game.currentPlayer.teamColor === 'blue'}"> {{currentGameIdPair.game.currentPlayer.name}}'s turn</span>
+              <span [ngClass]="{redText: currentGameIdPair.game.currentPlayer.teamColor === 'red', blueText: currentGameIdPair.game.currentPlayer.teamColor === 'blue'}"> {{currentGameIdPair.game.currentPlayer.name}}'s turn</span>
             </div>
           </td>
           <td mat-cell class="endTurnButton" (click)="endTurn()">
@@ -97,7 +97,7 @@
   </div>
 
   <div *ngIf="isSequence" id="sequenceCardsCol" class="playerHandContainer">
-    <div class="playerHandTitle">
+    <div class="playerHandTitle" [style.color]="selectedPlayer.teamColor">
       {{selectedPlayer.name}}'s hand
     </div>
     <div id="playerHand" class="playerHandGrid">
