@@ -1,5 +1,5 @@
 import { Player } from './player';
-import { PlayingCard } from './playing-card';
+import { PlayingCard } from '../models/cards/playing-card';
 
 describe('Player', () => {
   it('should create an instance', () => {

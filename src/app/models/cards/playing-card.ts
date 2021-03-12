@@ -1,6 +1,6 @@
 import { Card } from "./card";
-import { Face } from "./face";
-import { Suit } from "./suit.enum";
+import { Face } from "../face";
+import { Suit } from "../suit.enum";
 
 export class PlayingCard extends Card{
   face: Face;

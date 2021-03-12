@@ -1,7 +1,7 @@
-import { Card } from "./card";
+import { Card } from "../cards/card";
 import { GameContext } from "./game-context";
-import { GameMode } from "./game-mode.enum";
-import { Utils } from "./utils";
+import { GameMode } from "../game-mode.enum";
+import { Utils } from "../../utils";
 
 export class CodenamesGameContext extends GameContext{
 

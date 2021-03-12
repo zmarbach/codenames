@@ -1,6 +1,6 @@
-import { Face } from './face';
+import { Face } from '../face';
 import { PlayingCard } from './playing-card';
-import { Suit } from './suit.enum';
+import { Suit } from '../suit.enum';
 
 describe('PlayingCard', () => {
   it('should create an instance', () => {

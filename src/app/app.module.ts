@@ -17,7 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { HomeComponent } from './home/home.component';
 import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GameService } from './game.service';
+import { GameService } from './services/game.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dialog.component';

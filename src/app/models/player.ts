@@ -1,4 +1,4 @@
-import { Card } from "./card";
+import { Card } from "../models/cards/card";
 
 export class Player {
   id: number;

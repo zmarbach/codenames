@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Utils } from './utils';
+import { Utils } from '../utils';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,6 @@
-import { Card } from './card';
-import { GameMode } from './game-mode.enum';
-import { Player } from './player';
+import { Card } from '../cards/card';
+import { GameMode } from '../game-mode.enum';
+import { Player } from '../player';
 import { SequenceGameContext } from './sequence-game-context';
 
 describe('SequenceGameContext', () => {

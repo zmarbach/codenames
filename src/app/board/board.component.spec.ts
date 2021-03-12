@@ -11,16 +11,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
-import { Card } from '../card';
-import { GameIdPair } from '../game-id-pair';
-import { GameService } from '../game.service';
+import { Card } from '../models/cards/card';
+import { GameIdPair } from '../models/game-id-pair';
+import { GameService } from '../services/game.service';
 import { Location } from '@angular/common';
 
 import { BoardComponent } from './board.component';
 import { from } from 'rxjs';
-import { GameMode } from '../game-mode.enum';
-import { CodenameCard } from '../codename-card';
-import { CodenamesGameContext } from '../codenames-game-context';
+import { GameMode } from '../models/game-mode.enum';
+import { CodenameCard } from '../models/cards/codename-card';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 describe('BoardComponent', () => {

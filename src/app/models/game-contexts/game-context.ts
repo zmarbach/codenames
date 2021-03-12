@@ -1,5 +1,5 @@
-import { Card } from './card';
-import { GameMode } from './game-mode.enum';
+import { Card } from '../cards/card';
+import { GameMode } from '../game-mode.enum';
 
 export abstract class GameContext {
   mode: GameMode;

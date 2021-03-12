@@ -3,12 +3,11 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { Card } from './card';
-import { CodenameCard } from './codename-card';
-import { CodenamesGameContext } from './codenames-game-context';
-import { GameContext } from './game-context';
-import { GameIdPair } from './game-id-pair';
-import { GameMode } from './game-mode.enum';
+import { Card } from '../models/cards/card';
+import { CodenameCard } from '../models/cards/codename-card';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
+import { GameIdPair } from '../models/game-id-pair';
+import { GameMode } from '../models/game-mode.enum';
 
 import { GameService } from './game.service';
 

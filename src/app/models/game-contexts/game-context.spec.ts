@@ -1,6 +1,6 @@
-import { Card } from './card';
+import { Card } from '../cards/card';
 import { CodenamesGameContext } from './codenames-game-context';
-import { GameMode } from './game-mode.enum';
+import { GameMode } from '../game-mode.enum';
 
 describe('GameContext', () => {
   it('should create an instance', () => {

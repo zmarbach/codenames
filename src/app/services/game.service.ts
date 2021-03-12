@@ -1,44 +1,31 @@
 import { Injectable } from '@angular/core';
 
-import { Card } from './card';
-import { DataService } from './data.service';
-import { GameContext } from './game-context';
+import { Card } from '../models/cards/card';
+import { DataService } from '..//services/data.service';
+import { GameContext } from '../models/game-contexts/game-context';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { GameIdPair } from './game-id-pair';
+import { GameIdPair } from '../models/game-id-pair';
 import { Router } from '@angular/router';
-import { GameMode } from './game-mode.enum';
-import { CodenameCard } from './codename-card';
-import { CodenamesGameContext } from './codenames-game-context';
-import { PlayingCard } from './playing-card';
-import { Face } from './face';
-import { Suit } from './suit.enum';
-import { SequenceGameContext } from './sequence-game-context';
-import { Player } from './player';
-import { Utils } from './utils';
+import { GameMode } from '../models/game-mode.enum';
+import { CodenameCard } from '../models/cards/codename-card';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
+import { PlayingCard } from '../models/cards/playing-card';
+import { Face } from '../models/face';
+import { Suit } from '../models/suit.enum';
+import { SequenceGameContext } from '../models/game-contexts/sequence-game-context';
+import { Player } from '../models/player';
+import { Utils } from '../utils';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({providedIn: 'root'})
 export class GameService {
-  constructor(
-    private dataService: DataService,
-    private firebaseDb: AngularFireDatabase,
-    private router: Router
-  ) {}
+  constructor(private dataService: DataService, private firebaseDb: AngularFireDatabase, private router: Router) {}
 
   setUpGameAndDbListener(gameIdPair: GameIdPair) {
     this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).on('value', (snapshot) => {
         console.log('New shapshot val is ' + JSON.stringify(snapshot.val()));
 
-        //if snapshot does not exist, then the id is not in db...game has been deleted.
         if (snapshot.exists()) {
-          // if((snapshot.toJSON() as GameContext).mode === 'SEQUENCE'){
-          //   let sequenceGameJSON = snapshot.toJSON() as SequenceGameContext;
-          //   gameIdPair.game = new SequenceGameContext(sequenceGameJSON.players, sequenceGameJSON.mode, sequenceGameJSON.cardsForBoard, sequenceGameJSON.redScore, sequenceGameJSON.blueScore, sequenceGameJSON.isRedTurn, sequenceGameJSON.isBlueTurn);
-          // } else {
-            //Change this to transform to specific game...either WORDS or PICTURES
             gameIdPair.game = snapshot.val();
-          // }
         }
       });
   }
@@ -50,23 +37,11 @@ export class GameService {
   }
 
   async updateGameInDb(gameIdToUpdate: String, updatedGame: GameContext) {
-    if (
-      (
-        await this.firebaseDb.database
-          .ref('/games')
-          .child(gameIdToUpdate.toString())
-          .get()
-      ).exists()
-    ) {
-      await this.firebaseDb.database
-        .ref('/games')
-        .child(gameIdToUpdate.toString())
-        .set(updatedGame);
+    if ((await this.firebaseDb.database.ref('/games').child(gameIdToUpdate.toString()).get()).exists()) {
+      await this.firebaseDb.database.ref('/games').child(gameIdToUpdate.toString()).set(updatedGame);
       console.log('Updating game DB with id of ' + gameIdToUpdate);
     } else {
-      window.alert(
-        'This game has been deleted. You will now be redirected to the Home Page to start a new game'
-      );
+      window.alert('This game has been deleted. You will now be redirected to the Home Page to start a new game');
       this.router.navigate(['/home']);
     }
   }
@@ -350,11 +325,7 @@ export class GameService {
     return score;
   }
 
-  private setColors(
-    cards: Array<Card>,
-    colorWithMore: String,
-    colorWithLess: String
-  ) {
+  private setColors(cards: Array<Card>, colorWithMore: String, colorWithLess: String) {
     let firstBatchIndex: number;
     let secondBatchIndex: number;
 
@@ -448,21 +419,14 @@ export class GameService {
   getNextPlayer(sequenceGame: SequenceGameContext) {
     let nextPlayer: Player;
 
-    console.log('Current Player is ' + sequenceGame.currentPlayer.name + "They are on " + sequenceGame.currentPlayer.teamColor)
-
     if (sequenceGame.currentPlayer.teamColor === 'blue'){
-      console.log('PrevRedPlayerIndex is ' + sequenceGame.prevRedPlayerIndex)
       if (sequenceGame.prevRedPlayerIndex < this.getRedPlayers(sequenceGame).length - 1){
         nextPlayer = this.getRedPlayers(sequenceGame)[sequenceGame.prevRedPlayerIndex + 1]
       } else {
         nextPlayer =  this.getRedPlayers(sequenceGame)[0]
       }
       sequenceGame.prevRedPlayerIndex = this.getRedPlayers(sequenceGame).indexOf(nextPlayer)
-      console.log('PrevRedPlayerIndex AFTER setting to new player is ' + sequenceGame.prevRedPlayerIndex)
-
-
     } else {
-      console.log('PrevBluePlayerIndex is ' + sequenceGame.prevBluePlayerIndex)
       if (sequenceGame.prevBluePlayerIndex < this.getBluePlayers(sequenceGame).length - 1){
         nextPlayer = this.getBluePlayers(sequenceGame)[sequenceGame.prevBluePlayerIndex + 1]
       } else {
@@ -470,8 +434,6 @@ export class GameService {
       }
       sequenceGame.prevBluePlayerIndex = this.getBluePlayers(sequenceGame).indexOf(nextPlayer)
     }
-
-    console.log("Next player is " + nextPlayer.name)
     return nextPlayer
   }
 

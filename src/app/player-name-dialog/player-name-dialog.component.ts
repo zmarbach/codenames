@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Player } from '../player';
+import { Player } from '../models/player';
 
 @Component({
   selector: 'app-player-name-dialog',

@@ -1,5 +1,5 @@
-import { Card } from './card';
-import { CodenamesGameContext } from './codenames-game-context';
+import { Card } from '../models/cards/card';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { GameIdPair } from './game-id-pair';
 import { GameMode } from './game-mode.enum';
 

@@ -1,11 +1,11 @@
-import { Card } from './card';
-import { Face } from './face';
+import { Card } from '../cards/card';
+import { Face } from '../face';
 import { GameContext } from './game-context';
-import { GameMode } from './game-mode.enum';
-import { Player } from './player';
-import { PlayingCard } from './playing-card';
-import { Suit } from './suit.enum';
-import { Utils } from './utils';
+import { GameMode } from '../game-mode.enum';
+import { Player } from '../player';
+import { PlayingCard } from '../cards/playing-card';
+import { Suit } from '../suit.enum';
+import { Utils } from '../../utils';
 
 export class SequenceGameContext extends GameContext {
   players: Array<Player> = [];

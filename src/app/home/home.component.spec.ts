@@ -6,9 +6,9 @@ import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
-import { Card } from '../card';
-import { GameIdPair } from '../game-id-pair';
-import { GameService } from '../game.service';
+import { Card } from '../models/cards/card';
+import { GameIdPair } from '../models/game-id-pair';
+import { GameService } from '../services/game.service';
 
 import { HomeComponent } from './home.component';
 import { MatCardModule } from '@angular/material/card';
@@ -17,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GameMode } from '../game-mode.enum';
-import { CodenamesGameContext } from '../codenames-game-context';
+import { GameMode } from '../models/game-mode.enum';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 
 describe('HomeComponent', () => {
   let router: Router;

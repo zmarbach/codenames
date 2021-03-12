@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Card } from '../card';
-import { GameIdPair } from '../game-id-pair';
-import { GameService } from '../game.service';
-import { GameMode } from '../game-mode.enum';
-import { Suit } from '../suit.enum';
-import { SequenceGameContext } from '../sequence-game-context';
-import { GameContext } from '../game-context';
+import { Card } from '../models/cards/card';
+import { GameIdPair } from '../models/game-id-pair';
+import { GameService } from '../services/game.service';
+import { GameMode } from '../models/game-mode.enum';
+import { Suit } from '../models/suit.enum';
+import { SequenceGameContext } from '../models/game-contexts/sequence-game-context';
+import { GameContext } from '../models/game-contexts/game-context';
 import { MatDialog } from '@angular/material/dialog';
-import { Player } from '../player';
+import { Player } from '../models/player';
 import { FormControl } from '@angular/forms';
 import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
-import { PlayingCard } from '../playing-card';
-import { Face } from '../face';
+import { PlayingCard } from '../models/cards/playing-card';
+import { Face } from '../models/face';
 import { Utils } from '../utils';
 
 @Component({
@@ -31,12 +31,7 @@ export class BoardComponent implements OnInit {
   nameForm: FormControl;
   selectedPlayerId: number;
 
-  constructor(
-    private activeRoute: ActivatedRoute,
-    public router: Router,
-    private gameService: GameService,
-    private dialog: MatDialog
-  ) {}
+  constructor(private activeRoute: ActivatedRoute, public router: Router, private gameService: GameService, private dialog: MatDialog) {}
 
   ngOnInit() {
     //TODO - handle this better!!! No setTimeout, figure it out with async await instead!!!
@@ -44,24 +39,17 @@ export class BoardComponent implements OnInit {
     this.setUpCurrentGame(this.currentGameIdPair);
 
     setTimeout(() => {
-      this.isSequence =
-        this.currentGameIdPair.game.mode === GameMode.SEQUENCE ? true : false;
+      this.isSequence = this.currentGameIdPair.game.mode === GameMode.SEQUENCE ? true : false;
       this.title = this.isSequence ? 'SEQUENCE' : 'CODENAMES';
       if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE) {
         this.handleDialog();
       }
     }, 500);
-
-    console.log(
-      'currentGameIdPair is: ' + JSON.stringify(this.currentGameIdPair)
-    );
   }
 
   handleDialog() {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-    console.log(
-      'players in sequence game ---- ' + JSON.stringify(sequenceGame.players)
-    );
+    console.log('players in sequence game ---- ' + JSON.stringify(sequenceGame.players));
 
     const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
       width: '250px',
@@ -97,7 +85,9 @@ export class BoardComponent implements OnInit {
       nextGame = await this.gameService.createNewGame(this.currentGameIdPair.game.mode, [], []);
     }
     await this.gameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
-    this.handleDialog()
+    if (nextGame.mode === GameMode.SEQUENCE){
+      this.handleDialog()
+    }
   }
 
   toggleSpyMaster() {
@@ -199,10 +189,7 @@ export class BoardComponent implements OnInit {
       this.currentGameIdPair.game.isBlueTurn = false;
     }
     // update game in Firebase DB
-    await this.gameService.updateGameInDb(
-      this.currentGameIdPair.id,
-      this.currentGameIdPair.game
-    );
+    await this.gameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
   }
 
   async deleteGameFromDb() {
