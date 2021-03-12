@@ -38,6 +38,7 @@
                                 boardContainerPictures: currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES',
                                 boardContainerSequence: currentGameIdPair.game.mode.toString() === 'SEQUENCE'}">
       <div *ngFor="let card of currentGameIdPair.game.cardsForBoard">
+        <div>{{currentGameIdPair.game.cardsForBoard.indexOf(card)}}</div>
         <mat-card [ngClass]="{cardContainer: !card.selected,
                               cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
                               cardContainerSelectedBlue: (card.selected || isSpyMaster) && card.color == 'blue',

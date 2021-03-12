@@ -15,6 +15,10 @@ import { Face } from '../models/face';
 import { Utils } from '../utils';
 import { SequenceGameService } from '../services/sequence-game.service';
 import { CodenamesGameService } from '../services/codenames-game.service';
+import { ThrowStmt } from '@angular/compiler';
+
+const FAILURE = "fail"
+const SUCCESS = "success"
 
 @Component({
   selector: 'app-board',
@@ -101,10 +105,15 @@ export class BoardComponent implements OnInit {
 
   //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
   async select(card: Card) {
+    let statusCode: String = ''
+
     if (!card.selected) {
-      //sequence related logic only
       if (this.isSequence) {
-        this.doSequenceSelect(card);
+        statusCode = this.doSequenceSelect(card);
+        if (this.isSequence && statusCode === SUCCESS){
+          const sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+          this.sequenceGameService.checkForSequence(sequenceGame.cardsForBoard, this.selectedPlayer.teamColor, sequenceGame.existingSequences);
+        }
       } else {
         card.selected = true;
         this.updateScore(card.color);
@@ -117,7 +126,7 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  private doSequenceSelect(card: Card) {
+  private doSequenceSelect(card: Card) : String {
     let _card = card as PlayingCard;
     //Have to manually create new PlayingCard because really this is just JSON passed in.
     //Otherwise won't have access to functions on PlayingCard, Face, Suit, or any other objects
@@ -125,12 +134,14 @@ export class BoardComponent implements OnInit {
 
     if (playingCard.isFreeSpace()) {
       alert("No need to select this space. It's a freebie.");
+      return FAILURE;
     } else if (!this.isPlayersTurn()){
       alert("It is not your turn yet.")
+      return FAILURE;
     } else {
       let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
       //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
-      const removedCard = this.sequenceGameService.removeCardFromHand(playingCard, this.selectedPlayer.cardsInHand as PlayingCard[]);
+      const removedCard = this.sequenceGameService.removeCardFromHand(playingCard.displayValue, this.selectedPlayer.cardsInHand as PlayingCard[]);
       if (removedCard) {
         this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
         this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
@@ -138,6 +149,7 @@ export class BoardComponent implements OnInit {
         card.color = this.selectedPlayer.teamColor;
         card.selected = true;
         sequenceGame.currentPlayer = this.sequenceGameService.getNextPlayer(sequenceGame as SequenceGameContext)
+        return SUCCESS;
       }
     }
   }
