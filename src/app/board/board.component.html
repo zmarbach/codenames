@@ -78,7 +78,7 @@
             <div class="displayFlex">
               <span (click)="select(card)" [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
               <div *ngIf="card.selected">
-                <button id="removeButton" (click)="removeWithOneEyedJack(card)">x</button>
+                <button id="removeButton" (click)="removeWithOneEyedJack(card, currentGameIdPair.game.cardsForBoard.indexOf(card))">x</button>
               </div>
             </div>
           </div>

@@ -49,12 +49,11 @@ export class BoardComponent implements OnInit {
       if (this.currentGameIdPair.game.mode === GameMode.SEQUENCE) {
         this.handleDialog();
       }
-    }, 500);
+    }, 1000);
   }
 
   handleDialog() {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-    console.log('players in sequence game ---- ' + JSON.stringify(sequenceGame.players));
 
     const dialogRef = this.dialog.open(PlayerNameDialogComponent, {
       width: '250px',
@@ -119,10 +118,10 @@ export class BoardComponent implements OnInit {
         this.updateScore(card.color);
       }
 
-      await this.codenamesGameService.updateGameInDb(
-        this.currentGameIdPair.id,
-        this.currentGameIdPair.game
-      );
+      console.log("Hand RIGHT BEFORE updating db --->");
+      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand);
+
+      await this.codenamesGameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
     }
   }
 
@@ -140,10 +139,23 @@ export class BoardComponent implements OnInit {
       return FAILURE;
     } else {
       let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+
+      console.log("Hand BEFORE play --->")
+      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
+
       //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
       const removedCard = this.sequenceGameService.removeCardFromHand(playingCard.displayValue, this.selectedPlayer.cardsInHand as PlayingCard[]);
+      
+      console.log("Hand AFTER play but BEFORE draw ---> ")
+      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
+
       if (removedCard) {
         this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
+
+        console.log("Hand AFTER draw ---> ");
+        this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
+
+
         this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
         card.color = this.selectedPlayer.teamColor;
@@ -153,10 +165,29 @@ export class BoardComponent implements OnInit {
       }
     }
   }
+  printDisplayValuesOfHand(cardsInHand: Card[]) {
+    let displayValues = []
+    for (let card of cardsInHand){
+      displayValues.push((card as PlayingCard).displayValue)
+    }
+
+    console.log(JSON.stringify(displayValues))
+  }
 
   //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
-  async removeWithOneEyedJack(card: PlayingCard) {
+  async removeWithOneEyedJack(card: PlayingCard, boardIndexOfCard: number) {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
+
+    if (this.selectedPlayer.teamColor === card.color){
+      alert("You can only remove the other team's cards.");
+      return;
+    }
+
+    console.log("Board index is " + boardIndexOfCard)
+    if (this.sequenceGameService.cardIsPartOfExistingSequence(boardIndexOfCard, sequenceGame.existingSequences)){
+      alert('You cannot remove this card because it is already part of an exisiting sequence');
+      return;
+    }
 
     let indexOfOneEyedJack = this.sequenceGameService.getindexOfCard(this.selectedPlayer.cardsInHand as PlayingCard[], '👁 J');
     if (indexOfOneEyedJack !== undefined) {
@@ -168,6 +199,8 @@ export class BoardComponent implements OnInit {
         sequenceGame.topCardOnDiscardPile = removedCard;
 
         card.selected = false;
+        // Reset color because sequence check looks for colors to match
+        card.color = '';
         
         sequenceGame.currentPlayer = this.sequenceGameService.getNextPlayer(sequenceGame as SequenceGameContext)
 

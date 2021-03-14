@@ -1,3 +1,4 @@
+import { sequence } from '@angular/animations';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Router } from '@angular/router';
@@ -109,8 +110,6 @@ export class SequenceGameService extends GameService {
         let potentialNewSequence = [i, i+1, i+2, i+3, i+4];
         if (this.isFiveHorizontalInARow(allCardsOnBoard, i, color) && !this.isExistingSequence(potentialNewSequence, existingSequences)){
           existingSequences.push(new Sequence(potentialNewSequence));
-          console.log('Existing sequences --> ' + JSON.stringify(existingSequences));
-
           alert('New sequence!');
           return;
         }
@@ -122,9 +121,7 @@ export class SequenceGameService extends GameService {
       if (this.isValidStartIndexForVerticalCheck(i)){
           let potentialNewSequence = [i, i+10, i+20, i+30, i+40];
           if (this.isFiveVerticalInARow(allCardsOnBoard, i, color) && !this.isExistingSequence(potentialNewSequence, existingSequences)){
-            existingSequences.push(new Sequence(potentialNewSequence));
-            console.log('Existing sequences --> ' + JSON.stringify(existingSequences));
-  
+            existingSequences.push(new Sequence(potentialNewSequence));  
             alert('New sequence!');
             return;
         }
@@ -132,6 +129,8 @@ export class SequenceGameService extends GameService {
     }
 
     //Diagonal check
+
+    console.log('Existing sequences --> ' + JSON.stringify(existingSequences));
 
   }
 
@@ -184,6 +183,18 @@ export class SequenceGameService extends GameService {
 
   isValidStartIndexForVerticalCheck(index: number) {
     return index < 60;
+  }
+
+  cardIsPartOfExistingSequence(boardIndexOfCard: number, existingSequences: Array<Sequence>) {
+    for (let sequence of existingSequences) {
+      for (let i of sequence.indicies){
+        if (boardIndexOfCard === i){
+          return true;
+        }
+      }
+    } 
+    
+    return false  
   }
 
   getNextPlayer(sequenceGame: SequenceGameContext) {
@@ -254,8 +265,6 @@ export class SequenceGameService extends GameService {
 
     return names;
   }
-
-
 
   private async setInitialCardsForSequence(cards: Array<Card>) {
     let emptyString = '';

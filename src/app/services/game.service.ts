@@ -20,8 +20,6 @@ export abstract class GameService {
 
   setUpGameAndDbListener(gameIdPair: GameIdPair) {
     this.firebaseDb.database.ref('/games').child(gameIdPair.id.toString()).on('value', (snapshot) => {
-        console.log('New shapshot val is ' + JSON.stringify(snapshot.val()));
-
         if (snapshot.exists()) {
             gameIdPair.game = snapshot.val();
         }
