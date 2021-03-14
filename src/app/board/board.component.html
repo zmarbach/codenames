@@ -14,7 +14,8 @@
           </div>
           <div *ngIf="isSequence">
             <td mat-cell class="score">
-              <span><strong><i>Score is TBD</i></strong></span>
+              <!-- <span><strong><i>Score is TBD</i></strong></span> -->
+              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
             </td>
           </div>
           <td mat-cell class="turnIndicator">

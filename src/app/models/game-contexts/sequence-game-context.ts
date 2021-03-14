@@ -133,26 +133,40 @@ export class SequenceGameContext extends GameContext {
       }
     }
 
-    // //TODO delete this after testing
-    // players[0].cardsInHand = new Array<PlayingCard>(
-    //   new PlayingCard('red',false, Face.TWO, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.THREE, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.FOUR, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.FIVE, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.SIX, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.SEVEN, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.SPADE),
-    //   )
+    // TODO delete this after testing
+    players[0].cardsInHand = new Array<PlayingCard>(
+      new PlayingCard('red',false, Face.FIVE, Suit.CLUB),
+      new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.FIVE, Suit.CLUB),
+      new PlayingCard('red',false, Face.FIVE, Suit.HEART),
+      new PlayingCard('red',false, Face.THREE, Suit.HEART),
+      new PlayingCard('red',false, Face.TWO_EYED_JACK, Suit.SPADE),
+      new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.SPADE),
+      new PlayingCard('red',false, Face.TWO, Suit.SPADE),
+      new PlayingCard('red',false, Face.THREE, Suit.SPADE),
+      new PlayingCard('red',false, Face.FOUR, Suit.SPADE),
+      new PlayingCard('red',false, Face.FIVE, Suit.SPADE),
+      new PlayingCard('red',false, Face.SIX, Suit.SPADE),
+      new PlayingCard('red',false, Face.SEVEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.SPADE)
+    )
     
-    // players[1].cardsInHand = new Array<PlayingCard>(
-    //   new PlayingCard('red',false, Face.ACE, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.KING, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.TEN, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.QUEEN, Suit.SPADE),
-    //   new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
-    //   new PlayingCard('red',false, Face.THREE, Suit.DIAMOND),
-    //   new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.HEART),
-    //   )
+    players[1].cardsInHand = new Array<PlayingCard>(
+      new PlayingCard('red',false, Face.NINE, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.TWO, Suit.SPADE),
+      new PlayingCard('red',false, Face.KING, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.FIVE, Suit.HEART),
+      new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.TWO_EYED_JACK, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.HEART),
+      new PlayingCard('red',false, Face.ACE, Suit.SPADE),
+      new PlayingCard('red',false, Face.KING, Suit.SPADE),
+      new PlayingCard('red',false, Face.TEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.QUEEN, Suit.SPADE),
+      new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.THREE, Suit.DIAMOND),
+      new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.HEART)
+    )
   }
 
   private removeCardFromDeck(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {

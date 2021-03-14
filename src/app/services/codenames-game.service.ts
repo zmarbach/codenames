@@ -116,4 +116,12 @@ export class CodenamesGameService extends GameService {
       cards[i].color = 'gray';
     }
   }
+
+  updateScore(game: CodenamesGameContext, color: String) {
+    if (color == 'red' && game.redScore !== 0) {
+      game.redScore--;
+    } else if (color == 'blue' && game.blueScore !== 0) {
+      game.blueScore--;
+    }
+  }
 }

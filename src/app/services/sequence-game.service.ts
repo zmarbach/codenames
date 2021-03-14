@@ -13,7 +13,13 @@ import { Suit } from '../models/suit.enum';
 import { DataService } from './data.service';
 import { GameService } from './game.service';
 
-const VALID_LAST_DIGIT_FOR_HORIZONTAL_CHECK = ['0', '1', '2', '3', '4', '5']
+const VALID_LAST_DIGIT_FOR_HORIZONTAL_CHECK = ['0', '1', '2', '3', '4', '5'];
+
+const VALID_LAST_DIGIT_FOR_DIAGONAL_POS_CHECK = ['4', '5', '6', '7', '8', '9'];
+const VALID_FIRST_DIGIT_FOR_DIAGONAL_POS_CHECK = ['0', '1', '2', '3', '4', '5'];
+
+const VALID_LAST_DIGIT_FOR_DIAGONAL_NEG_CHECK = ['0', '1', '2', '3', '4', '5'];
+const VALID_FIRST_DIGIT_FOR_DIAGONAL_NEG_CHECK = ['0', '1', '2', '3', '4', '5'];
 
 @Injectable({
   providedIn: 'root'
@@ -22,12 +28,9 @@ export class SequenceGameService extends GameService {
 
   constructor(dataService: DataService, firebaseDb: AngularFireDatabase, router: Router) { 
     super(dataService, firebaseDb, router);
-    console.log('hello')
-
   }
 
   async createNewGame(gameMode: GameMode, redPlayerNames: Array<String>, bluePlayerNames: Array<String>): Promise<SequenceGameContext> {
-    console.log('hello')
     const cardsForBoard = await this.createSequenceCardList();
     return new SequenceGameContext(this.createPlayers(redPlayerNames, bluePlayerNames), gameMode, cardsForBoard, 0, 0, true, false);
   }
@@ -103,42 +106,75 @@ export class SequenceGameService extends GameService {
     sequenceGame.discardPile.push(card);
   }
 
-  checkForSequence(allCardsOnBoard: Array<Card>, color: String, existingSequences: Array<Sequence>){
-    //Horizontal check
-    for (let i=0; i < allCardsOnBoard.length; i++){
+  handlePotentialNewSequence(sequenceGame: SequenceGameContext, currentPlayerTeamColor: String){
+    // Horizontal check
+    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
       if (this.isValidStartIndexForHorizontalCheck(i)){
-        let potentialNewSequence = [i, i+1, i+2, i+3, i+4];
-        if (this.isFiveHorizontalInARow(allCardsOnBoard, i, color) && !this.isExistingSequence(potentialNewSequence, existingSequences)){
-          existingSequences.push(new Sequence(potentialNewSequence));
+        let potentialNewSequence = new Sequence([i, i+1, i+2, i+3, i+4]);
+        if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+          sequenceGame.existingSequences.push(potentialNewSequence);
           alert('New sequence!');
+          this.updateScore(currentPlayerTeamColor, sequenceGame);
           return;
         }
       }
     }
 
     //Vertical check
-    for (let i=0; i < allCardsOnBoard.length; i++){
+    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
       if (this.isValidStartIndexForVerticalCheck(i)){
-          let potentialNewSequence = [i, i+10, i+20, i+30, i+40];
-          if (this.isFiveVerticalInARow(allCardsOnBoard, i, color) && !this.isExistingSequence(potentialNewSequence, existingSequences)){
-            existingSequences.push(new Sequence(potentialNewSequence));  
+          let potentialNewSequence = new Sequence([i, i+10, i+20, i+30, i+40]);
+          if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+            sequenceGame.existingSequences.push(potentialNewSequence); 
             alert('New sequence!');
+            this.updateScore(currentPlayerTeamColor, sequenceGame);
             return;
         }
       }
     }
 
-    //Diagonal check
+    //Diagonal Positive check
+    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      if (this.isValidStartIndexForDiagonalPositiveCheck(i)){
+        let potentialNewSequence = new Sequence([i, i+9, i+18, i+27, i+36]);
+        if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+          sequenceGame.existingSequences.push(potentialNewSequence);
+          alert('New sequence!');
+          this.updateScore(currentPlayerTeamColor, sequenceGame);
+          return;
+        }
+      }
+    }
 
-    console.log('Existing sequences --> ' + JSON.stringify(existingSequences));
+    //Diagonal Negative check
+    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      if (this.isValidStartIndexForDiagonalNegativeCheck(i)){
+        let potentialNewSequence = new Sequence([i, i+11, i+22, i+33, i+44]);
+        if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+          sequenceGame.existingSequences.push(potentialNewSequence);
+          alert('New sequence!');
+          this.updateScore(currentPlayerTeamColor, sequenceGame);
+          return;
+        }
+      }
+    }
+
+    console.log('Existing sequences --> ' + JSON.stringify(sequenceGame.existingSequences));
 
   }
+  updateScore(currentPlayerTeamColor: String, sequenceGame: SequenceGameContext) {
+    if(currentPlayerTeamColor === 'red'){
+      sequenceGame.redScore++;
+    } else {
+      sequenceGame.blueScore++;
+    }
+  }
 
-  isExistingSequence(potentialNewSequence: Array<number>, existingSequences: Array<Sequence>): Boolean{
+  isExistingSequence(potentialNewSequence: Sequence, existingSequences: Array<Sequence>): Boolean{
     for (let sequence of existingSequences){
       let counter = 0;
       for (let i of sequence.indicies){
-        for (let pi of potentialNewSequence){
+        for (let pi of potentialNewSequence.indicies){
           if (i === pi){
             counter++;
           }
@@ -154,20 +190,13 @@ export class SequenceGameService extends GameService {
     return false;
   }
 
-  isFiveHorizontalInARow(allCardsOnBoard: Card[], i: number, color: String) {
-    return this.cardIsSequenceEligible(allCardsOnBoard[i], color) 
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+1], color) 
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+2], color)
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+3], color)
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+4], color)  
-  }
-
-  isFiveVerticalInARow(allCardsOnBoard: Card[], i: number, color: String) {
-    return this.cardIsSequenceEligible(allCardsOnBoard[i], color) 
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+10], color) 
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+20], color)
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+30], color)
-           && this.cardIsSequenceEligible(allCardsOnBoard[i+40], color) 
+  isFiveInARow(allCardsOnBoard: Card[], potentialSequence: Sequence, color: String) {
+    for (let index of potentialSequence.indicies){
+      if (!this.cardIsSequenceEligible(allCardsOnBoard[index], color)){
+        return false;
+      }
+    }
+    return true;
   }
 
   cardIsSequenceEligible(card:Card, targetColor: String) {
@@ -185,6 +214,17 @@ export class SequenceGameService extends GameService {
     return index < 60;
   }
 
+  isValidStartIndexForDiagonalPositiveCheck(index: number) {
+    return index > 3
+           && VALID_LAST_DIGIT_FOR_DIAGONAL_POS_CHECK.includes(index.toString().split('').pop()) 
+           && VALID_FIRST_DIGIT_FOR_DIAGONAL_POS_CHECK.includes(index.toString().split('').shift())
+  }
+
+  isValidStartIndexForDiagonalNegativeCheck(index: number) {
+    return VALID_LAST_DIGIT_FOR_DIAGONAL_NEG_CHECK.includes(index.toString().split('').pop()) 
+           && VALID_FIRST_DIGIT_FOR_DIAGONAL_NEG_CHECK.includes(index.toString().split('').shift())
+  }
+
   cardIsPartOfExistingSequence(boardIndexOfCard: number, existingSequences: Array<Sequence>) {
     for (let sequence of existingSequences) {
       for (let i of sequence.indicies){
@@ -199,8 +239,9 @@ export class SequenceGameService extends GameService {
 
   getNextPlayer(sequenceGame: SequenceGameContext) {
     let nextPlayer: Player;
-
+     
     if (sequenceGame.currentPlayer.teamColor === 'blue'){
+      //DRY this out. Extract method that takes in player list (red or blue)
       if (sequenceGame.prevRedPlayerIndex < this.getRedPlayers(sequenceGame).length - 1){
         nextPlayer = this.getRedPlayers(sequenceGame)[sequenceGame.prevRedPlayerIndex + 1]
       } else {
@@ -271,9 +312,7 @@ export class SequenceGameService extends GameService {
     let isSelected = false;
     cards.push(new PlayingCard(emptyString, isSelected, Face.FREE, Suit.SPADE)); // suit does not matter here because html will hide it if Face is FREE
     cards.push(new PlayingCard(emptyString, isSelected, Face.TWO, Suit.SPADE));
-    cards.push(
-      new PlayingCard(emptyString, isSelected, Face.THREE, Suit.SPADE)
-    );
+    cards.push(new PlayingCard(emptyString, isSelected, Face.THREE, Suit.SPADE));
     cards.push(new PlayingCard(emptyString, isSelected, Face.FOUR, Suit.SPADE));
     cards.push(new PlayingCard(emptyString, isSelected, Face.FIVE, Suit.SPADE));
     cards.push(new PlayingCard(emptyString, isSelected, Face.SIX, Suit.SPADE));

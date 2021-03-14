@@ -111,11 +111,11 @@ export class BoardComponent implements OnInit {
         statusCode = this.doSequenceSelect(card);
         if (this.isSequence && statusCode === SUCCESS){
           const sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
-          this.sequenceGameService.checkForSequence(sequenceGame.cardsForBoard, this.selectedPlayer.teamColor, sequenceGame.existingSequences);
+          this.sequenceGameService.handlePotentialNewSequence(sequenceGame, this.selectedPlayer.teamColor);
         }
       } else {
         card.selected = true;
-        this.updateScore(card.color);
+        this.codenamesGameService.updateScore(this.currentGameIdPair.game, card.color);
       }
 
       console.log("Hand RIGHT BEFORE updating db --->");
@@ -211,16 +211,6 @@ export class BoardComponent implements OnInit {
       }
     } else {
       alert('You cannot remove the ' + card.displayValue + " because you don't have a One-Eyed Jack.");
-    }
-  }
-
-  updateScore(color: String) {
-    if (color == 'red' && this.currentGameIdPair.game.redScore !== 0) {
-      this.currentGameIdPair.game.redScore--;
-      console.log('hello');
-    } else if (color == 'blue' && this.currentGameIdPair.game.blueScore !== 0) {
-      this.currentGameIdPair.game.blueScore--;
-      console.log('hello');
     }
   }
 
