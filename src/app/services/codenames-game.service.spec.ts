@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Card } from '../models/cards/card';
 import { CodenameCard } from '../models/cards/codename-card';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { GameMode } from '../models/game-mode.enum';
 
 import { CodenamesGameService } from './codenames-game.service';
@@ -125,6 +126,30 @@ describe('CodenamesGameService', () => {
     resetColors();
   });
 
+  //updateScore tests
+  it('updateScore should decrememnt redScore by 1 if selected card color is red', async () => {
+    let codenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, [], 8, 4, true, false);
+
+    service.updateScore(codenamesGame, 'red');
+
+    expect(codenamesGame.redScore).toEqual(7);
+  });
+
+  it('updateScore should decrememnt blueScore by 1 if selected card color is blue', async () => {
+    let codenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, [], 8, 4, false, true);
+
+    service.updateScore(codenamesGame, 'blue');
+
+    expect(codenamesGame.blueScore).toEqual(3);
+  });
+
+  it('updateScore should NOT decrememnt blueScore if score is already 0', async () => {
+    let codenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, [], 2, 0, false, true);
+
+    service.updateScore(codenamesGame, 'blue');
+
+    expect(codenamesGame.blueScore).toEqual(0);
+  });
 });
 
 // Utility functions

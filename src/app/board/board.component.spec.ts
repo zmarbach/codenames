@@ -32,7 +32,7 @@ describe('BoardComponent', () => {
   let gameServiceSpy: jasmine.SpyObj<CodenamesGameService>;
 
   beforeEach(async () => {
-    const spyForGameService = jasmine.createSpyObj('CodenamesGameService', ['setUpGameAndDbListener', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('CodenamesGameService', ['setUpGameAndDbListener', 'addGameToDb', 'updateGameInDb', 'deleteGameFromDb', 'createNewGame', 'updateScore']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -120,34 +120,6 @@ describe('BoardComponent', () => {
 
     expect(gameServiceSpy.deleteGameFromDb).toHaveBeenCalledTimes(0);
     expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_PICTURES);
-  });
-
-  // updateScore() tests
-  it('updateScore should decrememnt redScore by 1 if selected card color is red', () => {
-    component.currentGameIdPair.game.redScore = 4;
-    fixture.detectChanges();
-
-    component.updateScore('red');
-
-    expect(component.currentGameIdPair.game.redScore).toEqual(3);
-  });
-
-  it('updateScore should decrememnt blueScore by 1 if selected card color is blue', () => {
-    component.currentGameIdPair.game.blueScore = 8;
-    fixture.detectChanges();
-
-    component.updateScore('blue');
-
-    expect(component.currentGameIdPair.game.blueScore).toEqual(7);
-  });
-
-  it('updateScore should NOT decrememnt blueScore if score is already 0', () => {
-    component.currentGameIdPair.game.blueScore = 0;
-    fixture.detectChanges();
-
-    component.updateScore('blue');
-
-    expect(component.currentGameIdPair.game.blueScore).toEqual(0);
   });
 
   // select() tests
