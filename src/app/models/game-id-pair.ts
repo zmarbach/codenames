@@ -1,6 +1,6 @@
 import { GameContext } from './game-contexts/game-context';
 
-export class GameIdPair {
+export abstract class GameIdPair {
   id: String;
   game: GameContext;
 

@@ -10,24 +10,24 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
-import { routes } from '../app-routing.module';
-import { Card } from '../models/cards/card';
-import { GameIdPair } from '../models/game-id-pair';
+import { routes } from '../../app-routing.module';
+import { Card } from '../../models/cards/card';
 import { Location } from '@angular/common';
 
-import { BoardComponent } from './board.component';
 import { from } from 'rxjs';
-import { GameMode } from '../models/game-mode.enum';
-import { CodenameCard } from '../models/cards/codename-card';
-import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CodenamesGameService } from '../services/codenames-game.service';
+import { GameMode } from '../../models/game-mode.enum';
+import { CodenameCard } from '../../models/cards/codename-card';
+import { CodenamesGameContext } from '../../models/game-contexts/codenames-game-context';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CodenamesGameService } from '../../services/codenames-game.service';
+import { CodenamesGameIdPair } from 'src/app/models/codenames-game-id-pair';
+import { CodenamesBoardComponent } from './codenames-board.component';
 
-describe('BoardComponent', () => {
+describe('CodenamesBoardComponent', () => {
   let router: Router;
   let location: Location;
-  let component: BoardComponent;
-  let fixture: ComponentFixture<BoardComponent>;
+  let component: CodenamesBoardComponent;
+  let fixture: ComponentFixture<CodenamesBoardComponent>;
   let gameServiceSpy: jasmine.SpyObj<CodenamesGameService>;
 
   beforeEach(async () => {
@@ -48,13 +48,11 @@ describe('BoardComponent', () => {
       ],
       providers: [
         { provide: CodenamesGameService, useValue: spyForGameService },
-        { provide: MatDialogRef, useValue: {}},
-        { provide: MAT_DIALOG_DATA, useValue: {}},
         // Mock the activated route so that params actually contain this id
         // params is an Observable so need to use "from"
         { provide: ActivatedRoute, useValue: { params: from([{ id: 'abc1234' }]) } }
       ],
-      declarations: [ BoardComponent ]
+      declarations: [ CodenamesBoardComponent ]
     })
     .compileComponents();
 
@@ -64,7 +62,7 @@ describe('BoardComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BoardComponent);
+    fixture = TestBed.createComponent(CodenamesBoardComponent);
     component = fixture.componentInstance;
 
     let card = new CodenameCard('red', false, 'testWord', 'testImgPath');
@@ -72,7 +70,7 @@ describe('BoardComponent', () => {
     cards.push(card);
     //Set currentGameIdPair equal to this dummy data, otherwise will get property undefined errors
     let newCodenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, cards, 0, 0, false, false)
-    component.currentGameIdPair = new GameIdPair('abc1234', newCodenamesGame);
+    component.currentGameIdPair = new CodenamesGameIdPair('abc1234', newCodenamesGame);
 
     //Set up spy to always return this dummy gameIdPair when createNewGame() is called
     gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(component.currentGameIdPair.game));
@@ -189,3 +187,4 @@ describe('BoardComponent', () => {
   });
 
 });
+

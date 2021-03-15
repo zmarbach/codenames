@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Card } from '../models/cards/card';
-import { GameIdPair } from '../models/game-id-pair';
-import { GameMode } from '../models/game-mode.enum';
-import { Suit } from '../models/suit.enum';
-import { SequenceGameContext } from '../models/game-contexts/sequence-game-context';
-import { GameContext } from '../models/game-contexts/game-context';
+import { Card } from '../../models/cards/card';
+import { GameIdPair } from '../../models/game-id-pair';
+import { GameMode } from '../../models/game-mode.enum';
+import { Suit } from '../../models/suit.enum';
+import { SequenceGameContext } from '../../models/game-contexts/sequence-game-context';
+import { GameContext } from '../../models/game-contexts/game-context';
 import { MatDialog } from '@angular/material/dialog';
-import { Player } from '../models/player';
+import { Player } from '../../models/player';
 import { FormControl } from '@angular/forms';
-import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
-import { PlayingCard } from '../models/cards/playing-card';
-import { Face } from '../models/face';
-import { Utils } from '../utils';
-import { SequenceGameService } from '../services/sequence-game.service';
-import { CodenamesGameService } from '../services/codenames-game.service';
+import { PlayerNameDialogComponent } from '../../player-name-dialog/player-name-dialog.component';
+import { PlayingCard } from '../../models/cards/playing-card';
+import { Face } from '../../models/face';
+import { Utils } from '../../utils';
+import { SequenceGameService } from '../../services/sequence-game.service';
+import { CodenamesGameService } from '../../services/codenames-game.service';
+import { CodenamesGameIdPair } from 'src/app/models/codenames-game-id-pair';
 
 const FAILURE = "fail"
 const SUCCESS = "success"
@@ -25,7 +26,7 @@ const SUCCESS = "success"
   styleUrls: ['./board.component.css'],
 })
 export class BoardComponent implements OnInit {
-  currentGameIdPair = new GameIdPair('', null);
+  currentGameIdPair: CodenamesGameIdPair;
   isSpyMaster = false;
   isSequence = false;
   Suit = Suit;

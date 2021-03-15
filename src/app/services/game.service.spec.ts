@@ -4,6 +4,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Card } from '../models/cards/card';
+import { CodenamesGameIdPair } from '../models/codenames-game-id-pair';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { GameIdPair } from '../models/game-id-pair';
 import { GameMode } from '../models/game-mode.enum';
@@ -29,7 +30,7 @@ describe('GameService', () => {
   });
 
   it('Add, Update, Get, and Delete should all succeed', async function() {
-    let gameIdPair = new GameIdPair(null, new CodenamesGameContext(GameMode.CODENAMES_WORDS,new Array<Card>(), 0, 0, false, false));
+    let gameIdPair = new CodenamesGameIdPair(null, new CodenamesGameContext(GameMode.CODENAMES_WORDS,new Array<Card>(), 0, 0, false, false));
     try {
       gameIdPair.id = service.addGameToDb(gameIdPair.game);
       expect(gameIdPair.id).not.toBeNull();
