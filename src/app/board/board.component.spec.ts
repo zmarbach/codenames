@@ -13,7 +13,6 @@ import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
 import { Card } from '../models/cards/card';
 import { GameIdPair } from '../models/game-id-pair';
-import { GameService } from '../services/game.service';
 import { Location } from '@angular/common';
 
 import { BoardComponent } from './board.component';
@@ -88,14 +87,16 @@ describe('BoardComponent', () => {
   });
 
   // setUpCurrentGame() tests
-  it('setUpCurrentGame should call getGameById of GameService twice', () => {
-    gameServiceSpy.setUpGameAndDbListener.and.callFake(() => {console.log("do nothing")});
-    console.log('CurrentGame = ' + component.currentGameIdPair.game);
-
+  it('setUpCurrentGame should set up game with values', () => {
     component.setUpCurrentGame(component.currentGameIdPair);
 
-    expect(gameServiceSpy.setUpGameAndDbListener).toHaveBeenCalledTimes(2);
     expect(component.currentGameIdPair.game).not.toBe(undefined);
+    expect(component.currentGameIdPair.game.cardsForBoard).not.toBe(undefined, []);
+    expect(component.currentGameIdPair.game.mode).not.toBe(undefined);
+    expect(component.currentGameIdPair.game.redScore).not.toBe(undefined);
+    expect(component.currentGameIdPair.game.blueScore).not.toBe(undefined);
+    expect(component.currentGameIdPair.game.isRedTurn).not.toBe(undefined);
+    expect(component.currentGameIdPair.game.isBlueTurn).not.toBe(undefined);
   });
 
   //nextGame() tests

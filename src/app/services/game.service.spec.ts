@@ -33,27 +33,22 @@ describe('GameService', () => {
     try {
       gameIdPair.id = service.addGameToDb(gameIdPair.game);
       expect(gameIdPair.id).not.toBeNull();
-      console.log('Add game ---> SUCCESS');
 
       gameIdPair.game.blueScore = 99;
       let resultAfterUpdate = await service.updateGameInDb(gameIdPair.id, gameIdPair.game);
       expect(resultAfterUpdate).not.toBeNull();
-      console.log('Update game ---> SUCCESS');
 
       const resultAfterGetById = service.setUpGameAndDbListener(gameIdPair);
       expect(resultAfterGetById).not.toBeNull();
-      console.log('Get game by id is NOT null BEFORE delete ---> SUCCESS');
     } catch {
       console.log('ERROR!!!');
     } finally {
       if (gameIdPair.id !== null){
         const resultAfterDelete = await service.deleteGameFromDb(gameIdPair.id);
         expect(resultAfterDelete).not.toBeNull();
-        console.log('Delete game ---> SUCCESS');
 
         const resultAfterGetById = service.setUpGameAndDbListener(gameIdPair);
         expect(resultAfterGetById).toBeUndefined();
-        console.log('Get game by id is undeffined AFTER delete ---> SUCCESS');
       }
     }
   });

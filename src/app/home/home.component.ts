@@ -39,29 +39,20 @@ export class HomeComponent implements OnInit {
   }
 
   updateRequiredStatus(mode: GameMode) {
-    console.log(mode);
     if (mode === GameMode.SEQUENCE) {
       this.numOfPlayers.enable();
       this.redPlayerNames.controls.forEach((control) => control.enable);
       this.bluePlayerNames.controls.forEach((control) => control.enable);
       this.numOfPlayers.setValidators(Validators.required);
-      this.redPlayerNames.controls.forEach((control) =>
-        control.setValidators(Validators.required)
-      );
-      this.bluePlayerNames.controls.forEach((control) =>
-        control.setValidators(Validators.required)
-      );
+      this.redPlayerNames.controls.forEach((control) => control.setValidators(Validators.required));
+      this.bluePlayerNames.controls.forEach((control) => control.setValidators(Validators.required));
     } else {
       this.numOfPlayers.disable();
       this.redPlayerNames.controls.forEach((control) => control.disable());
       this.bluePlayerNames.controls.forEach((control) => control.disable());
       this.numOfPlayers.clearValidators();
-      this.redPlayerNames.controls.forEach((control) =>
-        control.clearValidators()
-      );
-      this.bluePlayerNames.controls.forEach((control) =>
-        control.clearValidators()
-      );
+      this.redPlayerNames.controls.forEach((control) => control.clearValidators());
+      this.bluePlayerNames.controls.forEach((control) => control.clearValidators());
     }
   }
 
@@ -84,7 +75,6 @@ export class HomeComponent implements OnInit {
   }
 
   async submit() {
-    console.log('Creating new game...');
     let newGame: GameContext;
 
     if (this.settingsForm.value.gameMode === GameMode.SEQUENCE){
@@ -95,8 +85,7 @@ export class HomeComponent implements OnInit {
 
     const newGameFirebaseId = this.codenamesGameService.addGameToDb(newGame);
 
-    console.log('New game created with this id ---> ' + newGameFirebaseId);
-      this.router.navigate(['/board/' + newGameFirebaseId]);
+    this.router.navigate(['/board/' + newGameFirebaseId]);
   }
 
   showSequence() {

@@ -59,7 +59,6 @@ export class BoardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Selected player has id of ' + result);
       const selectedPlayerJSON = sequenceGame.players.find(
         (player) => player.id === result
       );
@@ -164,7 +163,6 @@ export class BoardComponent implements OnInit {
       return;
     }
 
-    console.log("Board index is " + boardIndexOfCard)
     if (this.sequenceGameService.cardIsPartOfExistingSequence(boardIndexOfCard, sequenceGame.existingSequences)){
       alert('You cannot remove this card because it is already part of an exisiting sequence');
       return;
@@ -188,13 +186,10 @@ export class BoardComponent implements OnInit {
         
         sequenceGame.currentPlayer = this.sequenceGameService.getNextPlayer(sequenceGame as SequenceGameContext)
 
-        await this.sequenceGameService.updateGameInDb(
-          this.currentGameIdPair.id,
-          this.currentGameIdPair.game
-        );
+        await this.sequenceGameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
       }
     } else {
-      alert('You cannot remove the ' + card.displayValue + " because you don't have a One-Eyed Jack.");
+        alert('You cannot remove the ' + card.displayValue + " because you don't have a One-Eyed Jack.");
     }
   }
 

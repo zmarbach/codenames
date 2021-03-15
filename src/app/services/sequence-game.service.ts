@@ -1,4 +1,3 @@
-import { sequence } from '@angular/animations';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Router } from '@angular/router';
@@ -95,7 +94,6 @@ export class SequenceGameService extends GameService {
 
   drawTopCardFromDeck(sequenceGame: SequenceGameContext): Card {
     let card = sequenceGame.deck.pop();
-    console.log(sequenceGame.deck.length);
     return card;
   }
 
@@ -107,61 +105,84 @@ export class SequenceGameService extends GameService {
   }
 
   handlePotentialNewSequence(sequenceGame: SequenceGameContext, currentPlayerTeamColor: String){
-    // Horizontal check
     for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      // Horizontal check
       if (this.isValidStartIndexForHorizontalCheck(i)){
         let potentialNewSequence = new Sequence([i, i+1, i+2, i+3, i+4]);
         if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
-          sequenceGame.existingSequences.push(potentialNewSequence);
-          alert('New sequence!');
-          this.updateScore(currentPlayerTeamColor, sequenceGame);
+          this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
           return;
         }
       }
-    }
 
-    //Vertical check
-    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      //Vertical check
       if (this.isValidStartIndexForVerticalCheck(i)){
-          let potentialNewSequence = new Sequence([i, i+10, i+20, i+30, i+40]);
-          if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
-            sequenceGame.existingSequences.push(potentialNewSequence); 
-            alert('New sequence!');
-            this.updateScore(currentPlayerTeamColor, sequenceGame);
-            return;
+        let potentialNewSequence = new Sequence([i, i+10, i+20, i+30, i+40]);
+        if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+          this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
+          return;
         }
       }
-    }
 
-    //Diagonal Positive check
-    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      //Diagonal Positive Check
       if (this.isValidStartIndexForDiagonalPositiveCheck(i)){
         let potentialNewSequence = new Sequence([i, i+9, i+18, i+27, i+36]);
         if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
-          sequenceGame.existingSequences.push(potentialNewSequence);
-          alert('New sequence!');
-          this.updateScore(currentPlayerTeamColor, sequenceGame);
+          this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
           return;
         }
       }
-    }
 
-    //Diagonal Negative check
-    for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+      //Diagonal Negative Check
       if (this.isValidStartIndexForDiagonalNegativeCheck(i)){
         let potentialNewSequence = new Sequence([i, i+11, i+22, i+33, i+44]);
         if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
-          sequenceGame.existingSequences.push(potentialNewSequence);
-          alert('New sequence!');
-          this.updateScore(currentPlayerTeamColor, sequenceGame);
+          this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
           return;
         }
       }
-    }
+    } 
 
-    console.log('Existing sequences --> ' + JSON.stringify(sequenceGame.existingSequences));
+    // //Vertical check
+    // for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+    //   if (this.isValidStartIndexForVerticalCheck(i)){
+    //       let potentialNewSequence = new Sequence([i, i+10, i+20, i+30, i+40]);
+    //       if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+    //         this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
+    //         return;
+    //     }
+    //   }
+    // }
 
+    // //Diagonal Positive check
+    // for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+    //   if (this.isValidStartIndexForDiagonalPositiveCheck(i)){
+    //     let potentialNewSequence = new Sequence([i, i+9, i+18, i+27, i+36]);
+    //     if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+    //       this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
+    //       return;
+    //     }
+    //   }
+    // }
+
+    // //Diagonal Negative check
+    // for (let i=0; i < sequenceGame.cardsForBoard.length; i++){
+    //   if (this.isValidStartIndexForDiagonalNegativeCheck(i)){
+    //     let potentialNewSequence = new Sequence([i, i+11, i+22, i+33, i+44]);
+    //     if (this.isFiveInARow(sequenceGame.cardsForBoard, potentialNewSequence, currentPlayerTeamColor) && !this.isExistingSequence(potentialNewSequence, sequenceGame.existingSequences)){
+    //       this.handleNewSequence(sequenceGame, potentialNewSequence, currentPlayerTeamColor);
+    //       return;
+    //     }
+    //   }
+    // }
   }
+
+  private handleNewSequence(sequenceGame: SequenceGameContext, potentialNewSequence: Sequence, currentPlayerTeamColor: String) {
+    sequenceGame.existingSequences.push(potentialNewSequence);
+    alert('New sequence!');
+    this.updateScore(currentPlayerTeamColor, sequenceGame);
+  }
+
   updateScore(currentPlayerTeamColor: String, sequenceGame: SequenceGameContext) {
     if(currentPlayerTeamColor === 'red'){
       sequenceGame.redScore++;

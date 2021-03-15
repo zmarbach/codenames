@@ -7,17 +7,9 @@
     <mat-card id="boardTop" class="boardTop">
       <table class="matTable" mat-table>
         <tr mat-table-row>
-          <div *ngIf="!isSequence">
-            <td mat-cell class="score">
-              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
-            </td>
-          </div>
-          <div *ngIf="isSequence">
-            <td mat-cell class="score">
-              <!-- <span><strong><i>Score is TBD</i></strong></span> -->
-              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
-            </td>
-          </div>
+          <td mat-cell class="score">
+            <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
+          </td>
           <td mat-cell class="turnIndicator">
             <div *ngIf='!isSequence'>
               <span class="redText" *ngIf="currentGameIdPair.game.isRedTurn">Red's</span>
@@ -39,7 +31,6 @@
                                 boardContainerPictures: currentGameIdPair.game.mode.toString() === 'CODENAMES_PICTURES',
                                 boardContainerSequence: currentGameIdPair.game.mode.toString() === 'SEQUENCE'}">
       <div *ngFor="let card of currentGameIdPair.game.cardsForBoard">
-        <div>{{currentGameIdPair.game.cardsForBoard.indexOf(card)}}</div>
         <mat-card [ngClass]="{cardContainer: !card.selected,
                               cardContainerSelectedRed: (card.selected || isSpyMaster) && card.color == 'red',
                               cardContainerSelectedBlue: (card.selected || isSpyMaster) && card.color == 'blue',
