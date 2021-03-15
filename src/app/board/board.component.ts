@@ -48,6 +48,7 @@ export class BoardComponent implements OnInit {
         this.handleDialog();
       }
     }, 1000);
+
   }
 
   handleDialog() {
@@ -209,7 +210,7 @@ export class BoardComponent implements OnInit {
     await this.codenamesGameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 
-  midGameShuffle() {
+  async midGameShuffle() {
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
     //multiple shuffles just for fun
@@ -219,6 +220,9 @@ export class BoardComponent implements OnInit {
 
     sequenceGame.deck = sequenceGame.discardPile;
     sequenceGame.discardPile = [];
+    sequenceGame.topCardOnDiscardPile = null;
+
+    await this.codenamesGameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
   }
 
   private isPlayersTurn(): Boolean {
@@ -228,7 +232,7 @@ export class BoardComponent implements OnInit {
 
   topDiscardIsRedSuit(){
     let sequenceGame = this.currentGameIdPair.game as SequenceGameContext
-    return sequenceGame.topCardOnDiscardPile.suit === Suit.HEART || sequenceGame.topCardOnDiscardPile.suit === Suit.DIAMOND; 
+    return sequenceGame.topCardOnDiscardPile?.suit === Suit.HEART || sequenceGame.topCardOnDiscardPile?.suit === Suit.DIAMOND; 
   }
 }
 

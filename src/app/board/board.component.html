@@ -118,19 +118,23 @@
           </div>
         </mat-card>
     </div>
-    <div *ngIf="currentGameIdPair.game.deck.length === 0" id="reshuffleButton">
+    <div *ngIf="currentGameIdPair.game.deck === undefined" id="reshuffleButton">
       <button mat-raised-button (click)="midGameShuffle()">Shuffle</button>
     </div>
   </div>
 
-  <!-- DECK: 
-    <div  *ngFor="let card of currentGameIdPair.game.deck">
-      {{ card.displayValue }}
-    </div>
 
-    <br/>
+  DECK:
+    <div *ngIf="isSequence">
+      <div  *ngFor="let card of currentGameIdPair.game.deck">
+        {{ card.displayValue }}
+      </div>
+  
+      <br/>
+    </div> 
+    
 
-    DISCARD PILE: 
+    <!-- DISCARD PILE: 
     <div  *ngFor="let card of currentGameIdPair.game.discardPile">
       {{ card.displayValue }}
     </div> -->
