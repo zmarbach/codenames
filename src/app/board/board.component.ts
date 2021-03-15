@@ -15,7 +15,6 @@ import { Face } from '../models/face';
 import { Utils } from '../utils';
 import { SequenceGameService } from '../services/sequence-game.service';
 import { CodenamesGameService } from '../services/codenames-game.service';
-import { ThrowStmt } from '@angular/compiler';
 
 const FAILURE = "fail"
 const SUCCESS = "success"
@@ -34,7 +33,6 @@ export class BoardComponent implements OnInit {
   selectedPlayer = new Player(9999, 'test', [], '');
   title: String;
   nameForm: FormControl;
-  selectedPlayerId: number;
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private sequenceGameService: SequenceGameService, private codenamesGameService: CodenamesGameService, private dialog: MatDialog) {}
 
@@ -65,6 +63,7 @@ export class BoardComponent implements OnInit {
       const selectedPlayerJSON = sequenceGame.players.find(
         (player) => player.id === result
       );
+      
       // Transform the data from find into an ACTUAL player obj so we have access to functions
       this.selectedPlayer = new Player(selectedPlayerJSON.id, selectedPlayerJSON.name, selectedPlayerJSON.cardsInHand, selectedPlayerJSON.teamColor)
     });
@@ -118,9 +117,6 @@ export class BoardComponent implements OnInit {
         this.codenamesGameService.updateScore(this.currentGameIdPair.game, card.color);
       }
 
-      console.log("Hand RIGHT BEFORE updating db --->");
-      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand);
-
       await this.codenamesGameService.updateGameInDb(this.currentGameIdPair.id, this.currentGameIdPair.game);
     }
   }
@@ -140,21 +136,14 @@ export class BoardComponent implements OnInit {
     } else {
       let sequenceGame = this.currentGameIdPair.game as SequenceGameContext;
 
-      console.log("Hand BEFORE play --->")
-      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
-
       //removed card because the card selected is not always the card played (one eyed jack or two eyed jack)
       const removedCard = this.sequenceGameService.removeCardFromHand(playingCard.displayValue, this.selectedPlayer.cardsInHand as PlayingCard[]);
       
-      console.log("Hand AFTER play but BEFORE draw ---> ")
-      this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
-
       if (removedCard) {
         this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
 
-        console.log("Hand AFTER draw ---> ");
-        this.printDisplayValuesOfHand(this.selectedPlayer.cardsInHand)
-
+        //Have to update player object in the actual game that gets persisted in DB (otherwise hand wont be updated on page reload)
+        sequenceGame.players.find(player => player.id === this.selectedPlayer.id).cardsInHand = this.selectedPlayer.cardsInHand
 
         this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
@@ -164,14 +153,6 @@ export class BoardComponent implements OnInit {
         return SUCCESS;
       }
     }
-  }
-  printDisplayValuesOfHand(cardsInHand: Card[]) {
-    let displayValues = []
-    for (let card of cardsInHand){
-      displayValues.push((card as PlayingCard).displayValue)
-    }
-
-    console.log(JSON.stringify(displayValues))
   }
 
   //TODO - clean this up. Lots of duplicate code between select and removeWithOneEyedJack
@@ -194,6 +175,9 @@ export class BoardComponent implements OnInit {
       if (confirm('Are you sure you want to use your One-Eyed Jack to remove the ' + card.displayValue + '?')) {
         let removedCard = this.selectedPlayer.cardsInHand.splice(indexOfOneEyedJack, 1)[0] as PlayingCard;
         this.selectedPlayer.cardsInHand.push(this.sequenceGameService.drawTopCardFromDeck(sequenceGame));
+        
+         //Have to update player object in the actual game that gets persisted in DB (otherwise hand wont be updated on page reload)
+         sequenceGame.players.find(player => player.id === this.selectedPlayer.id).cardsInHand = this.selectedPlayer.cardsInHand
 
         this.sequenceGameService.addToDiscardPile(removedCard, sequenceGame);
         sequenceGame.topCardOnDiscardPile = removedCard;
