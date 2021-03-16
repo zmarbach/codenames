@@ -1,0 +1,22 @@
+<mat-card id="boardTop" class="boardTop">
+    <table class="matTable" mat-table>
+      <tr mat-table-row>
+        <td mat-cell class="score">
+          <span style="color: red;">Red: {{redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{blueScore}}</span>
+        </td>
+        <td mat-cell class="turnIndicator">
+          <div *ngIf="currentPlayer">
+            <span [ngClass]="{redText: currentPlayer.teamColor === 'red', blueText: currentPlayer.teamColor === 'blue'}"> {{currentPlayer.name}}'s turn</span>
+          </div>  
+          <div *ngIf="!currentPlayer">
+            <span class="redText" *ngIf="isRedTurn">Red's</span>
+            <span class="blueText" *ngIf="isBlueTurn">Blue's</span>
+            <span [ngClass]="{redText: isRedTurn, blueText: isBlueTurn}"> turn</span>
+          </div>
+        </td>
+        <td mat-cell class="endTurnButton" (click)="endTurn()">
+          <button mat-raised-button color="primary">End turn</button>
+        </td>
+      </tr>
+    </table>
+  </mat-card>

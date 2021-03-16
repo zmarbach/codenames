@@ -1,0 +1,19 @@
+.boardBottom {
+  padding: 5px;
+  background-color:lightgray;
+  margin-top: 10px;
+  border: 1px solid black;
+  text-align: right;
+}
+  
+.spyMasterToggle {
+  margin:0px 10px;
+}
+
+.nextGameButton {
+  margin: 5px 10px;
+}
+
+button:hover {
+  transform: scale(1.1);
+}

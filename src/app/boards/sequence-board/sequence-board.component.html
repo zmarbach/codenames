@@ -2,23 +2,11 @@
     <div id="boardCol" class="mainContainer">
       <app-board-title [title]="title" (deleteGameEvent)="deleteGameFromDb()"></app-board-title>
   
-      <mat-card id="boardTop" class="boardTop">
-        <table class="matTable" mat-table>
-          <tr mat-table-row>
-            <td mat-cell class="score">
-              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
-            </td>
-            <td mat-cell class="turnIndicator">
-              <div>
-                <span [ngClass]="{redText: currentGameIdPair.game.currentPlayer.teamColor === 'red', blueText: currentGameIdPair.game.currentPlayer.teamColor === 'blue'}"> {{currentGameIdPair.game.currentPlayer.name}}'s turn</span>
-              </div>
-            </td>
-            <td mat-cell class="endTurnButton" (click)="endTurn()">
-              <button mat-raised-button color="primary">End turn</button>
-            </td>
-          </tr>
-        </table>
-      </mat-card>
+      <app-board-top [redScore]="currentGameIdPair.game.redScore" 
+                     [blueScore]="currentGameIdPair.game.blueScore"
+                     [currentPlayer]="currentGameIdPair.game.currentPlayer"
+                     (endTurnEvent)="endTurn()">
+      </app-board-top>
   
       <div id="board" class="boardContainerSequence">
         <div *ngFor="let card of currentGameIdPair.game.cardsForBoard">
@@ -37,9 +25,7 @@
         </div>
       </div>
   
-      <mat-card class="boardBottom">
-        <button id="nextGameButton" class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
-      </mat-card>
+      <app-board-bottom [isCodenames]="isCodenames" (nextGameEvent)="nextGame()"></app-board-bottom>
     </div>
   
     <div id="sequenceCardsCol" class="playerHandContainer">

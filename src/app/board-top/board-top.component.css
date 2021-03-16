@@ -1,0 +1,25 @@
+.boardTop{
+    background-color:lightgray;
+    margin-bottom: 10px;
+    border: 1px solid black;
+}
+
+.score, .turnIndicator{
+    text-align: center; width: 33%;
+}
+
+.endTurnButton{
+    text-align: center; width: auto;
+}
+
+.redText{
+    color: red;
+}
+
+.blueText{
+    color: blue;
+}
+
+.matTable{
+    width: 100%;
+}

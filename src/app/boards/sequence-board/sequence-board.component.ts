@@ -28,6 +28,7 @@ export class SequenceBoardComponent implements OnInit {
   Face = Face;
   selectedPlayer = new Player(9999, 'test', [], '');
   nameForm: FormControl;
+  isCodenames = false;
   title = 'SEQUENCE'
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private sequenceGameService: SequenceGameService, private dialog: MatDialog) {}
@@ -70,6 +71,7 @@ export class SequenceBoardComponent implements OnInit {
   async nextGame() {
     // create new game and update it in the DB
     // data on page will update dynamically since using event listener for any DB changes specific to current game id
+    console.log('Creating next sequence game...');
     const nextGame = await this.sequenceGameService.createNewGame(this.currentGameIdPair.game.mode, this.sequenceGameService.getRedPlayerNames(this.currentGameIdPair.game), this.sequenceGameService.getBluePlayerNames(this.currentGameIdPair.game));
     await this.sequenceGameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
     this.handleDialog();
@@ -156,6 +158,7 @@ export class SequenceBoardComponent implements OnInit {
   }
 
   async endTurn() {
+    console.log('Ending sequence turn...')
     if (this.currentGameIdPair.game.isRedTurn) {
       this.currentGameIdPair.game.isRedTurn = false;
       this.currentGameIdPair.game.isBlueTurn = true;

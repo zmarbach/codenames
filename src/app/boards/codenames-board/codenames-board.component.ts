@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { $ } from 'protractor';
 import { Card } from 'src/app/models/cards/card';
 import { CodenamesGameIdPair } from 'src/app/models/game-id-pairs/codenames-game-id-pair';
 import { GameIdPair } from 'src/app/models/game-id-pairs/game-id-pair';
@@ -14,6 +15,7 @@ export class CodenamesBoardComponent implements OnInit {
 
   currentGameIdPair = new CodenamesGameIdPair('', null);
   isSpyMaster = false;
+  isCodenames = true;
   title = 'CODENAMES'
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private codenamesGameService: CodenamesGameService) {}
@@ -35,6 +37,10 @@ export class CodenamesBoardComponent implements OnInit {
   async nextGame() {
     // create new game and update it in the DB
     // data on page will update dynamically since using event listener for any DB changes specific to current game id
+    console.log('Creating next codenames game...');
+    // if(this.isSpyMaster){
+    //   document.getElementById('spyMasterToggle').click();
+    // }
     const nextGame = await this.codenamesGameService.createNewGame(this.currentGameIdPair.game.mode);
     await this.codenamesGameService.updateGameInDb(this.currentGameIdPair.id, nextGame);
   }
@@ -56,6 +62,7 @@ export class CodenamesBoardComponent implements OnInit {
   }
 
   async endTurn() {
+    console.log('Ending codenames turn...')
     if (this.currentGameIdPair.game.isRedTurn) {
       this.currentGameIdPair.game.isRedTurn = false;
       this.currentGameIdPair.game.isBlueTurn = true;

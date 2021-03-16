@@ -16,24 +16,6 @@
   margin: 0px 100px;
 }
 
-.boardTop{
-  background-color:lightgray;
-  margin-bottom: 10px;
-  border: 1px solid black;
-}
-
-.matTable{
-  width: 100%;
-}
-
-.score, .turnIndicator{
-  text-align: center; width: 33%;
-}
-
-.endTurnButton{
-  text-align: center; width: auto;
-}
-
 .boardContainerSequence{
   display:grid;
   grid-template-columns:repeat(10, 9.5%);
@@ -86,18 +68,6 @@
 .cardContainer:hover{
   cursor: pointer;
   transform: scale(1.05);
-}
-
-.boardBottom{
-  padding: 5px;
-  background-color:lightgray;
-  margin-top: 10px;
-  border: 1px solid black;
-  text-align: right;
-}
-
-.nextGameButton{
-  margin: 5px 10px;
 }
 
 .redText{
