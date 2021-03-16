@@ -14,7 +14,7 @@ export class CodenamesBoardComponent implements OnInit {
 
   currentGameIdPair = new CodenamesGameIdPair('', null);
   isSpyMaster = false;
-  title: String;
+  title = 'CODENAMES'
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private codenamesGameService: CodenamesGameService) {}
 
@@ -22,7 +22,6 @@ export class CodenamesBoardComponent implements OnInit {
     //TODO - handle this better!!! No setTimeout, figure it out with async await instead!!!
     // maybe create currentGameIdPair instead of "setting it up". Await for it and then move on once we know it is created
     this.setUpCurrentGame(this.currentGameIdPair);
-    this.title = 'CODENAMES';
   }
 
   setUpCurrentGame(currentGameIdPair: GameIdPair) {
@@ -68,6 +67,7 @@ export class CodenamesBoardComponent implements OnInit {
   }
 
   async deleteGameFromDb() {
+    console.log('Deleting codenames game...')
     await this.codenamesGameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 }

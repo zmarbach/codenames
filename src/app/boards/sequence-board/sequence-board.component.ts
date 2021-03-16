@@ -27,8 +27,8 @@ export class SequenceBoardComponent implements OnInit {
   Suit = Suit;
   Face = Face;
   selectedPlayer = new Player(9999, 'test', [], '');
-  title: String;
   nameForm: FormControl;
+  title = 'SEQUENCE'
 
   constructor(private activeRoute: ActivatedRoute, public router: Router, private sequenceGameService: SequenceGameService, private dialog: MatDialog) {}
 
@@ -38,7 +38,6 @@ export class SequenceBoardComponent implements OnInit {
     this.setUpCurrentGame(this.currentGameIdPair);
 
     setTimeout(() => {
-      this.title = 'SEQUENCE';
       this.handleDialog();
     }, 1000);
 
@@ -169,6 +168,7 @@ export class SequenceBoardComponent implements OnInit {
   }
 
   async deleteGameFromDb() {
+    console.log('Deleting sequence game...')
     await this.sequenceGameService.deleteGameFromDb(this.currentGameIdPair.id);
   }
 

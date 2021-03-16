@@ -1,8 +1,6 @@
 <div class="displayFlex">
     <div id="boardCol" class="mainContainer">
-      <div id="title" class="title">
-        <p id="codeNamesTitle" class="codeNamesTitle" routerLink="/home" (click)="deleteGameFromDb()"><strong><a>{{title}}</a></strong></p>
-      </div>
+      <app-board-title [title]="title" (deleteGameEvent)="deleteGameFromDb()"></app-board-title>
   
       <mat-card id="boardTop" class="boardTop">
         <table class="matTable" mat-table>
