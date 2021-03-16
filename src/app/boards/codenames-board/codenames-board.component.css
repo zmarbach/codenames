@@ -1,7 +1,7 @@
 .displayFlex{
-  display: flex;
+    display: flex;
 }
-
+  
 #removeButton{
   position:absolute; 
   top:2px; 
@@ -63,32 +63,6 @@
   grid-template-rows:repeat(4, 24%);
   grid-gap:10px;
   grid-auto-flow:column;
-}
-
-.boardContainerSequence{
-  display:grid;
-  grid-template-columns:repeat(10, 9.5%);
-  grid-gap:10px;
-  grid-auto-flow:row;
-}
-
-.playerHandTitle{
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  margin: 0 auto;
-  width: 50%;
-}
-
-.playerHandGrid{
-  display: grid;
-  grid-template-columns:repeat(2, auto);
-  grid-gap:10px;
-  grid-auto-flow:row;
-}
-
-.playerHandContainer{
-  margin: 50px 50px;
 }
 
 .cardContainer{
@@ -188,15 +162,4 @@ button:hover{
   margin: 20px 0px;
   padding-bottom: 20px;
   text-align: center;
-}
-
-.redSuit{
-  color: red;
-}
-
-#discardPile{
-  margin-top: 50px;
-  margin-left: 25px;
-  margin-right: 25px;
-
 }

@@ -25,7 +25,7 @@ export class SequenceGameContext extends GameContext {
 
     //2 full decks needed for sequence
     this.buildDeck();
-    // this.buildDeck();
+    this.buildDeck();
     Utils.shuffle(this.deck);
 
     this.setPlayerHands(players);
@@ -75,38 +75,24 @@ export class SequenceGameContext extends GameContext {
   private buildDeck() {
     let emptyString = '';
     let isSelected = false;
-    this.deck.push(new PlayingCard('', false, Face.TEN, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.NINE, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.EIGHT, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.SEVEN, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.SIX, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.FIVE, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.FOUR, Suit.HEART))
-    this.deck.push(new PlayingCard('', false, Face.THREE, Suit.HEART))
 
-    // for (const face of Object.values(Face)) {
-    //   for (const suit of Object.values(Suit)) {
-    //     if (face !== Face.FREE) {
-    //       if (face === Face.TWO_EYED_JACK) {
-    //         if (suit === Suit.DIAMOND || suit === Suit.CLUB) {
-    //           this.deck.push(
-    //             new PlayingCard(emptyString, isSelected, face, suit)
-    //           );
-    //         }
-    //       } else if (face === Face.ONE_EYED_JACK) {
-    //         if (suit === Suit.HEART || suit === Suit.SPADE) {
-    //           this.deck.push(
-    //             new PlayingCard(emptyString, isSelected, face, suit)
-    //           );
-    //         }
-    //       } else {
-    //         this.deck.push(
-    //           new PlayingCard(emptyString, isSelected, face, suit)
-    //         );
-    //       }
-    //     }
-    //   }
-    // }
+    for (const face of Object.values(Face)) {
+      for (const suit of Object.values(Suit)) {
+        if (face !== Face.FREE) {
+          if (face === Face.TWO_EYED_JACK) {
+            if (suit === Suit.DIAMOND || suit === Suit.CLUB) {
+              this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
+            }
+          } else if (face === Face.ONE_EYED_JACK) {
+            if (suit === Suit.HEART || suit === Suit.SPADE) {
+              this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
+            }
+          } else {
+            this.deck.push(new PlayingCard(emptyString, isSelected, face, suit));
+          }
+        }
+      }
+    }
   }
 
   private setPlayerHands(players: Array<Player>) {
@@ -134,48 +120,11 @@ export class SequenceGameContext extends GameContext {
         break;
     }
     for (let player of players) {
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < numOfCardsInHand; i++) {
         player.cardsInHand.push(this.deck[i]);
         this.removeCardFromDeck(this.deck[i], this.deck);
       }
     }
-
-    // TODO delete this after testing
-  //   players[0].cardsInHand = new Array<PlayingCard>(
-  //     new PlayingCard('red',false, Face.FIVE, Suit.CLUB),
-  //     new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.FIVE, Suit.CLUB),
-  //     new PlayingCard('red',false, Face.FIVE, Suit.HEART),
-  //     new PlayingCard('red',false, Face.THREE, Suit.HEART),
-  //     new PlayingCard('red',false, Face.TWO_EYED_JACK, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.TWO, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.THREE, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.FOUR, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.FIVE, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.SIX, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.SEVEN, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.SPADE)
-  //   )
-    
-  //   players[1].cardsInHand = new Array<PlayingCard>(
-  //     new PlayingCard('red',false, Face.NINE, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.TWO, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.KING, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.FIVE, Suit.HEART),
-  //     new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.TWO_EYED_JACK, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.HEART),
-  //     new PlayingCard('red',false, Face.ACE, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.KING, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.TEN, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.QUEEN, Suit.SPADE),
-  //     new PlayingCard('red',false, Face.TWO, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.THREE, Suit.DIAMOND),
-  //     new PlayingCard('red',false, Face.ONE_EYED_JACK, Suit.HEART)
-  //   )
-
-
   }
 
   private removeCardFromDeck(cardToBeRemoved: Card, listToRemoveFrom: Array<Card>) {

@@ -15,7 +15,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HomeComponent } from './home/home.component';
-import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameService } from './services/game.service';
 import { AngularFireModule } from '@angular/fire';
@@ -25,13 +24,16 @@ import { DataService } from './services/data.service';
 import { Router } from '@angular/router';
 import { SequenceGameService } from './services/sequence-game.service';
 import { CodenamesGameService } from './services/codenames-game.service';
+import { SequenceBoardComponent } from './boards/sequence-board/sequence-board.component';
+import { CodenamesBoardComponent } from './boards/codenames-board/codenames-board.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    BoardComponent,
-    PlayerNameDialogComponent
+    PlayerNameDialogComponent,
+    SequenceBoardComponent,
+    CodenamesBoardComponent
   ],
   imports: [
     BrowserModule,

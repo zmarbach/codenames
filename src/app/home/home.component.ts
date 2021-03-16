@@ -77,15 +77,18 @@ export class HomeComponent implements OnInit {
   async submit() {
     let newGame: GameContext;
 
+    //TODO - refactor
     if (this.settingsForm.value.gameMode === GameMode.SEQUENCE){
       newGame = await this.sequenceGameService.createNewGame(this.settingsForm.value.gameMode as GameMode, this.settingsForm.value.redPlayerNames, this.settingsForm.value.bluePlayerNames);
+      const newGameFirebaseId = this.sequenceGameService.addGameToDb(newGame);
+      this.router.navigate(['/board/sequence/' + newGameFirebaseId]);
+
     } else {
       newGame = await this.codenamesGameService.createNewGame(this.settingsForm.value.gameMode as GameMode);
+      const newGameFirebaseId = this.codenamesGameService.addGameToDb(newGame);
+      this.router.navigate(['/board/codenames/' + newGameFirebaseId]);
+
     }
-
-    const newGameFirebaseId = this.codenamesGameService.addGameToDb(newGame);
-
-    this.router.navigate(['/board/' + newGameFirebaseId]);
   }
 
   showSequence() {

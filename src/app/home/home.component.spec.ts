@@ -7,8 +7,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
 import { Card } from '../models/cards/card';
-import { GameIdPair } from '../models/game-id-pair';
-import { GameService } from '../services/game.service';
 
 import { HomeComponent } from './home.component';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { GameMode } from '../models/game-mode.enum';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { CodenamesGameService } from '../services/codenames-game.service';
+import { CodenamesGameIdPair } from '../models/game-id-pairs/codenames-game-id-pair';
 
 describe('HomeComponent', () => {
   let router: Router;
@@ -55,7 +54,7 @@ describe('HomeComponent', () => {
 
   beforeEach(() => {
     const fakeCodenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false);
-    const fakeGamePairId = new GameIdPair('test1234', fakeCodenamesGame);
+    const fakeGamePairId = new CodenamesGameIdPair('test1234', fakeCodenamesGame);
     gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeCodenamesGame));
     gameServiceSpy.addGameToDb.and.returnValue(fakeGamePairId.id.toString());
 
@@ -112,7 +111,7 @@ describe('HomeComponent', () => {
     component.submit();
     tick()
 
-    expect(location.path()).toBe('/board/test1234');
+    expect(location.path()).toBe('/board/codenames/test1234');
   }));
 
   afterEach(() => {

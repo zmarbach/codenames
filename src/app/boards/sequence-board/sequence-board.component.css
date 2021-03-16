@@ -1,0 +1,141 @@
+.displayFlex{
+    display: flex;
+  }
+  
+  #removeButton{
+    position:absolute; 
+    top:2px; 
+    right:2px;
+    border-radius: 50%;
+    background-color: transparent;
+    border-color: black;
+    color: black;
+  }
+  
+  .title{
+    margin: 15px;
+  }
+  
+  .mainContainer{
+    margin: 0px 100px;
+  }
+  
+  .codeNamesTitle{
+    text-align: center;
+    font-size: 40px;
+    margin: 0 auto;
+    width: 50%;
+  }
+  
+  .codeNamesTitle:hover{
+    cursor: pointer;
+    color: cornflowerblue;
+    font-size: 41px;
+  }
+  
+  .boardTop{
+    background-color:lightgray;
+    margin-bottom: 10px;
+    border: 1px solid black;
+  }
+  
+  .matTable{
+    width: 100%;
+  }
+  
+  .score, .turnIndicator{
+    text-align: center; width: 33%;
+  }
+  
+  .endTurnButton{
+    text-align: center; width: auto;
+  }
+  
+  .boardContainerSequence{
+    display:grid;
+    grid-template-columns:repeat(10, 9.5%);
+    grid-gap:10px;
+    grid-auto-flow:row;
+  }
+  
+  .playerHandTitle{
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    margin: 0 auto;
+    width: 50%;
+  }
+  
+  .playerHandGrid{
+    display: grid;
+    grid-template-columns:repeat(2, auto);
+    grid-gap:10px;
+    grid-auto-flow:row;
+  }
+  
+  .playerHandContainer{
+    margin: 50px 50px;
+  }
+  
+  .cardContainer{
+    text-align: center;
+    font-size: 40px;
+    border: 5px solid lightgray;
+    padding: 5px;
+  }
+  
+  .cardContainerSelectedRed{
+    text-align: center;
+    font-size: 40px;
+    border: 5px solid red;
+    padding: 5px;
+    background-color: #ff8080;
+  }
+  
+  .cardContainerSelectedBlue{
+    text-align: center;
+    font-size: 40px;
+    border: 5px solid blue;
+    padding: 5px;
+    background-color: #8080ff;
+  }
+  
+  .cardContainer:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+  
+  .boardBottom{
+    padding: 5px;
+    background-color:lightgray;
+    margin-top: 10px;
+    border: 1px solid black;
+    text-align: right;
+  }
+  
+  .nextGameButton{
+    margin: 5px 10px;
+  }
+  
+  .redText{
+    color: red;
+  }
+  
+  .blueText{
+    color: blue;
+  }
+  
+  button:hover{
+    transform: scale(1.1);
+  }
+  
+  .redSuit{
+    color: red;
+  }
+  
+  #discardPile{
+    margin-top: 50px;
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+  
