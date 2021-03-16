@@ -1,0 +1,20 @@
+.title{
+    margin: 15px;
+}
+
+.mainContainer{
+    margin: 0px 100px;
+}
+
+.titleWords{
+    text-align: center;
+    font-size: 40px;
+    margin: 0 auto;
+    width: 50%;
+}
+
+.titleWords:hover{
+    cursor: pointer;
+    color: cornflowerblue;
+    font-size: 41px;
+  }

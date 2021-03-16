@@ -6,10 +6,7 @@ import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { routes } from '../app-routing.module';
-import { Card } from '../card';
-import { GameContext } from '../game-context';
-import { GameIdPair } from '../game-id-pair';
-import { GameService } from '../game.service';
+import { Card } from '../models/cards/card';
 
 import { HomeComponent } from './home.component';
 import { MatCardModule } from '@angular/material/card';
@@ -18,16 +15,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
+import { GameMode } from '../models/game-mode.enum';
+import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
+import { CodenamesGameService } from '../services/codenames-game.service';
+import { CodenamesGameIdPair } from '../models/game-id-pairs/codenames-game-id-pair';
 
 describe('HomeComponent', () => {
   let router: Router;
   let location: Location;
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
-  let gameServiceSpy: jasmine.SpyObj<GameService>;
+  let gameServiceSpy: jasmine.SpyObj<CodenamesGameService>;
 
   beforeEach(async () => {
-    const spyForGameService = jasmine.createSpyObj('GameService', ['createNewGame']);
+    const spyForGameService = jasmine.createSpyObj('GameService', ['createNewGame', 'addGameToDb']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -42,18 +43,20 @@ describe('HomeComponent', () => {
         ReactiveFormsModule
       ],
       providers: [
-        {provide: GameService, useValue: spyForGameService},
+        {provide: CodenamesGameService, useValue: spyForGameService},
       ],
       declarations: [ HomeComponent ],
     })
     .compileComponents();
 
-    gameServiceSpy = TestBed.inject(GameService) as jasmine.SpyObj<GameService>;
+    gameServiceSpy = TestBed.inject(CodenamesGameService) as jasmine.SpyObj<CodenamesGameService>;
   });
 
   beforeEach(() => {
-    const fakeGamePairId = new GameIdPair('test1234', new GameContext(new Array<Card>(), 0, 0, false, false));
-    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeGamePairId));
+    const fakeCodenamesGame = new CodenamesGameContext(GameMode.CODENAMES_WORDS, new Array<Card>(), 0, 0, false, false);
+    const fakeGamePairId = new CodenamesGameIdPair('test1234', fakeCodenamesGame);
+    gameServiceSpy.createNewGame.and.returnValue(Promise.resolve(fakeCodenamesGame));
+    gameServiceSpy.addGameToDb.and.returnValue(fakeGamePairId.id.toString());
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
@@ -79,25 +82,36 @@ describe('HomeComponent', () => {
     });
   });
 
-  it('submit should call createNewGame method on GameService', async () => {
+  it('submit should call createNewGame method on GameService one time', async () => {
     fixture.detectChanges();
 
     // WAIT for promise to resolve before making assertions
     await component.submit();
 
     expect(gameServiceSpy.createNewGame.calls.count()).toEqual(1);
-    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith('Words');
+    expect(gameServiceSpy.createNewGame).toHaveBeenCalledWith(GameMode.CODENAMES_WORDS);
+  });
+
+  it('submit should call addGameToDb method on GameService one time', async () => {
+    fixture.detectChanges();
+
+    // WAIT for promise to resolve before making assertions
+    await component.submit();
+
+    expect(gameServiceSpy.addGameToDb.calls.count()).toEqual(1);
   });
 
   // Have to use tick and fakeAsync together
   // Can do the same thing with async/await, but use fakeAsync and tick here as an example
-  // fakeAsync essentially turns all asycn stuff into sync
-  // tick simulates passage of time, so 'asycn' actions have resolved (can pass ms into tick if need more than default time to pass)
-  it('submit should route to correct URL for board component', fakeAsync(() => {
-    component.submit();
-    tick();
+  // fakeAsync essentially turns all async stuff into sync
+  // tick simulates passage of time, so 'async' actions have resolved (can pass ms into tick if need more than default time to pass)
+  it('submit should route to correct URL for board component', fakeAsync (() => {
+    fixture.detectChanges();
 
-    expect(location.path()).toBe('/board/test1234');
+    component.submit();
+    tick()
+
+    expect(location.path()).toBe('/board/codenames/test1234');
   }));
 
   afterEach(() => {

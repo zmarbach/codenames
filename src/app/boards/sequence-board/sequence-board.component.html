@@ -1,0 +1,77 @@
+<div class="displayFlex">
+    <div id="boardCol" class="mainContainer">
+      <app-board-title [title]="title" (deleteGameEvent)="deleteGameFromDb()"></app-board-title>
+  
+      <mat-card id="boardTop" class="boardTop">
+        <table class="matTable" mat-table>
+          <tr mat-table-row>
+            <td mat-cell class="score">
+              <span style="color: red;">Red: {{currentGameIdPair.game.redScore}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: blue;">Blue: {{currentGameIdPair.game.blueScore}}</span>
+            </td>
+            <td mat-cell class="turnIndicator">
+              <div>
+                <span [ngClass]="{redText: currentGameIdPair.game.currentPlayer.teamColor === 'red', blueText: currentGameIdPair.game.currentPlayer.teamColor === 'blue'}"> {{currentGameIdPair.game.currentPlayer.name}}'s turn</span>
+              </div>
+            </td>
+            <td mat-cell class="endTurnButton" (click)="endTurn()">
+              <button mat-raised-button color="primary">End turn</button>
+            </td>
+          </tr>
+        </table>
+      </mat-card>
+  
+      <div id="board" class="boardContainerSequence">
+        <div *ngFor="let card of currentGameIdPair.game.cardsForBoard">
+          <mat-card [ngClass]="{cardContainer: !card.selected,
+                                cardContainerSelectedRed: (card.selected) && card.color == 'red',
+                                cardContainerSelectedBlue: (card.selected) && card.color == 'blue'}">
+            <div>
+              <div class="displayFlex">
+                <span (click)="select(card)" [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
+                <div *ngIf="card.selected">
+                  <button id="removeButton" (click)="removeWithOneEyedJack(card, currentGameIdPair.game.cardsForBoard.indexOf(card))">x</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+  
+      <mat-card class="boardBottom">
+        <button id="nextGameButton" class="nextGameButton" mat-raised-button color="primary" (click)="nextGame()">Next Game!</button>
+      </mat-card>
+    </div>
+  
+    <div id="sequenceCardsCol" class="playerHandContainer">
+      <div class="playerHandTitle" [style.color]="selectedPlayer.teamColor">
+        {{selectedPlayer.name}}'s hand
+      </div>
+      <div id="playerHand" class="playerHandGrid">
+        <div *ngFor="let card of selectedPlayer.cardsInHand">
+          <mat-card [ngClass]="{cardContainer: !card.selected,
+                                cardContainerSelectedRed: card.selected && card.color == 'red',
+                                cardContainerSelectedBlue: card.selected && card.color == 'blue'}">
+            <div class="cardSequence">
+              <div>
+                <span [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+  
+      <div id="discardPile" *ngIf="currentGameIdPair.game.topCardOnDiscardPile">
+        <h3>DISCARD PILE:</h3>
+        <mat-card class="cardContainer">
+            <div class="cardSequence">
+              <div>
+                <span [ngClass]="{redSuit: topDiscardIsRedSuit()}">{{ currentGameIdPair.game.topCardOnDiscardPile?.displayValue }}</span>
+              </div>
+            </div>
+          </mat-card>
+      </div>
+      <div *ngIf="currentGameIdPair.game.deck === undefined" id="reshuffleButton">
+        <button mat-raised-button (click)="midGameShuffle()">Shuffle</button>
+      </div>
+    </div>
+  </div>

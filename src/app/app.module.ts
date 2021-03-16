@@ -11,18 +11,31 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
 import { HomeComponent } from './home/home.component';
-import { BoardComponent } from './board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GameService } from './game.service';
+import { GameService } from './services/game.service';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/database';
+import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dialog.component';
+import { DataService } from './services/data.service';
+import { Router } from '@angular/router';
+import { SequenceGameService } from './services/sequence-game.service';
+import { CodenamesGameService } from './services/codenames-game.service';
+import { SequenceBoardComponent } from './boards/sequence-board/sequence-board.component';
+import { CodenamesBoardComponent } from './boards/codenames-board/codenames-board.component';
+import { BoardTitleComponent } from './board-title/board-title.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    BoardComponent
+    PlayerNameDialogComponent,
+    SequenceBoardComponent,
+    CodenamesBoardComponent,
+    BoardTitleComponent
   ],
   imports: [
     BrowserModule,
@@ -34,11 +47,14 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     MatIconModule,
     MatSlideToggleModule,
     MatRadioModule,
+    MatSelectModule,
+    MatInputModule,
+    MatDialogModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
   ],
-  providers: [GameService],
+  providers: [SequenceGameService, CodenamesGameService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
