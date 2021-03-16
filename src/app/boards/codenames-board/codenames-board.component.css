@@ -20,37 +20,6 @@
   margin: 0px 100px;
 }
 
-.codeNamesTitle{
-  text-align: center;
-  font-size: 40px;
-  margin: 0 auto;
-  width: 50%;
-}
-
-.codeNamesTitle:hover{
-  cursor: pointer;
-  color: cornflowerblue;
-  font-size: 41px;
-}
-
-.boardTop{
-  background-color:lightgray;
-  margin-bottom: 10px;
-  border: 1px solid black;
-}
-
-.matTable{
-  width: 100%;
-}
-
-.score, .turnIndicator{
-  text-align: center; width: 33%;
-}
-
-.endTurnButton{
-  text-align: center; width: auto;
-}
-
 .boardContainerWords{
   display:grid;
   grid-template-columns:repeat(5, 19.5%);
@@ -118,22 +87,6 @@
 .cardImg img{
   max-width: 100%;
   max-height: 100%;
-}
-
-.boardBottom{
-  padding: 5px;
-  background-color:lightgray;
-  margin-top: 10px;
-  border: 1px solid black;
-  text-align: right;
-}
-
-.spyMasterToggle{
-  margin:0px 10px;
-}
-
-.nextGameButton{
-  margin: 5px 10px;
 }
 
 .redText{

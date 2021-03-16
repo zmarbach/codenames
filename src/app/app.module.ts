@@ -27,6 +27,8 @@ import { CodenamesGameService } from './services/codenames-game.service';
 import { SequenceBoardComponent } from './boards/sequence-board/sequence-board.component';
 import { CodenamesBoardComponent } from './boards/codenames-board/codenames-board.component';
 import { BoardTitleComponent } from './board-title/board-title.component';
+import { BoardBottomComponent } from './board-bottom/board-bottom.component';
+import { BoardTopComponent } from './board-top/board-top.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { BoardTitleComponent } from './board-title/board-title.component';
     PlayerNameDialogComponent,
     SequenceBoardComponent,
     CodenamesBoardComponent,
-    BoardTitleComponent
+    BoardTitleComponent,
+    BoardBottomComponent,
+    BoardTopComponent
   ],
   imports: [
     BrowserModule,
