@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { GameMode } from '../models/game-mode.enum';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
 import { CodenamesGameService } from '../services/codenames-game.service';
-import { CodenamesGameIdPair } from '../models/codenames-game-id-pair';
+import { CodenamesGameIdPair } from '../models/game-id-pairs/codenames-game-id-pair';
 
 describe('HomeComponent', () => {
   let router: Router;

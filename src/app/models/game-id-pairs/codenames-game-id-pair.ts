@@ -1,4 +1,4 @@
-import { CodenamesGameContext } from "./game-contexts/codenames-game-context";
+import { CodenamesGameContext } from "../game-contexts/codenames-game-context";
 import { GameIdPair } from "./game-id-pair";
 
 export class CodenamesGameIdPair extends GameIdPair{

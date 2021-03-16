@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from 'src/app/models/cards/card';
-import { CodenamesGameIdPair } from 'src/app/models/codenames-game-id-pair';
-import { GameIdPair } from 'src/app/models/game-id-pair';
+import { CodenamesGameIdPair } from 'src/app/models/game-id-pairs/codenames-game-id-pair';
+import { GameIdPair } from 'src/app/models/game-id-pairs/game-id-pair';
 import { CodenamesGameService } from 'src/app/services/codenames-game.service';
 
 @Component({

@@ -17,7 +17,7 @@ import { SequenceGameService } from 'src/app/services/sequence-game.service';
 import { environment } from 'src/environments/environment';
 
 import { SequenceBoardComponent } from './sequence-board.component';
-import { SequenceGameIdPair } from 'src/app/models/sequence-game-id-pair';
+import { SequenceGameIdPair } from 'src/app/models/game-id-pairs/sequence-game-id-pair';
 import { SequenceGameContext } from 'src/app/models/game-contexts/sequence-game-context';
 import { GameMode } from 'src/app/models/game-mode.enum';
 import { Player } from 'src/app/models/player';

@@ -20,7 +20,7 @@ import { CodenameCard } from '../../models/cards/codename-card';
 import { CodenamesGameContext } from '../../models/game-contexts/codenames-game-context';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CodenamesGameService } from '../../services/codenames-game.service';
-import { CodenamesGameIdPair } from 'src/app/models/codenames-game-id-pair';
+import { CodenamesGameIdPair } from 'src/app/models/game-id-pairs/codenames-game-id-pair';
 import { CodenamesBoardComponent } from './codenames-board.component';
 
 describe('CodenamesBoardComponent', () => {

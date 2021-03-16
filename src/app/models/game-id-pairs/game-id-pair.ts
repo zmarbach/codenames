@@ -1,4 +1,4 @@
-import { GameContext } from './game-contexts/game-context';
+import { GameContext } from '../game-contexts/game-context';
 
 export abstract class GameIdPair {
   id: String;

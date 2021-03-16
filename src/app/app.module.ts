@@ -15,7 +15,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HomeComponent } from './home/home.component';
-import { BoardComponent } from './boards/board/board.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GameService } from './services/game.service';
 import { AngularFireModule } from '@angular/fire';
@@ -32,7 +31,6 @@ import { CodenamesBoardComponent } from './boards/codenames-board/codenames-boar
   declarations: [
     AppComponent,
     HomeComponent,
-    BoardComponent,
     PlayerNameDialogComponent,
     SequenceBoardComponent,
     CodenamesBoardComponent

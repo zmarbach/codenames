@@ -1,4 +1,4 @@
-import { SequenceGameContext } from "./game-contexts/sequence-game-context";
+import { SequenceGameContext } from "../game-contexts/sequence-game-context";
 import { GameIdPair } from "./game-id-pair";
 
 export class SequenceGameIdPair extends GameIdPair{

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { DataService } from '..//services/data.service';
 import { GameContext } from '../models/game-contexts/game-context';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { GameIdPair } from '../models/game-id-pair';
+import { GameIdPair } from '../models/game-id-pairs/game-id-pair';
 import { Router } from '@angular/router';
 
 @Injectable({providedIn: 'root'})

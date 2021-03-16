@@ -52,8 +52,7 @@
         <div *ngFor="let card of selectedPlayer.cardsInHand">
           <mat-card [ngClass]="{cardContainer: !card.selected,
                                 cardContainerSelectedRed: card.selected && card.color == 'red',
-                                cardContainerSelectedBlue: card.selected && card.color == 'blue',
-                                cardContainerSelectedBlack: card.selected && card.color == 'black'}">
+                                cardContainerSelectedBlue: card.selected && card.color == 'blue'}">
             <div class="cardSequence">
               <div>
                 <span [ngClass]="{redSuit: card.suit === Suit.DIAMOND || card.suit === Suit.HEART }">{{ card.displayValue }}</span>
@@ -77,18 +76,4 @@
         <button mat-raised-button (click)="midGameShuffle()">Shuffle</button>
       </div>
     </div>
-  
-  
-    DECK:
-        <div  *ngFor="let card of currentGameIdPair.game.deck">
-          {{ card.displayValue }}
-        </div>
-    
-        <br/>
-  
-      <!-- DISCARD PILE: 
-      <div  *ngFor="let card of currentGameIdPair.game.discardPile">
-        {{ card.displayValue }}
-      </div> -->
-  
   </div>

@@ -4,9 +4,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { RouterModule } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { Card } from '../models/cards/card';
-import { CodenamesGameIdPair } from '../models/codenames-game-id-pair';
+import { CodenamesGameIdPair } from '../models/game-id-pairs/codenames-game-id-pair';
 import { CodenamesGameContext } from '../models/game-contexts/codenames-game-context';
-import { GameIdPair } from '../models/game-id-pair';
 import { GameMode } from '../models/game-mode.enum';
 
 import { GameService } from './game.service';
